@@ -205,9 +205,7 @@ function renderCharacterCards() {
                 </div>
                 ${buffsHtml}
             </div>
-            <div class="character-card-favor-value">
-                ${like}<span class="favor-trend ${trendClass}">${trendIcon}</span>
-            </div>
+            <div class="character-card-favor-value">${like}</div>
         `;
 
         const portraitDiv = card.querySelector(`#portrait-${character.id}`);
@@ -585,7 +583,7 @@ function calculateWeeklyProgress() {
     const currentPhase = getCurrentPhase();
     const totalWeight = calculateTotalWeight(currentPhase);
     
-    let weightedProgress = baseProgress * (totalWeight / 6);
+    let weightedProgress = baseProgress * totalWeight;
     
     gameState.progress = Math.min(100, gameState.progress + weightedProgress);
 }
@@ -603,7 +601,8 @@ function getCurrentPhase() {
     return phases[phases.length - 1] || { weights: {} };
 }
 
-function calculateTotalWeight(phase) {
+function calculateWeightedEfficiency(phase) {
+    let weightedSum = 0;
     let totalWeight = 0;
     
     data.characters.characters.forEach(character => {
@@ -611,23 +610,24 @@ function calculateTotalWeight(phase) {
         const baseWeight = phase.weights[characterId] || 0.1;
         const favor = gameState.favors[characterId] || 50;
         
-        let efficiencyBonus = 1;
+        let efficiency = 1;
         if (favor > weightsData.efficiency_buff.threshold) {
-            efficiencyBonus = 1 + getRandomEfficiencyBonus();
+            efficiency = 1 + getRandomEfficiencyBonus();
         }
         
         const characterBuffs = gameState.characterBuffs[characterId] || [];
         characterBuffs.forEach(buff => {
             const buffData = buffsData.buffs.find(b => b.id === buff.buffId);
             if (buffData && buffData.effect.type === 'progress') {
-                efficiencyBonus += buffData.effect.value / 100;
+                efficiency += buffData.effect.value / 100;
             }
         });
         
-        totalWeight += baseWeight * efficiencyBonus;
+        weightedSum += efficiency * baseWeight;
+        totalWeight += baseWeight;
     });
     
-    return totalWeight;
+    return { weightedSum, totalWeight };
 }
 
 function getRandomEfficiencyBonus() {
