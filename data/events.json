@@ -1,0 +1,767 @@
+{
+  "events": [
+    {
+      "id": "event_001",
+      "title": "凌晨三点的需求",
+      "description": "甲方在群里@了你，发来59秒语音方阵。",
+      "options": [
+        {
+          "text": "接下需求，安排RD加班",
+          "effects": {"aisaike": -5, "progress": 10, "satisfaction": 5},
+          "budget": -8,
+          "prd_effect": "新增需求#408：批量导出功能",
+          "weekly_effect": "本周加班严重，团队略显疲惫"
+        },
+        {
+          "text": "拒绝需求，跟甲方谈判",
+          "effects": {"xiaokui": 5, "morale": 5, "satisfaction": -15},
+          "prd_effect": "需求变更记录：拒绝非核心需求",
+          "weekly_effect": "团队士气有所提升，但甲方关系紧张"
+        },
+        {
+          "text": "让QA帮忙评估需求",
+          "effects": {"moganna": 3, "progress": 5, "satisfaction": 0},
+          "prd_effect": "需求评估记录：QA参与需求分析",
+          "weekly_effect": "莫甘娜参与度提高，团队协作加强"
+        }
+      ]
+    },
+    {
+      "id": "event_002",
+      "title": "代码review危机",
+      "description": "艾萨克提交的代码被发现有严重性能问题。",
+      "options": [
+        {
+          "text": "严厉批评艾萨克",
+          "effects": {"aisaike": -10, "satisfaction": -5},
+          "prd_effect": "代码规范更新：增加性能审查环节",
+          "weekly_effect": "艾萨克情绪低落，但代码质量意识提升"
+        },
+        {
+          "text": "一起分析问题，帮助改进",
+          "effects": {"aisaike": 5, "moganna": 3, "satisfaction": 5},
+          "prd_effect": "新增：代码review流程优化",
+          "weekly_effect": "团队氛围变好，问题得到妥善解决"
+        },
+        {
+          "text": "让小葵组织团建缓解压力",
+          "effects": {"xiaokui": 5, "aisaike": 3, "satisfaction": -3},
+          "budget": -12,
+          "prd_effect": "团队建设记录：缓解开发压力",
+          "weekly_effect": "团建效果不错，大家又充满干劲"
+        }
+      ]
+    },
+    {
+      "id": "event_003",
+      "title": "测试用例争议",
+      "description": "莫甘娜认为测试用例覆盖不足，要求增加测试。",
+      "options": [
+        {
+          "text": "支持莫甘娜，增加测试用例",
+          "effects": {"moganna": 5, "progress": -5, "satisfaction": 3},
+          "prd_effect": "测试计划更新：增加回归测试用例",
+          "weekly_effect": "莫甘娜很满意，测试覆盖率提升"
+        },
+        {
+          "text": "说服莫甘娜先上线再迭代",
+          "effects": {"moganna": -3, "progress": 5, "satisfaction": -5},
+          "prd_effect": "发布计划调整：优先上线",
+          "weekly_effect": "项目进度加快，但莫甘娜有些不满"
+        },
+        {
+          "text": "让小葵协调双方意见",
+          "effects": {"xiaokui": 3, "moganna": 2, "aisaike": 2, "satisfaction": 0},
+          "prd_effect": "沟通记录：协调开发与测试",
+          "weekly_effect": "小葵的协调能力得到认可"
+        }
+      ]
+    },
+    {
+      "id": "event_004",
+      "title": "运营数据异常",
+      "description": "小葵发现用户留存数据出现异常波动。",
+      "options": [
+        {
+          "text": "让RD紧急排查问题",
+          "effects": {"aisaike": -5, "xiaokui": 5, "satisfaction": -10},
+          "prd_effect": "紧急修复：用户留存数据问题",
+          "weekly_effect": "问题快速解决，小葵很感激"
+        },
+        {
+          "text": "让QA先定位问题原因",
+          "effects": {"moganna": 5, "xiaokui": 3, "satisfaction": -5},
+          "prd_effect": "问题分析记录：数据异常排查",
+          "weekly_effect": "QA和运营协作更加顺畅"
+        },
+        {
+          "text": "召开紧急会议一起讨论",
+          "effects": {"aisaike": 2, "moganna": 2, "xiaokui": 2, "satisfaction": -3},
+          "prd_effect": "会议记录：数据异常应对方案",
+          "weekly_effect": "团队凝聚力提升，问题妥善解决"
+        }
+      ]
+    },
+    {
+      "id": "event_005",
+      "title": "版本发布延期",
+      "description": "原计划本周发布的版本因为bug太多需要延期。",
+      "options": [
+        {
+          "text": "要求团队加班赶工",
+          "effects": {"aisaike": -8, "moganna": -5, "satisfaction": 10},
+          "budget": -15,
+          "prd_effect": "发布计划更新：版本延期至下周",
+          "weekly_effect": "团队压力很大，抱怨声不断"
+        },
+        {
+          "text": "向甲方说明情况，请求延期",
+          "effects": {"xiaokui": 5, "satisfaction": -15},
+          "prd_effect": "沟通记录：版本延期说明",
+          "weekly_effect": "甲方表示理解，团队松了一口气"
+        },
+        {
+          "text": "组织复盘会总结经验",
+          "effects": {"aisaike": 3, "moganna": 3, "xiaokui": 3, "satisfaction": -8},
+          "prd_effect": "复盘记录：发布延期原因分析",
+          "weekly_effect": "团队从失败中学习，氛围积极"
+        }
+      ]
+    },
+    {
+      "id": "event_006",
+      "title": "需求变更风暴",
+      "description": "甲方突然提出大量需求变更，超出了原计划范围。",
+      "options": [
+        {
+          "text": "全部接受，保证客户满意",
+          "effects": {"aisaike": -10, "moganna": -8, "satisfaction": 15},
+          "prd_effect": "需求变更记录：接受甲方新增需求",
+          "weekly_effect": "团队负担加重，加班已成常态"
+        },
+        {
+          "text": "评估后只接受核心需求",
+          "effects": {"moganna": 3, "satisfaction": -10},
+          "prd_effect": "需求评估记录：筛选优先级",
+          "weekly_effect": "需求得到控制，团队压力可控"
+        },
+        {
+          "text": "要求追加预算和时间",
+          "effects": {"xiaokui": 5, "satisfaction": -5},
+          "prd_effect": "合同变更：追加开发资源",
+          "weekly_effect": "甲方同意追加投入，团队士气回升"
+        }
+      ]
+    },
+    {
+      "id": "event_007",
+      "title": "服务器宕机",
+      "description": "线上服务器突然宕机，用户无法访问。",
+      "options": [
+        {
+          "text": "让艾萨克立即排查",
+          "effects": {"aisaike": -3, "progress": -5, "satisfaction": -15},
+          "prd_effect": "紧急修复：服务器宕机问题",
+          "weekly_effect": "问题快速解决，但影响了部分用户"
+        },
+        {
+          "text": "启动应急预案",
+          "effects": {"moganna": 5, "satisfaction": -5},
+          "budget": -20,
+          "prd_effect": "应急预案执行记录",
+          "weekly_effect": "响应迅速，用户影响降到最低"
+        },
+        {
+          "text": "让小葵发布公告安抚用户",
+          "effects": {"xiaokui": 5, "aisaike": 3, "satisfaction": -8},
+          "prd_effect": "用户沟通记录：宕机说明",
+          "weekly_effect": "用户反馈良好，团队协作默契"
+        }
+      ]
+    },
+    {
+      "id": "event_008",
+      "title": "技术债务爆发",
+      "description": "前期积累的技术债务导致新功能开发困难。",
+      "options": [
+        {
+          "text": "先重构再开发",
+          "effects": {"aisaike": 5, "progress": -10, "satisfaction": -10},
+          "prd_effect": "技术债务清理计划",
+          "weekly_effect": "代码质量提升，但进度受阻"
+        },
+        {
+          "text": "继续开发，后续再处理",
+          "effects": {"aisaike": -5, "satisfaction": 5},
+          "prd_effect": "技术债务记录：后续迭代处理",
+          "weekly_effect": "进度正常，但技术债务进一步累积"
+        },
+        {
+          "text": "平衡重构与开发",
+          "effects": {"aisaike": 2, "moganna": 2, "satisfaction": 0},
+          "prd_effect": "技术债务管理策略",
+          "weekly_effect": "稳步推进，团队状态良好"
+        }
+      ]
+    },
+    {
+      "id": "event_009",
+      "title": "设计稿被否决",
+      "description": "辛竹提交的设计稿被甲方驳回，要求重新设计。",
+      "options": [
+        {
+          "text": "要求辛竹立刻重新设计",
+          "effects": {"xinzhu": -8, "satisfaction": 5},
+          "prd_effect": "设计变更：重新设计方案",
+          "weekly_effect": "辛竹压力很大，熬夜赶工"
+        },
+        {
+          "text": "和甲方沟通了解具体需求",
+          "effects": {"xinzhu": 3, "xiaokui": 3, "satisfaction": -5},
+          "prd_effect": "设计需求澄清记录",
+          "weekly_effect": "明确了需求方向，辛竹重获信心"
+        },
+        {
+          "text": "让团队一起帮忙出主意",
+          "effects": {"xinzhu": 5, "aisaike": 2, "moganna": 2, "satisfaction": -3},
+          "prd_effect": "设计评审会议记录",
+          "weekly_effect": "团队协作完成设计，效果超出预期"
+        }
+      ]
+    },
+    {
+      "id": "event_010",
+      "title": "设计与开发冲突",
+      "description": "艾萨克认为辛竹的设计过于复杂，难以实现。",
+      "options": [
+        {
+          "text": "支持艾萨克，要求简化设计",
+          "effects": {"aisaike": 5, "xinzhu": -5, "satisfaction": 0},
+          "prd_effect": "设计方案调整：简化实现",
+          "weekly_effect": "开发效率提升，但辛竹有些失望"
+        },
+        {
+          "text": "支持辛竹，要求开发克服困难",
+          "effects": {"xinzhu": 5, "aisaike": -5, "satisfaction": 3},
+          "prd_effect": "设计方案确认：保持原有设计",
+          "weekly_effect": "设计效果很好，但开发压力增大"
+        },
+        {
+          "text": "组织双方沟通，寻找折中方案",
+          "effects": {"xinzhu": 3, "aisaike": 3, "xiaokui": 3, "satisfaction": 0},
+          "prd_effect": "设计与开发协调记录",
+          "weekly_effect": "找到平衡点，双方都满意"
+        }
+      ]
+    },
+    {
+      "id": "event_011",
+      "title": "竞品功能上线",
+      "description": "竞品突然上线了一个我们正在开发的核心功能，甲方要求加快进度。",
+      "options": [
+        {
+          "text": "加速开发，快速上线",
+          "effects": {"aisaike": -6, "moganna": -4, "progress": 15, "satisfaction": 8},
+          "prd_effect": "开发计划调整：竞品对标",
+          "weekly_effect": "进度大幅提升，但测试覆盖率下降"
+        },
+        {
+          "text": "分析竞品，优化我们的方案",
+          "effects": {"xinzhu": 4, "xiaokui": 3, "progress": -5, "satisfaction": -3},
+          "prd_effect": "竞品分析记录：功能优化",
+          "weekly_effect": "产品方案更完善，但进度有所落后"
+        },
+        {
+          "text": "按原计划推进，保证质量",
+          "effects": {"moganna": 5, "aisaike": 2, "satisfaction": -8},
+          "prd_effect": "产品策略：坚持质量优先",
+          "weekly_effect": "质量有保证，但甲方有些着急"
+        }
+      ]
+    },
+    {
+      "id": "event_012",
+      "title": "团队成员生病",
+      "description": "艾萨克感冒发烧，精神状态不佳。",
+      "options": [
+        {
+          "text": "让艾萨克回家休息",
+          "effects": {"aisaike": 8, "progress": -8, "satisfaction": -5},
+          "prd_effect": "人员安排：艾萨克请假",
+          "weekly_effect": "艾萨克很感动，身体很快恢复"
+        },
+        {
+          "text": "让他带病坚持，分担工作",
+          "effects": {"aisaike": -10, "moganna": -3, "progress": 3, "satisfaction": 3},
+          "prd_effect": "工作安排：紧急调整",
+          "weekly_effect": "艾萨克病情加重，团队氛围变差"
+        },
+        {
+          "text": "让莫甘娜和小葵帮忙分担",
+          "effects": {"aisaike": 5, "moganna": 3, "xiaokui": 3, "progress": -3},
+          "budget": 5,
+          "prd_effect": "团队协作：互帮互助",
+          "weekly_effect": "团队凝聚力提升，艾萨克心存感激"
+        }
+      ]
+    },
+    {
+      "id": "event_013",
+      "title": "用户反馈好评",
+      "description": "用户在社交媒体上夸赞我们的产品，好评如潮！",
+      "options": [
+        {
+          "text": "组织团队庆祝",
+          "effects": {"aisaike": 5, "moganna": 5, "xiaokui": 5, "xinzhu": 5, "satisfaction": 10},
+          "budget": -18,
+          "prd_effect": "里程碑记录：用户好评",
+          "weekly_effect": "团队士气高涨，大家都很开心"
+        },
+        {
+          "text": "让小葵整理用户反馈",
+          "effects": {"xiaokui": 4, "progress": 5, "satisfaction": 8},
+          "prd_effect": "用户反馈汇总",
+          "weekly_effect": "收集到很多有用的建议"
+        },
+        {
+          "text": "让大家继续保持，不要骄傲",
+          "effects": {"moganna": 3, "aisaike": 2, "satisfaction": 5},
+          "prd_effect": "团队激励：保持势头",
+          "weekly_effect": "团队状态稳定，继续稳步推进"
+        }
+      ]
+    },
+    {
+      "id": "event_014",
+      "title": "接口文档缺失",
+      "description": "后端接口文档更新不及时，前端开发受阻。",
+      "options": [
+        {
+          "text": "要求艾萨克立即补写文档",
+          "effects": {"aisaike": -5, "progress": -3, "satisfaction": 0},
+          "prd_effect": "流程改进：接口文档规范",
+          "weekly_effect": "文档规范了，但艾萨克有些不耐烦"
+        },
+        {
+          "text": "让莫甘娜帮忙整理文档",
+          "effects": {"moganna": 4, "aisaike": 3, "progress": -2},
+          "prd_effect": "协作记录：QA协助文档",
+          "weekly_effect": "QA和开发协作更顺畅了"
+        },
+        {
+          "text": "组织文档评审会",
+          "effects": {"aisaike": 2, "moganna": 2, "xiaokui": 2, "satisfaction": -2},
+          "prd_effect": "文档评审记录",
+          "weekly_effect": "文档质量提升，大家都满意"
+        }
+      ]
+    },
+    {
+      "id": "event_015",
+      "title": "第三方服务故障",
+      "description": "我们依赖的第三方支付服务出现故障，影响用户交易。",
+      "options": [
+        {
+          "text": "让艾萨克紧急开发备用方案",
+          "effects": {"aisaike": -6, "progress": -5, "satisfaction": -10},
+          "prd_effect": "紧急开发：备用支付方案",
+          "weekly_effect": "艾萨克压力很大，但问题得到缓解"
+        },
+        {
+          "text": "让小葵发布公告并联系客服",
+          "effects": {"xiaokui": 5, "satisfaction": -5},
+          "prd_effect": "用户沟通：第三方服务故障",
+          "weekly_effect": "用户反馈良好，小葵处理得当"
+        },
+        {
+          "text": "启动多方案并行应对",
+          "effects": {"aisaike": 2, "moganna": 3, "xiaokui": 4, "satisfaction": -3},
+          "prd_effect": "应急预案启动：多方案并行",
+          "weekly_effect": "团队协作高效，问题快速解决"
+        }
+      ]
+    },
+    {
+      "id": "event_016",
+      "title": "代码被抄袭",
+      "description": "发现有竞品公司抄袭了我们的部分代码实现。",
+      "options": [
+        {
+          "text": "让小葵联系法务处理",
+          "effects": {"xiaokui": 4, "satisfaction": -3},
+          "prd_effect": "法务记录：代码抄袭事件",
+          "weekly_effect": "法务介入，维护了我们的权益"
+        },
+        {
+          "text": "让艾萨克重构关键代码",
+          "effects": {"aisaike": -4, "progress": -8, "satisfaction": 0},
+          "prd_effect": "技术改进：代码重构",
+          "weekly_effect": "代码更安全，但进度受影响"
+        },
+        {
+          "text": "加强技术壁垒，快速迭代",
+          "effects": {"aisaike": 3, "xinzhu": 3, "progress": 5, "satisfaction": 5},
+          "prd_effect": "产品策略：快速迭代",
+          "weekly_effect": "产品优势扩大，团队充满斗志"
+        }
+      ]
+    },
+    {
+      "id": "event_017",
+      "title": "新功能上线反响好",
+      "description": "刚上线的新功能用户反馈非常好，数据表现超出预期！",
+      "options": [
+        {
+          "text": "给团队发奖金激励",
+          "effects": {"aisaike": 6, "moganna": 6, "xiaokui": 6, "xinzhu": 6, "satisfaction": 10},
+          "budget": -20,
+          "prd_effect": "里程碑：新功能成功上线",
+          "weekly_effect": "大家都很开心，工作热情高涨"
+        },
+        {
+          "text": "让小葵加大运营推广",
+          "effects": {"xiaokui": 5, "progress": 8, "satisfaction": 12},
+          "prd_effect": "运营计划：加大推广",
+          "weekly_effect": "用户量快速增长，小葵成就感满满"
+        },
+        {
+          "text": "让莫甘娜加强回归测试",
+          "effects": {"moganna": 4, "aisaike": 2, "satisfaction": 5},
+          "prd_effect": "测试策略：加强回归",
+          "weekly_effect": "质量更有保障，莫甘娜很满意"
+        }
+      ]
+    },
+    {
+      "id": "event_018",
+      "title": "加班餐事件",
+      "description": "最近加班频繁，团队对加班餐不满意，抱怨声四起。",
+      "options": [
+        {
+          "text": "升级加班餐标准",
+          "effects": {"aisaike": 4, "moganna": 4, "xiaokui": 4, "xinzhu": 4, "satisfaction": -2},
+          "budget": -10,
+          "prd_effect": "团队福利：加班餐升级",
+          "weekly_effect": "大家都很满意，抱怨消失了"
+        },
+        {
+          "text": "让小葵收集大家的意见",
+          "effects": {"xiaokui": 3, "aisaike": 2, "satisfaction": -1},
+          "prd_effect": "团队沟通：收集反馈",
+          "weekly_effect": "小葵积极协调，大家感觉被重视"
+        },
+        {
+          "text": "减少加班，提高效率",
+          "effects": {"aisaike": 6, "moganna": 5, "progress": -5, "satisfaction": -3},
+          "prd_effect": "工作方式：效率优先",
+          "weekly_effect": "工作效率提升，团队氛围改善"
+        }
+      ]
+    },
+    {
+      "id": "event_019",
+      "title": "面试候选人",
+      "description": "有一个非常优秀的候选人来面试，大家都很看好。",
+      "options": [
+        {
+          "text": "高薪聘请，立即入职",
+          "effects": {"xiaokui": 3, "aisaike": 2, "satisfaction": -5},
+          "budget": -35,
+          "prd_effect": "团队扩张：新成员加入",
+          "weekly_effect": "新成员加入，团队实力增强"
+        },
+        {
+          "text": "让团队成员一起面试评估",
+          "effects": {"aisaike": 3, "moganna": 3, "xiaokui": 3, "satisfaction": -2},
+          "prd_effect": "招聘流程：团队参与",
+          "weekly_effect": "大家都有参与感，对新人更认可"
+        },
+        {
+          "text": "谨慎考察，多轮面试",
+          "effects": {"moganna": 4, "satisfaction": -1},
+          "prd_effect": "招聘策略：谨慎选择",
+          "weekly_effect": "招聘流程更规范，但时间较长"
+        }
+      ]
+    },
+    {
+      "id": "event_020",
+      "title": "API设计分歧",
+      "description": "艾萨克和莫甘娜对API设计方案产生了严重分歧。",
+      "options": [
+        {
+          "text": "支持艾萨克的方案",
+          "effects": {"aisaike": 5, "moganna": -5, "satisfaction": 0},
+          "prd_effect": "技术方案：采用艾萨克方案",
+          "weekly_effect": "开发效率提升，但莫甘娜有些失落"
+        },
+        {
+          "text": "支持莫甘娜的方案",
+          "effects": {"moganna": 5, "aisaike": -5, "satisfaction": 0},
+          "prd_effect": "技术方案：采用莫甘娜方案",
+          "weekly_effect": "可维护性提升，但艾萨克有些不服气"
+        },
+        {
+          "text": "组织技术评审会，投票决定",
+          "effects": {"aisaike": 2, "moganna": 2, "xiaokui": 2, "satisfaction": 0},
+          "prd_effect": "技术评审：民主决策",
+          "weekly_effect": "双方都认可结果，团队氛围和谐"
+        }
+      ]
+    },
+    {
+      "id": "event_021",
+      "title": "产品演示会",
+      "description": "要向甲方做产品演示，大家都很紧张。",
+      "options": [
+        {
+          "text": "让小葵主持演示",
+          "effects": {"xiaokui": 5, "satisfaction": 8},
+          "prd_effect": "产品演示：小葵主持",
+          "weekly_effect": "小葵表现出色，甲方很满意"
+        },
+        {
+          "text": "让艾萨克演示技术亮点",
+          "effects": {"aisaike": 4, "xiaokui": 2, "satisfaction": 6},
+          "prd_effect": "产品演示：技术亮点",
+          "weekly_effect": "技术实力得到认可，艾萨克很有成就感"
+        },
+        {
+          "text": "团队一起准备，分工协作",
+          "effects": {"aisaike": 3, "moganna": 3, "xiaokui": 3, "xinzhu": 3, "satisfaction": 10},
+          "prd_effect": "产品演示：团队协作",
+          "weekly_effect": "演示非常成功，团队凝聚力提升"
+        }
+      ]
+    },
+    {
+      "id": "event_022",
+      "title": "内存泄漏问题",
+      "description": "线上环境发现内存泄漏，需要紧急修复。",
+      "options": [
+        {
+          "text": "让艾萨克立即排查修复",
+          "effects": {"aisaike": -4, "progress": -6, "satisfaction": -8},
+          "prd_effect": "紧急修复：内存泄漏",
+          "weekly_effect": "问题快速解决，艾萨克技术能力得到认可"
+        },
+        {
+          "text": "让莫甘娜帮忙复现问题",
+          "effects": {"moganna": 4, "aisaike": 2, "satisfaction": -5},
+          "prd_effect": "问题定位：QA协助",
+          "weekly_effect": "QA和开发配合默契"
+        },
+        {
+          "text": "启动监控和灰度发布",
+          "effects": {"aisaike": 3, "moganna": 3, "satisfaction": -3},
+          "prd_effect": "线上策略：监控+灰度",
+          "weekly_effect": "问题平稳解决，风险可控"
+        }
+      ]
+    },
+    {
+      "id": "event_023",
+      "title": "用户增长瓶颈",
+      "description": "用户增长遇到瓶颈，数据停滞不前。",
+      "options": [
+        {
+          "text": "让小葵加大推广力度",
+          "effects": {"xiaokui": 4, "progress": 3, "satisfaction": -3},
+          "prd_effect": "运营策略：加大推广",
+          "weekly_effect": "小葵积极尝试，但效果有待观察"
+        },
+        {
+          "text": "让辛竹优化用户体验",
+          "effects": {"xinzhu": 5, "xiaokui": 2, "progress": -4, "satisfaction": -1},
+          "prd_effect": "产品优化：体验改进",
+          "weekly_effect": "用户体验提升，留存率改善"
+        },
+        {
+          "text": "让团队一起头脑风暴",
+          "effects": {"aisaike": 2, "moganna": 2, "xiaokui": 3, "xinzhu": 3, "satisfaction": 0},
+          "prd_effect": "产品会议：头脑风暴",
+          "weekly_effect": "很多创意涌现，团队充满活力"
+        }
+      ]
+    },
+    {
+      "id": "event_024",
+      "title": "版本回滚",
+      "description": "上线后发现严重bug，必须紧急回滚版本。",
+      "options": [
+        {
+          "text": "立即回滚，保证用户体验",
+          "effects": {"moganna": 5, "satisfaction": -8},
+          "prd_effect": "版本回滚：紧急处理",
+          "weekly_effect": "用户影响最小化，但进度受影响"
+        },
+        {
+          "text": "让艾萨克紧急修复后重新上线",
+          "effects": {"aisaike": -6, "progress": 5, "satisfaction": -10},
+          "prd_effect": "紧急修复：快速重发",
+          "weekly_effect": "艾萨克压力很大，但问题快速解决"
+        },
+        {
+          "text": "组织复盘，完善流程",
+          "effects": {"aisaike": 3, "moganna": 4, "satisfaction": -5},
+          "prd_effect": "复盘记录：版本回滚",
+          "weekly_effect": "流程得到完善，团队成长"
+        }
+      ]
+    },
+    {
+      "id": "event_025",
+      "title": "团队生日",
+      "description": "今天是小葵的生日！",
+      "options": [
+        {
+          "text": "组织生日派对",
+          "effects": {"xiaokui": 8, "aisaike": 3, "moganna": 3, "xinzhu": 3, "satisfaction": -2},
+          "budget": -15,
+          "prd_effect": "团队活动：生日庆祝",
+          "weekly_effect": "大家都很开心，团队氛围超好"
+        },
+        {
+          "text": "准备惊喜礼物",
+          "effects": {"xiaokui": 6, "satisfaction": -1},
+          "budget": -8,
+          "prd_effect": "团队关怀：生日礼物",
+          "weekly_effect": "小葵很感动，工作更有动力"
+        },
+        {
+          "text": "让大家签名写祝福卡片",
+          "effects": {"xiaokui": 5, "aisaike": 2, "moganna": 2, "xinzhu": 2},
+          "prd_effect": "团队纪念：生日卡片",
+          "weekly_effect": "简单但温馨，小葵很喜欢"
+        }
+      ]
+    },
+    {
+      "id": "event_026",
+      "title": "竞品挖人",
+      "description": "有猎头联系艾萨克，想要挖他去竞品公司。",
+      "options": [
+        {
+          "text": "给艾萨克加薪挽留",
+          "effects": {"aisaike": 6, "satisfaction": -5},
+          "prd_effect": "团队稳定：薪资调整",
+          "weekly_effect": "艾萨克很感激，决心好好干"
+        },
+        {
+          "text": "和艾萨克坦诚沟通",
+          "effects": {"aisaike": 4, "xiaokui": 2, "satisfaction": -2},
+          "prd_effect": "团队沟通：职业规划",
+          "weekly_effect": "艾萨克感受到被重视，更加忠诚"
+        },
+        {
+          "text": "给艾萨克更多成长机会",
+          "effects": {"aisaike": 5, "moganna": 2, "satisfaction": -1},
+          "prd_effect": "团队发展：晋升机会",
+          "weekly_effect": "艾萨克对未来更有期待，干劲十足"
+        }
+      ]
+    },
+    {
+      "id": "event_027",
+      "title": "黑客攻击",
+      "description": "网站遭受DDoS攻击，服务响应缓慢。",
+      "options": [
+        {
+          "text": "让艾萨克紧急应对攻击",
+          "effects": {"aisaike": -5, "progress": -8, "satisfaction": -12},
+          "prd_effect": "安全事件：DDoS攻击应对",
+          "weekly_effect": "艾萨克熬夜解决问题，非常辛苦"
+        },
+        {
+          "text": "启动CDN和防护服务",
+          "effects": {"moganna": 4, "satisfaction": -8},
+          "prd_effect": "安全加固：CDN+防护",
+          "weekly_effect": "防护措施到位，服务快速恢复"
+        },
+        {
+          "text": "让小葵对外发布公告",
+          "effects": {"xiaokui": 4, "aisaike": 2, "satisfaction": -6},
+          "prd_effect": "用户沟通：安全事件公告",
+          "weekly_effect": "用户表示理解，团队协作顺畅"
+        }
+      ]
+    },
+    {
+      "id": "event_028",
+      "title": "代码开源",
+      "description": "公司决定开源我们的核心组件库，这是个大新闻！",
+      "options": [
+        {
+          "text": "让艾萨克主导开源工作",
+          "effects": {"aisaike": 7, "progress": -5, "satisfaction": 5},
+          "prd_effect": "里程碑：组件库开源",
+          "weekly_effect": "艾萨克很兴奋，在业界获得知名度"
+        },
+        {
+          "text": "让莫甘娜编写测试用例",
+          "effects": {"moganna": 5, "aisaike": 3, "satisfaction": 3},
+          "prd_effect": "开源准备：测试覆盖",
+          "weekly_effect": "代码质量提升，莫甘娜很有成就感"
+        },
+        {
+          "text": "让小葵负责社区运营",
+          "effects": {"xiaokui": 5, "satisfaction": 8},
+          "prd_effect": "开源社区：运营启动",
+          "weekly_effect": "社区活跃度高，公司影响力扩大"
+        }
+      ]
+    },
+    {
+      "id": "event_029",
+      "title": "用户隐私问题",
+      "description": "收到用户投诉，认为我们的隐私政策不够透明。",
+      "options": [
+        {
+          "text": "让辛竹重新设计隐私页面",
+          "effects": {"xinzhu": 4, "satisfaction": -3},
+          "prd_effect": "合规改进：隐私政策优化",
+          "weekly_effect": "隐私页面更清晰，用户反馈改善"
+        },
+        {
+          "text": "让小葵联系用户道歉沟通",
+          "effects": {"xiaokui": 5, "satisfaction": -5},
+          "prd_effect": "用户沟通：隐私问题道歉",
+          "weekly_effect": "用户感受到诚意，问题圆满解决"
+        },
+        {
+          "text": "全面检查数据处理流程",
+          "effects": {"moganna": 4, "aisaike": 3, "satisfaction": -2},
+          "prd_effect": "合规审查：数据流程",
+          "weekly_effect": "流程更规范，大家对合规更重视"
+        }
+      ]
+    },
+    {
+      "id": "event_030",
+      "title": "项目成功上线",
+      "description": "经过大家的努力，项目终于成功上线了！",
+      "options": [
+        {
+          "text": "组织庆功宴",
+          "effects": {"aisaike": 6, "moganna": 6, "xiaokui": 6, "xinzhu": 6, "satisfaction": 15},
+          "budget": -25,
+          "prd_effect": "里程碑：项目成功上线",
+          "weekly_effect": "大家都很开心，成就感满满"
+        },
+        {
+          "text": "给团队申请奖金",
+          "effects": {"aisaike": 5, "moganna": 5, "xiaokui": 5, "xinzhu": 5, "satisfaction": 10},
+          "budget": -30,
+          "prd_effect": "团队奖励：项目奖金",
+          "weekly_effect": "大家得到回报，工作更有动力"
+        },
+        {
+          "text": "安排团队调休",
+          "effects": {"aisaike": 7, "moganna": 7, "xiaokui": 7, "xinzhu": 7, "satisfaction": 5},
+          "prd_effect": "团队关怀：调休安排",
+          "weekly_effect": "大家好好休息，准备迎接新挑战"
+        }
+      ]
+    }
+  ]
+}

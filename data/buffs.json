@@ -1,0 +1,157 @@
+{
+    "buffs": [
+        {
+            "id": "efficiency_boost",
+            "name": "效率提升",
+            "type": "positive",
+            "icon": "⬆️",
+            "color": "#4CAF50",
+            "effect": {
+                "type": "progress",
+                "value": 5,
+                "duration": "permanent"
+            },
+            "trigger": "favor_above_80",
+            "description": "好感度>80%时自动获得，提升项目进度"
+        },
+        {
+            "id": "team_spirit",
+            "name": "团队精神",
+            "type": "positive",
+            "icon": "🤝",
+            "color": "#2196F3",
+            "effect": {
+                "type": "team_favor",
+                "value": 3,
+                "duration": 3
+            },
+            "trigger": "random_event",
+            "description": "团队协作氛围好，全员好感度提升"
+        },
+        {
+            "id": "inspiration",
+            "name": "灵感迸发",
+            "type": "positive",
+            "icon": "💡",
+            "color": "#FFC107",
+            "effect": {
+                "type": "progress",
+                "value": 10,
+                "duration": 1
+            },
+            "trigger": "random_event",
+            "description": "突然有了好点子，项目进度大幅提升"
+        },
+        {
+            "id": "overtime",
+            "name": "加班冲刺",
+            "type": "positive",
+            "icon": "🔥",
+            "color": "#FF5722",
+            "effect": {
+                "type": "progress",
+                "value": 15,
+                "duration": 1
+            },
+            "side_effect": {
+                "type": "favor",
+                "value": -5,
+                "duration": 1
+            },
+            "trigger": "choice",
+            "description": "加班赶进度，但团队好感度下降"
+        },
+        {
+            "id": "burnout",
+            "name": "疲劳过度",
+            "type": "negative",
+            "icon": "😫",
+            "color": "#F44336",
+            "effect": {
+                "type": "progress",
+                "value": -10,
+                "duration": 2
+            },
+            "trigger": "random_event",
+            "description": "连续加班导致效率下降"
+        },
+        {
+            "id": "conflict",
+            "name": "团队冲突",
+            "type": "negative",
+            "icon": "⚔️",
+            "color": "#E91E63",
+            "effect": {
+                "type": "team_favor",
+                "value": -8,
+                "duration": 2
+            },
+            "trigger": "random_event",
+            "description": "团队成员之间产生矛盾"
+        },
+        {
+            "id": "client_pressure",
+            "name": "甲方施压",
+            "type": "negative",
+            "icon": "😰",
+            "color": "#9C27B0",
+            "effect": {
+                "type": "satisfaction",
+                "value": -10,
+                "duration": 1
+            },
+            "trigger": "random_event",
+            "description": "甲方对进度不满意"
+        },
+        {
+            "id": "tech_debt",
+            "name": "技术债务",
+            "type": "negative",
+            "icon": "🐛",
+            "color": "#795548",
+            "effect": {
+                "type": "progress",
+                "value": -5,
+                "duration": 3
+            },
+            "trigger": "random_event",
+            "description": "之前的代码问题暴露了"
+        },
+        {
+            "id": "motivation",
+            "name": "士气高涨",
+            "type": "positive",
+            "icon": "💪",
+            "color": "#8BC34A",
+            "effect": {
+                "type": "all_favor",
+                "value": 5,
+                "duration": 2
+            },
+            "trigger": "random_event",
+            "description": "团队士气高涨，全员好感度提升"
+        },
+        {
+            "id": "bug_fix",
+            "name": "Bug修复",
+            "type": "positive",
+            "icon": "🔧",
+            "color": "#00BCD4",
+            "effect": {
+                "type": "satisfaction",
+                "value": 8,
+                "duration": 1
+            },
+            "trigger": "random_event",
+            "description": "及时修复了关键Bug，甲方满意"
+        }
+    ],
+    "buff_rules": {
+        "max_buffs_per_character": 3,
+        "buff_duration_unit": "weeks",
+        "stacking": {
+            "same_type": "refresh",
+            "different_type": "stack"
+        }
+    }
+}

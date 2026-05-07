@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>公平事务所 - 主菜单</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/modals.css">
+</head>
+<body>
+    <div class="crt-effect"></div>
+    <div class="scanline"></div>
+
+    <div class="start-screen" id="start-screen">
+        <h1 class="start-title">公平事务所</h1>
+        <p class="start-subtitle">PM模拟器 · 创业版</p>
+        
+        <div class="rank-info" id="rank-info">
+            <div class="current-rank">当前职级：<span class="rank-value">P5</span></div>
+            <div class="rank-comparison">
+                <span class="tian">天堂 P5</span> / 
+                <span class="jue">裁决 2-1</span> / 
+                <span class="di">地狱 1-1</span>
+            </div>
+            <div class="prestige-info">
+                声望：<span class="prestige-value">0</span> / <span class="next-prestige">2</span>
+                <span class="prestige-remaining">（下一级 P6 还需 2）</span>
+            </div>
+        </div>
+        
+        <div class="start-buttons">
+            <button class="btn-levelup" id="btn-levelup">🔥 卷一卷</button>
+            <button class="btn-gallery" id="btn-gallery">🖼️ 画廊</button>
+            <button class="btn-toolchain" id="btn-toolchain">⚙️ 自定义工具链</button>
+            <button class="btn-continue" id="btn-continue" style="display: none;">继续游戏</button>
+            <button class="btn-start" id="btn-start">开始游戏</button>
+        </div>
+        <div class="current-tools-display" id="current-tools-display" style="display: none;">
+            当前工具链：<span id="current-tools-names">未选择</span>
+        </div>
+    </div>
+
+    <div class="levelup-modal" id="levelup-modal">
+        <div class="levelup-content">
+            <button class="levelup-close" onclick="closeLevelupModal()">X</button>
+            <h2 class="levelup-title">🔥 职级晋升</h2>
+            <div class="levelup-list" id="levelup-list"></div>
+        </div>
+    </div>
+
+    <div class="gallery-modal" id="gallery-modal">
+        <div class="gallery-content">
+            <button class="gallery-close" onclick="closeGalleryModal()">X</button>
+            <h2 class="gallery-title">🖼️ 结局画廊</h2>
+            <div class="gallery-grid" id="gallery-grid"></div>
+        </div>
+    </div>
+
+    <div class="toolchain-modal" id="toolchain-modal">
+        <div class="toolchain-content">
+            <button class="toolchain-close" onclick="closeToolchainModal()">X</button>
+            <h2 class="toolchain-title">⚙️ 自定义工具链</h2>
+            
+            <div class="toolchain-tabs" id="toolchain-tabs"></div>
+            <div id="toolchain-categories"></div>
+            
+            <div class="toolchain-summary">
+                <div class="toolchain-budget">
+                    初始预算：<span id="base-budget">100</span> 
+                    → 调整后：<span id="adjusted-budget" class="budget-change">100</span>
+                </div>
+                <div class="toolchain-effects-summary" id="toolchain-effects-summary">
+                    选择工具后将显示效果汇总
+                </div>
+                <button class="toolchain-confirm" id="toolchain-confirm">确认选择</button>
+                <button class="toolchain-cancel" onclick="closeToolchainModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/home.js"></script>
+</body>
+</html>

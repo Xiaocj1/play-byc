@@ -1,0 +1,138 @@
+{
+    "phases": [
+        {
+            "id": "feasibility",
+            "name": "可行性分析",
+            "code": "SDLC-01",
+            "min_progress": 0,
+            "max_progress": 20,
+            "weights": {
+                "aisaike": 0.15,
+                "moganna": 0.05,
+                "xiaokui": 0.30,
+                "chenyu": 0.50,
+                "liyue": 0.50,
+                "zhangwei": 0.05
+            },
+            "pm_rant": "需求文档写了三版，甲方还是说看不懂..."
+        },
+        {
+            "id": "requirements",
+            "name": "需求分析",
+            "code": "SDLC-02",
+            "min_progress": 21,
+            "max_progress": 35,
+            "weights": {
+                "aisaike": 0.20,
+                "moganna": 0.10,
+                "xiaokui": 0.40,
+                "chenyu": 0.30,
+                "liyue": 0.40,
+                "zhangwei": 0.10
+            },
+            "pm_rant": "这个需求到底是要做还是不要做？"
+        },
+        {
+            "id": "architecture",
+            "name": "架构设计",
+            "code": "SDLC-03",
+            "min_progress": 36,
+            "max_progress": 50,
+            "weights": {
+                "aisaike": 0.60,
+                "moganna": 0.15,
+                "xiaokui": 0.20,
+                "chenyu": 0.05,
+                "liyue": 0.30,
+                "zhangwei": 0.15
+            },
+            "pm_rant": "架构评审开了5小时，最后说要重新设计..."
+        },
+        {
+            "id": "development",
+            "name": "开发编码",
+            "code": "SDLC-04",
+            "min_progress": 51,
+            "max_progress": 70,
+            "weights": {
+                "aisaike": 0.80,
+                "moganna": 0.10,
+                "xiaokui": 0.05,
+                "chenyu": 0.05,
+                "liyue": 0.10,
+                "zhangwei": 0.10
+            },
+            "pm_rant": "这个Bug我找了三小时，结果是个拼写错误..."
+        },
+        {
+            "id": "testing",
+            "name": "测试验证",
+            "code": "SDLC-05",
+            "min_progress": 71,
+            "max_progress": 85,
+            "weights": {
+                "aisaike": 0.20,
+                "moganna": 0.70,
+                "xiaokui": 0.05,
+                "chenyu": 0.05,
+                "liyue": 0.10,
+                "zhangwei": 0.70
+            },
+            "pm_rant": "测试提了100个Bug，开发说这不是Bug是特性..."
+        },
+        {
+            "id": "deployment",
+            "name": "部署上线",
+            "code": "SDLC-06",
+            "min_progress": 86,
+            "max_progress": 95,
+            "weights": {
+                "aisaike": 0.50,
+                "moganna": 0.30,
+                "xiaokui": 0.05,
+                "chenyu": 0.15,
+                "liyue": 0.20,
+                "zhangwei": 0.30
+            },
+            "pm_rant": "上线前一分钟，运维说服务器炸了..."
+        },
+        {
+            "id": "acceptance",
+            "name": "验收交付",
+            "code": "SDLC-07",
+            "min_progress": 96,
+            "max_progress": 99,
+            "weights": {
+                "aisaike": 0.20,
+                "moganna": 0.20,
+                "xiaokui": 0.20,
+                "chenyu": 0.40,
+                "liyue": 0.30,
+                "zhangwei": 0.20
+            },
+            "pm_rant": "甲方说这和他想象的不一样..."
+        },
+        {
+            "id": "completed",
+            "name": "项目完结",
+            "code": "SDLC-08",
+            "min_progress": 100,
+            "max_progress": 100,
+            "weights": {
+                "aisaike": 0.25,
+                "moganna": 0.25,
+                "xiaokui": 0.25,
+                "chenyu": 0.25,
+                "liyue": 0.25,
+                "zhangwei": 0.25
+            },
+            "pm_rant": "终于结束了！下一个项目什么时候开始？"
+        }
+    ],
+    "efficiency_buff": {
+        "threshold": 80,
+        "min_bonus": 0.05,
+        "max_bonus": 1.0,
+        "description": "好感度大于80%时触发效率buff，随机增加5%-100%"
+    }
+}

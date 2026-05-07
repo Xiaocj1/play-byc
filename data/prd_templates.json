@@ -1,0 +1,22 @@
+{
+  "prd_entries": [
+    {
+      "id": "prd_001",
+      "version": "V1.0.0",
+      "change": "初始版本，确定项目范围",
+      "author": "PM"
+    },
+    {
+      "id": "prd_002",
+      "version": "V1.0.1",
+      "change": "需求评审完成，确定技术方案",
+      "author": "PM"
+    },
+    {
+      "id": "prd_003",
+      "version": "V1.0.2",
+      "change": "开发计划制定完成",
+      "author": "PM"
+    }
+  ]
+}

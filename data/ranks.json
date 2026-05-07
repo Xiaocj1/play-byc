@@ -1,0 +1,10 @@
+{
+  "ranks": [
+    {"id": "p5", "name": "P5", "tian": "P5", "jue": "2-1", "di": "1-1", "cost": 0, "budget": 80, "unlock": "基础开局"},
+    {"id": "p6", "name": "P6", "tian": "P6", "jue": "2-2", "di": "1-2", "cost": 2, "budget": 100, "unlock": "「前大厂实习生」背景"},
+    {"id": "p7", "name": "P7", "tian": "P7", "jue": "3-1", "di": "2-1", "cost": 5, "budget": 120, "unlock": "「前天堂RD」背景"},
+    {"id": "p8", "name": "P8", "tian": "P8", "jue": "3-2", "di": "2-2", "cost": 9, "budget": 150, "unlock": "「免死金牌」"},
+    {"id": "p9", "name": "P9", "tian": "P9", "jue": "4-1", "di": "3-1", "cost": 14, "budget": 180, "unlock": "「前G端审计员」"},
+    {"id": "p10", "name": "P10", "tian": "P10", "jue": "4-2", "di": "3-2", "cost": 20, "budget": 220, "unlock": "「黑化线」"}
+  ]
+}

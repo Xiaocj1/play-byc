@@ -1,0 +1,39 @@
+{
+  "endings": [
+    {
+      "id": "ending_fail",
+      "name": "被大厂吞并",
+      "trigger": {"project_progress": {"<": 100}, "jiafang_manyi": {"<": 65}},
+      "priority": 1,
+      "description": "甲方最终无奈再次接洽天堂和地狱两方大厂……创业失败。"
+    },
+    {
+      "id": "ending_success",
+      "name": "梦想实现",
+      "trigger": {"project_progress": {"==": 100}},
+      "priority": 0,
+      "description": "项目成功上线！你们终于……实现了大家的梦想。"
+    },
+    {
+      "id": "ending_team_collapse",
+      "name": "团队解散",
+      "trigger": {"avg_favor": {"<": 30}},
+      "priority": 2,
+      "description": "团队矛盾激化，成员纷纷离职。你的事务所不得不解散。"
+    },
+    {
+      "id": "ending_perfect",
+      "name": "完美收官",
+      "trigger": {"project_progress": {"==": 100}, "avg_favor": {">": 80}, "jiafang_manyi": {">": 90}},
+      "priority": 0,
+      "description": "项目完美交付，团队凝聚力空前，甲方高度认可！这是属于你们的传奇！"
+    },
+    {
+      "id": "ending_balance",
+      "name": "中规中矩",
+      "trigger": {"project_progress": {">=": 80}, "avg_favor": {">=": 50}, "jiafang_manyi": {">=": 70}},
+      "priority": 1,
+      "description": "项目顺利完成，虽然不算完美，但大家都还算满意。"
+    }
+  ]
+}

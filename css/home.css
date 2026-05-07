@@ -1,0 +1,168 @@
+.start-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 10002;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.start-title {
+    font-size: 24px;
+    color: #00ff41;
+    text-shadow: 0 0 20px #00ff41;
+    margin-bottom: 40px;
+}
+
+.start-subtitle {
+    font-size: 12px;
+    color: #ffd700;
+    margin-bottom: 50px;
+}
+
+.start-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.btn-start {
+    font-family: 'Press Start 2P', monospace;
+    background: transparent;
+    color: #00ff41;
+    border: 3px solid #00ff41;
+    padding: 20px 40px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+    min-width: 300px;
+}
+
+.btn-start:hover {
+    background: rgba(0, 255, 65, 0.1);
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(0, 255, 65, 0.4);
+}
+
+.btn-continue {
+    font-family: 'Press Start 2P', monospace;
+    background: transparent;
+    color: #ffd700;
+    border: 3px solid #ffd700;
+    padding: 15px 30px;
+    cursor: pointer;
+    font-size: 10px;
+    transition: all 0.2s;
+}
+
+.btn-continue:hover {
+    background: rgba(255, 215, 0, 0.1);
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+.rank-info {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid #00ff41;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.current-rank {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #ffd700;
+}
+
+.rank-value {
+    font-weight: bold;
+    color: #ffd700;
+}
+
+.rank-comparison {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.rank-comparison .tian {
+    color: #ff9500;
+}
+
+.rank-comparison .jue {
+    color: #00ff41;
+}
+
+.rank-comparison .di {
+    color: #ff4444;
+}
+
+.prestige-info {
+    font-size: 14px;
+    color: #aaa;
+}
+
+.prestige-value {
+    color: #ffd700;
+    font-weight: bold;
+}
+
+.next-prestige {
+    color: #00ff41;
+}
+
+.prestige-remaining {
+    color: #888;
+}
+
+.btn-levelup, .btn-gallery {
+    font-family: 'Press Start 2P', monospace;
+    background: transparent;
+    color: #ff9500;
+    border: 3px solid #ff9500;
+    padding: 12px 24px;
+    cursor: pointer;
+    font-size: 10px;
+    transition: all 0.2s;
+    margin: 10px;
+}
+
+.btn-levelup:hover, .btn-gallery:hover {
+    background: rgba(255, 149, 0, 0.1);
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 149, 0, 0.4);
+}
+
+.btn-toolchain {
+    font-family: 'Press Start 2P', monospace;
+    background: transparent;
+    color: #00bfff;
+    border: 3px solid #00bfff;
+    padding: 12px 24px;
+    cursor: pointer;
+    font-size: 10px;
+    transition: all 0.2s;
+    margin: 10px;
+}
+
+.btn-toolchain:hover {
+    background: rgba(0, 191, 255, 0.1);
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(0, 191, 255, 0.4);
+}
+
+.current-tools-display {
+    font-size: 9px;
+    color: #00bfff;
+    margin-top: 10px;
+    padding: 8px;
+    background: rgba(0, 191, 255, 0.1);
+    border-radius: 4px;
+}
