@@ -438,7 +438,7 @@ function handleChoice(option, event) {
     });
     
     if (effects.progress) {
-        let progressChange = effects.progress + toolchainEffects.progress;
+        let progressChange = effects.progress;
         gameState.progress = Math.max(0, Math.min(100, gameState.progress + progressChange));
     }
     if (effects.satisfaction !== undefined) {
@@ -581,11 +581,12 @@ function calculateWeeklyProgress() {
     baseProgress += toolchainEffects.progress;
     
     const currentPhase = getCurrentPhase();
-    const totalWeight = calculateTotalWeight(currentPhase);
+    const { weightedSum, totalWeight } = calculateWeightedEfficiency(currentPhase);
     
-    let weightedProgress = baseProgress * totalWeight;
+    let progressMultiplier = totalWeight > 0 ? weightedSum / totalWeight : 1;
+    let weeklyProgress = baseProgress * progressMultiplier;
     
-    gameState.progress = Math.min(100, gameState.progress + weightedProgress);
+    gameState.progress = Math.min(100, gameState.progress + weeklyProgress);
 }
 
 function getCurrentPhase() {

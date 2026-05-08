@@ -137,12 +137,16 @@ function checkForSave() {
 function startNewGame() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
-        if (!confirm("将删除未通关的档案，是否继续？")) {
-            return;
-        }
-        localStorage.removeItem(STORAGE_KEY);
+        showConfirm('将删除未通关的档案，是否继续？', () => {
+            localStorage.removeItem(STORAGE_KEY);
+            doStartNewGame();
+        }, () => {});
+        return;
     }
-    
+    doStartNewGame();
+}
+
+function doStartNewGame() {
     const rank = ranks.find(r => r.id === currentRank) || ranks[0] || { budget: 100 };
     
     let toolchainCost = 0;
@@ -248,7 +252,43 @@ function promoteToRank(rankId) {
     updateRankDisplay();
     closeLevelupModal();
     
-    alert(`恭喜晋升到 ${rank.name}！初始预算变为 ${rank.budget}`);
+    showToast(`恭喜晋升到 ${rank.name}！初始预算变为 ${rank.budget}`);
+}
+
+function showConfirm(message, onOk, onCancel) {
+    const modal = document.getElementById('confirm-modal');
+    const msgEl = document.getElementById('confirm-message');
+    const okBtn = document.getElementById('confirm-ok');
+    const cancelBtn = document.getElementById('confirm-cancel');
+    
+    if (!modal || !msgEl || !okBtn || !cancelBtn) return;
+    
+    msgEl.textContent = message;
+    modal.style.display = 'flex';
+    
+    okBtn.onclick = () => {
+        modal.style.display = 'none';
+        if (onOk) onOk();
+    };
+    
+    cancelBtn.onclick = () => {
+        modal.style.display = 'none';
+        if (onCancel) onCancel();
+    };
+}
+
+function showToast(message, duration = 3000) {
+    const modal = document.getElementById('toast-modal');
+    const msgEl = document.getElementById('toast-message');
+    
+    if (!modal || !msgEl) return;
+    
+    msgEl.textContent = message;
+    modal.style.display = 'flex';
+    
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, duration);
 }
 
 function showGallery() {

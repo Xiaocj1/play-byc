@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>公平事务所 - 主菜单</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/home.css">
     <link rel="stylesheet" href="css/modals.css">
@@ -12,33 +15,88 @@
 <body>
     <div class="crt-effect"></div>
     <div class="scanline"></div>
+    <div class="crt-noise"></div>
+    <div class="crt-flicker"></div>
 
-    <div class="start-screen" id="start-screen">
-        <h1 class="start-title">公平事务所</h1>
-        <p class="start-subtitle">PM模拟器 · 创业版</p>
+    <div class="main-menu">
+        <div class="menu-background"></div>
         
-        <div class="rank-info" id="rank-info">
-            <div class="current-rank">当前职级：<span class="rank-value">P5</span></div>
-            <div class="rank-comparison">
-                <span class="tian">天堂 P5</span> / 
-                <span class="jue">裁决 2-1</span> / 
-                <span class="di">地狱 1-1</span>
+        <header class="logo-section">
+            <h1 class="logo-title">公平事务所</h1>
+            <p class="logo-subtitle">Fairness Studio</p>
+        </header>
+
+        <main class="buttons-section">
+            <button class="pixel-btn btn-start-game" id="btn-start">
+                <span class="btn-icon">▶</span>
+                <span class="btn-text">开始游戏</span>
+            </button>
+
+            <div class="secondary-buttons">
+                <button class="pixel-btn btn-secondary" id="btn-levelup">
+                    <span class="btn-icon">🔥</span>
+                    <span class="btn-text">卷一卷</span>
+                </button>
+                <button class="pixel-btn btn-secondary" id="btn-gallery">
+                    <span class="btn-icon">🖼️</span>
+                    <span class="btn-text">画廊</span>
+                </button>
+                <button class="pixel-btn btn-secondary" id="btn-toolchain">
+                    <span class="btn-icon">⚙️</span>
+                    <span class="btn-text">工具链</span>
+                </button>
+            </div>
+
+            <button class="pixel-btn btn-continue" id="btn-continue" style="display: none;">
+                <span class="btn-icon">▸</span>
+                <span class="btn-text">继续游戏</span>
+            </button>
+
+            <div class="current-tools-display" id="current-tools-display" style="display: none;">
+                当前工具链：<span id="current-tools-names">未选择</span>
+            </div>
+        </main>
+
+        <div class="rank-badge" id="rank-badge">
+            <div class="rank-label">当前职级</div>
+            <div class="rank-value">P5</div>
+            <div class="rank-bars">
+                <div class="rank-bar">
+                    <span class="bar-label">天堂</span>
+                    <span class="bar-value">P5</span>
+                </div>
+                <div class="rank-bar">
+                    <span class="bar-label">裁决</span>
+                    <span class="bar-value">2-1</span>
+                </div>
+                <div class="rank-bar">
+                    <span class="bar-label">地狱</span>
+                    <span class="bar-value">1-1</span>
+                </div>
             </div>
             <div class="prestige-info">
-                声望：<span class="prestige-value">0</span> / <span class="next-prestige">2</span>
-                <span class="prestige-remaining">（下一级 P6 还需 2）</span>
+                <span class="prestige-label">声望</span>
+                <span class="prestige-value">0</span>
+                <span class="prestige-divider">/</span>
+                <span class="prestige-next">2</span>
+                <span class="prestige-hint">（P6还需2）</span>
             </div>
         </div>
-        
-        <div class="start-buttons">
-            <button class="btn-levelup" id="btn-levelup">🔥 卷一卷</button>
-            <button class="btn-gallery" id="btn-gallery">🖼️ 画廊</button>
-            <button class="btn-toolchain" id="btn-toolchain">⚙️ 自定义工具链</button>
-            <button class="btn-continue" id="btn-continue" style="display: none;">继续游戏</button>
-            <button class="btn-start" id="btn-start">开始游戏</button>
+    </div>
+
+    <div class="confirm-modal" id="confirm-modal">
+        <div class="confirm-content">
+            <p class="confirm-message" id="confirm-message"></p>
+            <div class="confirm-buttons">
+                <button class="pixel-btn confirm-ok" id="confirm-ok">确定</button>
+                <button class="pixel-btn confirm-cancel" id="confirm-cancel">取消</button>
+            </div>
         </div>
-        <div class="current-tools-display" id="current-tools-display" style="display: none;">
-            当前工具链：<span id="current-tools-names">未选择</span>
+    </div>
+
+    <div class="toast-modal" id="toast-modal">
+        <div class="toast-content">
+            <p class="toast-message" id="toast-message"></p>
         </div>
     </div>
 
@@ -62,13 +120,13 @@
         <div class="toolchain-content">
             <button class="toolchain-close" onclick="closeToolchainModal()">X</button>
             <h2 class="toolchain-title">⚙️ 自定义工具链</h2>
-            
+
             <div class="toolchain-tabs" id="toolchain-tabs"></div>
             <div id="toolchain-categories"></div>
-            
+
             <div class="toolchain-summary">
                 <div class="toolchain-budget">
-                    初始预算：<span id="base-budget">100</span> 
+                    初始预算：<span id="base-budget">100</span>
                     → 调整后：<span id="adjusted-budget" class="budget-change">100</span>
                 </div>
                 <div class="toolchain-effects-summary" id="toolchain-effects-summary">
