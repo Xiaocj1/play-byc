@@ -4,6 +4,7 @@ const PRESTIGE_KEY = "fair_office_prestige";
 const RANK_KEY = "fair_office_current_rank";
 const TOOLCHAIN_KEY = "fair_office_toolchain";
 const UNLOCKED_TOOLS_KEY = "fair_office_unlocked_tools";
+const QUARTER_DURATION = 12;
 
 let prestige = 0;
 let currentRank = "p5";
@@ -12,8 +13,172 @@ let toolsData = { categories: [] };
 let selectedTools = {};
 let unlockedTools = [];
 
+function getCurrentQuarter() {
+    const week = gameState.week;
+    return Math.floor((week - 1) / QUARTER_DURATION) + 1;
+}
+
+function getWeekInQuarter() {
+    const week = gameState.week;
+    return ((week - 1) % QUARTER_DURATION) + 1;
+}
+
+function formatQuarterWeek() {
+    const q = getCurrentQuarter();
+    const w = getWeekInQuarter();
+    return `Q${q} · 第 ${w} 周`;
+}
+
+function getFameLevel() {
+    const fame = gameState.fame;
+    if (fame >= 80) return 'legendary';
+    if (fame >= 60) return 'high';
+    if (fame >= 40) return 'normal';
+    if (fame >= 20) return 'low';
+    return 'bad';
+}
+
+function getFameMultiplier() {
+    const fame = gameState.fame;
+    if (fame >= 80) return 1.5;
+    if (fame >= 60) return 1.2;
+    if (fame >= 40) return 1.0;
+    if (fame >= 20) return 0.8;
+    return 0.5;
+}
+
+function getDrawCostMultiplier() {
+    const fame = gameState.fame;
+    if (fame >= 80) return 0.7;
+    if (fame >= 60) return 0.9;
+    if (fame >= 40) return 1.0;
+    if (fame >= 20) return 1.2;
+    return 1.5;
+}
+
+function getDebtLimit() {
+    const fame = gameState.fame;
+    if (fame >= 80) return 200;
+    if (fame >= 60) return 150;
+    if (fame >= 40) return 100;
+    if (fame >= 20) return 50;
+    return 20;
+}
+
+function getInterestRate() {
+    const fame = gameState.fame;
+    if (fame >= 80) return 0.02;
+    if (fame >= 60) return 0.03;
+    if (fame >= 40) return 0.05;
+    if (fame >= 20) return 0.08;
+    return 0.15;
+}
+
+function updateDebtLimit() {
+    gameState.debtLimit = getDebtLimit();
+}
+
+function addFame(amount) {
+    gameState.fame = Math.max(0, Math.min(100, gameState.fame + amount));
+    updateDebtLimit();
+}
+
+function borrowMoney(amount) {
+    if (amount <= 0) return false;
+    if (gameState.debt + amount > gameState.debtLimit) return false;
+    
+    gameState.budget += amount;
+    gameState.debt += amount;
+    saveGame();
+    updateUI();
+    return true;
+}
+
+function repayMoney(amount) {
+    if (amount <= 0) return false;
+    if (gameState.budget < amount) return false;
+    if (gameState.debt < amount) amount = gameState.debt;
+    
+    gameState.budget -= amount;
+    gameState.debt -= amount;
+    saveGame();
+    updateUI();
+    return true;
+}
+
+function calculateInterest() {
+    if (gameState.debt <= 0) return 0;
+    const interest = Math.round(gameState.debt * getInterestRate());
+    gameState.budget -= interest;
+    return interest;
+}
+
+const directionTexts = {
+    'tob': {
+        name: 'To B',
+        icon: '💼',
+        taskSource: '甲方需求',
+        satisfactionName: '甲方满意度',
+        fameName: '行业口碑',
+        reportName: '项目验收',
+        cardRole: '外包团队',
+        successEnding: '被大厂收购 / 成为头部服务商',
+        failureEnding: '被甲方拉黑',
+        cardPoolTheme: '外包',
+        weeklyStoryPrefix: '第一个客户',
+        fameIcon: '🏢',
+        satisfactionIcon: '👨‍💼'
+    },
+    'toc': {
+        name: 'To C',
+        icon: '📱',
+        taskSource: '用户反馈',
+        satisfactionName: '用户满意度',
+        fameName: '应用评分',
+        reportName: '数据复盘',
+        cardRole: '合伙人',
+        successEnding: 'App爆火 / 公司上市',
+        failureEnding: 'App凉了',
+        cardPoolTheme: '产品',
+        weeklyStoryPrefix: '第一个用户',
+        fameIcon: '⭐',
+        satisfactionIcon: '😊'
+    },
+    'b2c': {
+        name: 'B2C',
+        icon: '🌐',
+        taskSource: '服务商订单',
+        satisfactionName: '双边满意度',
+        fameName: '平台信用分',
+        reportName: '双边增长复盘',
+        cardRole: '服务商',
+        successEnding: '平台垄断 / 成为行业标准',
+        failureEnding: '平台跑路',
+        cardPoolTheme: '平台',
+        weeklyStoryPrefix: '第一个服务商',
+        fameIcon: '🏛️',
+        satisfactionIcon: '🤝'
+    }
+};
+
+function getDirectionText(key) {
+    const dir = gameState.direction || 'tob';
+    if (!directionTexts[dir]) {
+        return directionTexts['tob'][key] || '';
+    }
+    return directionTexts[dir][key] || '';
+}
+
+function triggerVictory() {
+    gameState.gameOver = true;
+    gameState.ending = 'victory';
+    saveGame();
+    showGameOverModal();
+}
+
 let gameState = {
     week: 1,
+    direction: null,
     prdVersion: "V1.0.0",
     favors: {},
     progress: 0,
@@ -26,8 +191,66 @@ let gameState = {
     gameOver: false,
     budget: 100,
     toolchain: {},
-    characterBuffs: {}
+    characterBuffs: {},
+    quarterlyQuests: [],
+    quarterlyScore: 0,
+    fame: 50,
+    debt: 0,
+    debtLimit: 100
 };
+
+function showBorrowModal() {
+    const modal = document.getElementById('borrow-modal');
+    if (!modal) return;
+    
+    updateBorrowModal();
+    modal.style.display = 'flex';
+}
+
+function closeBorrowModal() {
+    const modal = document.getElementById('borrow-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function updateBorrowModal() {
+    const currentDebt = document.getElementById('borrow-current-debt');
+    const debtLimit = document.getElementById('borrow-limit');
+    const interest = document.getElementById('borrow-interest');
+    const available = document.getElementById('borrow-available');
+    
+    if (currentDebt) currentDebt.textContent = gameState.debt;
+    if (debtLimit) debtLimit.textContent = gameState.debtLimit;
+    if (interest) interest.textContent = Math.round(getInterestRate() * 100) + '%';
+    if (available) available.textContent = gameState.debtLimit - gameState.debt;
+}
+
+function handleBorrow() {
+    const amountInput = document.getElementById('borrow-amount');
+    const amount = parseInt(amountInput.value) || 0;
+    
+    if (borrowMoney(amount)) {
+        showToast(`成功借款 ${amount} 元`);
+        amountInput.value = '';
+        updateBorrowModal();
+    } else {
+        showToast('借款失败！检查金额是否超出额度');
+    }
+}
+
+function handleRepay() {
+    const amountInput = document.getElementById('repay-amount');
+    const amount = parseInt(amountInput.value) || 0;
+    
+    if (repayMoney(amount)) {
+        showToast(`成功还款 ${amount} 元`);
+        amountInput.value = '';
+        updateBorrowModal();
+    } else {
+        showToast('还款失败！检查资金是否足够');
+    }
+}
 
 let data = {
     weekly_reports: { reports: [] },
@@ -79,9 +302,10 @@ async function loadAllData() {
         
         if (gameState.toolchain) {
             selectedTools = { ...gameState.toolchain };
-        }
-        
+        }        
         initGame();
+        startDirectionLabelUpdates();
+        
     } catch (error) {
         console.error('Failed to load data:', error);
         alert('数据加载失败，请刷新页面重试');
@@ -103,8 +327,51 @@ function loadGameState() {
     if (saved) {
         const savedState = JSON.parse(saved);
         gameState = { ...gameState, ...savedState };
+        
+        if (!gameState.direction) {
+            window.location.href = 'select.html';
+            return;
+        }
     } else {
         window.location.href = 'index.html';
+        return;
+    }
+}
+
+function updateDirectionLabels() {
+    const dir = gameState.direction || 'tob';
+    const dt = directionTexts[dir] || directionTexts['tob'];
+    
+    const fameLabel = document.getElementById('fame-label');
+    const satisfactionPanelTitle = document.getElementById('satisfaction-panel-title');
+    
+    if (fameLabel) {
+        const newFameText = `${dt.fameIcon} ${dt.fameName}:`;
+        if (fameLabel.textContent !== newFameText) {
+            fameLabel.textContent = newFameText;
+        }
+    }
+    if (satisfactionPanelTitle) {
+        if (satisfactionPanelTitle.textContent !== dt.satisfactionName) {
+            satisfactionPanelTitle.textContent = dt.satisfactionName;
+        }
+    }
+}
+
+// 持续更新标签，确保万无一失
+let directionLabelInterval = null;
+function startDirectionLabelUpdates() {
+    if (directionLabelInterval) {
+        clearInterval(directionLabelInterval);
+    }
+    // 降低更新频率，避免不必要的重复更新
+    directionLabelInterval = setInterval(updateDirectionLabels, 1000);
+}
+
+function stopDirectionLabelUpdates() {
+    if (directionLabelInterval) {
+        clearInterval(directionLabelInterval);
+        directionLabelInterval = null;
     }
 }
 
@@ -140,9 +407,11 @@ function initGame() {
 function updateUI() {
     if (gameState.gameOver) return;
 
-    document.getElementById('week-number').textContent = `第 ${gameState.week} 周`;
+    document.getElementById('week-number').textContent = formatQuarterWeek();
     document.getElementById('prd-version').textContent = gameState.prdVersion;
     document.getElementById('budget-value').textContent = gameState.budget;
+    document.getElementById('fame-value').textContent = gameState.fame;
+    document.getElementById('debt-value').textContent = `${gameState.debt}/${gameState.debtLimit}`;
     
     if (gameState.budget < 20) {
         document.getElementById('budget-value').classList.add('cashflow-low');
@@ -150,18 +419,26 @@ function updateUI() {
         document.getElementById('budget-value').classList.remove('cashflow-low');
     }
 
-    const favorValues = Object.values(gameState.favors);
-    const avgFavor = favorValues.length > 0 ? Math.round(favorValues.reduce((a, b) => a + b, 0) / favorValues.length) : 0;
-    document.getElementById('avg-favor').textContent = `${avgFavor}%`;
+    updateDirectionLabels();
 
-    document.getElementById('satisfaction-value').textContent = `${gameState.satisfaction}%`;
-
+    updateHCDisplay();
     renderCharacterCards();
     updateProgressUI();
     updateSatisfactionUI();
     updateWeeklyReport();
     renderPRDHistory();
     renderWeeklyLogs();
+}
+
+function updateHCDisplay() {
+    const hcDisplay = document.getElementById('hc-display');
+    if (!hcDisplay || typeof getCurrentHCCount !== 'function') return;
+    
+    const currentHC = getCurrentHCCount ? getCurrentHCCount() : 0;
+    const maxHC = typeof hc !== 'undefined' ? hc : 3;
+    const variantCount = typeof backpack !== 'undefined' ? backpack.filter(c => c.is_variant).length : 0;
+    
+    hcDisplay.textContent = `📦 HC ${currentHC}/${maxHC}（管培生${variantCount}不计）`;
 }
 
 function renderCharacterCards() {
@@ -472,24 +749,43 @@ function handleChoice(option, event) {
 function handleWeekChange() {
     gameState.satisfactionHistory.push(gameState.satisfaction);
 
-    if (gameState.satisfaction < 65) {
-        gameState.consecutiveLowSatisfactionWeeks++;
-
-        if (gameState.consecutiveLowSatisfactionWeeks >= 3) {
-            triggerGameOver();
-            return;
-        }
-    } else {
-        gameState.consecutiveLowSatisfactionWeeks = 0;
-    }
+    gameState.consecutiveLowSatisfactionWeeks = 0;
 
     gameState.budget -= 5;
 
+    const interest = calculateInterest();
+    
     updateFavorHistory();
     updateCharacterBuffs();
     checkEfficiencyBuffs();
 
     calculateWeeklyProgress();
+
+    if (gameState.progress >= 100) {
+        triggerVictory();
+        return;
+    }
+
+    if (gameState.budget <= 0) {
+        if (gameState.debt >= gameState.debtLimit) {
+            triggerGameOver();
+            return;
+        } else {
+            if (typeof showToast === 'function') {
+                showToast('⚠️ 资金不足！可以考虑借钱续命');
+            }
+        }
+    }
+
+    const weekInQuarter = getWeekInQuarter();
+    
+    if (weekInQuarter === 12 && typeof showToast === 'function') {
+        showToast('⚠️ 本周是本季度最后一周，结束后将进入季度报表！');
+    }
+
+    if (typeof checkQuarterEnd === 'function' && checkQuarterEnd()) {
+        showReportModal();
+    }
 }
 
 function updateFavorHistory() {
@@ -864,7 +1160,7 @@ function showEndingModal(ending) {
             <span class="ending-stat-value ${Math.min(gameState.progress, 100) >= 100 ? 'perfect' : 'good'}">${Math.min(gameState.progress, 100)}%</span>
         </div>
         <div class="ending-stat-row">
-            <span class="ending-stat-label">甲方满意度:</span>
+            <span class="ending-stat-label">${getDirectionText('satisfactionName')}:</span>
             <span class="ending-stat-value ${gameState.satisfaction >= 90 ? 'perfect' : gameState.satisfaction >= 70 ? 'good' : 'bad'}">${gameState.satisfaction}%</span>
         </div>
         <div class="ending-stat-row">
@@ -873,20 +1169,36 @@ function showEndingModal(ending) {
         </div>
     `;
 
-    document.getElementById('ending-title').textContent = ending.name;
-    document.getElementById('ending-description').textContent = ending.description;
+    const endingTitle = document.getElementById('ending-title');
+    const endingDesc = document.getElementById('ending-description');
+    
+    if (gameState.ending === 'victory') {
+        endingTitle.textContent = getDirectionText('successEnding');
+        endingDesc.textContent = `恭喜！${getDirectionText('successEnding')}！`;
+    } else {
+        endingTitle.textContent = ending.name;
+        endingDesc.textContent = ending.description;
+    }
 
     modal.classList.add('active');
 }
 
 function triggerGameOver() {
     gameState.gameOver = true;
+    
+    if (typeof clearBackpack === 'function') {
+        clearBackpack();
+    }
+    
     showGameOverModal();
 }
 
 function showGameOverModal() {
     const modal = document.getElementById('game-over-modal');
     const stats = document.getElementById('game-over-stats');
+    const message = document.getElementById('game-over-message');
+
+    message.textContent = getDirectionText('failureEnding');
 
     stats.innerHTML = `
         <div class="game-over-stat">
@@ -902,7 +1214,7 @@ function showGameOverModal() {
             <span class="game-over-stat-value">${Math.min(gameState.progress, 100)}%</span>
         </div>
         <div class="game-over-stat">
-            <span class="game-over-stat-label">甲方满意度:</span>
+            <span class="game-over-stat-label">${getDirectionText('satisfactionName')}:</span>
             <span class="game-over-stat-value">${gameState.satisfaction}%</span>
         </div>
     `;

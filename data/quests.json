@@ -1,0 +1,119 @@
+{
+    "quests": [
+        {
+            "id": "quest_g_appeal",
+            "name": "G端合规审查",
+            "camp": "justice",
+            "difficulty": "urgent",
+            "base_score": 20,
+            "flavor": "G端说：你们的天平歪了"
+        },
+        {
+            "id": "quest_heaven_requirement",
+            "name": "天堂需求变更",
+            "camp": "heaven",
+            "difficulty": "normal",
+            "base_score": 15,
+            "flavor": "P5精英们提出了第18版需求"
+        },
+        {
+            "id": "quest_hell_bug",
+            "name": "地狱Bug修复",
+            "camp": "hell",
+            "difficulty": "urgent",
+            "base_score": 25,
+            "flavor": "1-1的兄弟们说：这个Bug不是我们引入的"
+        },
+        {
+            "id": "quest_architecture_review",
+            "name": "架构评审",
+            "camp": "heaven",
+            "difficulty": "hard",
+            "base_score": 30,
+            "flavor": "评审了5小时，最后说要推倒重来"
+        },
+        {
+            "id": "quest_data_migration",
+            "name": "数据迁移",
+            "camp": "hell",
+            "difficulty": "normal",
+            "base_score": 15,
+            "flavor": "历史包袱太重了，谁的锅？"
+        },
+        {
+            "id": "quest_performance_opt",
+            "name": "性能优化",
+            "camp": "neutral",
+            "difficulty": "hard",
+            "base_score": 35,
+            "flavor": "甲方说：再慢就换供应商"
+        },
+        {
+            "id": "quest_security_audit",
+            "name": "安全审计",
+            "camp": "justice",
+            "difficulty": "urgent",
+            "base_score": 25,
+            "flavor": "G端要求：等保三级，现在就要"
+        },
+        {
+            "id": "quest_user_feedback",
+            "name": "用户反馈处理",
+            "camp": "neutral",
+            "difficulty": "normal",
+            "base_score": 12,
+            "flavor": "用户说：功能在哪？我怎么看不到？"
+        },
+        {
+            "id": "quest_deployment",
+            "name": "版本发布",
+            "camp": "hell",
+            "difficulty": "urgent",
+            "base_score": 20,
+            "flavor": "上线前5分钟，服务器又炸了"
+        },
+        {
+            "id": "quest_doc_write",
+            "name": "文档编写",
+            "camp": "neutral",
+            "difficulty": "easy",
+            "base_score": 8,
+            "flavor": "PRD、DRD、FRD、SRS...还有什么D？"
+        },
+        {
+            "id": "quest_test_plan",
+            "name": "测试计划",
+            "camp": "heaven",
+            "difficulty": "normal",
+            "base_score": 12,
+            "flavor": "测试用例写了1000条，覆盖率还是不够"
+        },
+        {
+            "id": "quest_code_review",
+            "name": "代码评审",
+            "camp": "neutral",
+            "difficulty": "easy",
+            "base_score": 10,
+            "flavor": "评审意见：建议改名，建议重构，建议重写"
+        }
+    ],
+    "difficulty_colors": {
+        "easy": "#22c55e",
+        "normal": "#3b82f6",
+        "hard": "#f97316",
+        "urgent": "#ef4444"
+    },
+    "camp_colors": {
+        "heaven": "#ffffff",
+        "hell": "#8b0000",
+        "justice": "#ffd700",
+        "neutral": "#888888"
+    },
+    "camp_names": {
+        "heaven": "天堂",
+        "hell": "地狱",
+        "justice": "G端",
+        "neutral": "中立"
+    },
+    "uncomplete_penalty": 8
+}

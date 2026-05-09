@@ -103,26 +103,28 @@ function updateRankDisplay() {
     const nextRank = ranks.find(r => r.cost > prestige);
     
     const rankValue = document.querySelector('.rank-value');
-    const tianSpan = document.querySelector('.rank-comparison .tian');
-    const jueSpan = document.querySelector('.rank-comparison .jue');
-    const diSpan = document.querySelector('.rank-comparison .di');
+    const rankBars = document.querySelectorAll('.rank-bar');
     const prestigeValue = document.querySelector('.prestige-value');
-    const nextPrestige = document.querySelector('.next-prestige');
-    const prestigeRemaining = document.querySelector('.prestige-remaining');
+    const prestigeNext = document.querySelector('.prestige-next');
+    const prestigeHint = document.querySelector('.prestige-hint');
     
     if (rankValue) rankValue.textContent = rank.name;
-    if (tianSpan) tianSpan.textContent = `天堂 ${rank.tian}`;
-    if (jueSpan) jueSpan.textContent = `裁决 ${rank.jue}`;
-    if (diSpan) diSpan.textContent = `地狱 ${rank.di}`;
+    
+    if (rankBars.length >= 3) {
+        rankBars[0].querySelector('.bar-value').textContent = rank.tian;
+        rankBars[1].querySelector('.bar-value').textContent = rank.jue;
+        rankBars[2].querySelector('.bar-value').textContent = rank.di;
+    }
+    
     if (prestigeValue) prestigeValue.textContent = prestige;
     
     if (nextRank) {
-        if (nextPrestige) nextPrestige.textContent = nextRank.cost;
+        if (prestigeNext) prestigeNext.textContent = nextRank.cost;
         const remaining = nextRank.cost - prestige;
-        if (prestigeRemaining) prestigeRemaining.textContent = `（下一级 ${nextRank.name} 还需 ${remaining}）`;
+        if (prestigeHint) prestigeHint.textContent = `（${nextRank.name}还需 ${remaining}）`;
     } else {
-        if (nextPrestige) nextPrestige.textContent = '-';
-        if (prestigeRemaining) prestigeRemaining.textContent = '（已达到最高职级）';
+        if (prestigeNext) prestigeNext.textContent = '-';
+        if (prestigeHint) prestigeHint.textContent = '（已达到最高职级）';
     }
 }
 
@@ -139,11 +141,11 @@ function startNewGame() {
     if (saved) {
         showConfirm('将删除未通关的档案，是否继续？', () => {
             localStorage.removeItem(STORAGE_KEY);
-            doStartNewGame();
+            window.location.href = 'select.html';
         }, () => {});
         return;
     }
-    doStartNewGame();
+    window.location.href = 'select.html';
 }
 
 function doStartNewGame() {
@@ -162,6 +164,7 @@ function doStartNewGame() {
     
     const gameState = {
         week: 1,
+        direction: null,
         prdVersion: "V1.0.0",
         favors: {},
         progress: 0,
@@ -173,7 +176,10 @@ function doStartNewGame() {
         currentEventIndex: 0,
         gameOver: false,
         budget: rank.budget + toolchainCost,
-        toolchain: { ...selectedTools }
+        toolchain: { ...selectedTools },
+        fame: 50,
+        debt: 0,
+        debtLimit: 100
     };
     
     localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
@@ -520,6 +526,7 @@ function confirmToolchain() {
 function bindButtonEvents() {
     const btnLevelup = document.getElementById('btn-levelup');
     const btnGallery = document.getElementById('btn-gallery');
+    const btnMuseum = document.getElementById('btn-museum');
     const btnContinue = document.getElementById('btn-continue');
     const btnStart = document.getElementById('btn-start');
     const btnToolchain = document.getElementById('btn-toolchain');
@@ -527,6 +534,7 @@ function bindButtonEvents() {
     
     if (btnLevelup) btnLevelup.onclick = showLevelupModal;
     if (btnGallery) btnGallery.onclick = showGallery;
+    if (btnMuseum) btnMuseum.onclick = showMuseumModal;
     if (btnContinue) btnContinue.onclick = continueGame;
     if (btnStart) btnStart.onclick = startNewGame;
     if (btnToolchain) btnToolchain.onclick = showToolchainModal;
@@ -544,5 +552,7 @@ document.addEventListener('keydown', (e) => {
         closeLevelupModal();
         closeGalleryModal();
         closeToolchainModal();
+        closeMuseumModal();
+        closeMuseumDetailModal();
     }
 });

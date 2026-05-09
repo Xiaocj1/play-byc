@@ -15,28 +15,47 @@
 
     <div class="status-bar">
         <button class="btn-back-home" id="btn-back-home">🏠 返回主页</button>
-        <div class="status-item">
-            <span>周数:</span>
-            <span class="status-value glow-text" id="week-number">第 1 周</span>
+        
+        <div class="status-columns">
+            <div class="status-column">
+                <div class="status-item">
+                    <span>周数:</span>
+                    <span class="status-value glow-text" id="week-number">Q1 · 第 1 周</span>
+                </div>
+                <div class="status-item">
+                    <span>PRD版本:</span>
+                    <span class="status-value glow-text" id="prd-version">V1.0.0</span>
+                </div>
+            </div>
+            
+            <div class="status-column">
+                <div class="status-item">
+                    <span>💰 资金:</span>
+                    <span class="status-value glow-text" id="budget-value">100</span>
+                </div>
+                <div class="status-item">
+                    <span>📉 负债:</span>
+                    <span class="status-value glow-text" id="debt-value">0/100</span>
+                </div>
+            </div>
+            
+            <div class="status-column">
+                <div class="status-item">
+                    <span id="fame-label"></span>
+                    <span class="status-value glow-text" id="fame-value">50</span>
+                </div>
+                <div class="status-item">
+                    <span id="hc-display">📦 HC 0/3</span>
+                </div>
+            </div>
         </div>
-        <div class="status-item">
-            <span>PRD版本:</span>
-            <span class="status-value glow-text" id="prd-version">V1.0.0</span>
+        
+        <div class="status-buttons">
+            <button class="btn-pixel" onclick="showRecruitModal()">📱 招聘</button>
+            <button class="btn-pixel" onclick="openPRDModal()">查看 PRD</button>
+            <button class="btn-pixel" onclick="showBorrowModal()">💰 借钱</button>
+            <button class="btn-pixel" onclick="saveGame()">💾 保存</button>
         </div>
-        <div class="status-item">
-            <span>💰 现金流:</span>
-            <span class="status-value glow-text" id="budget-value">100</span>
-        </div>
-        <div class="status-item">
-            <span>团队好感度:</span>
-            <span class="status-value glow-text" id="avg-favor">50%</span>
-        </div>
-        <div class="status-item">
-            <span>满意度:</span>
-            <span class="status-value glow-text" id="satisfaction-value">80%</span>
-        </div>
-        <button class="btn-pixel" onclick="openPRDModal()">查看 PRD</button>
-        <button class="btn-pixel" onclick="saveGame()">💾 保存</button>
     </div>
 
     <div class="save-notification" id="save-notification">游戏已保存!</div>
@@ -84,7 +103,7 @@
             </div>
 
             <div class="satisfaction-panel">
-                <h3 class="panel-title">甲方满意度</h3>
+                <h3 class="panel-title" id="satisfaction-panel-title"></h3>
                 <div class="satisfaction-bar"><div class="satisfaction-fill green" id="satisfaction-fill" style="width: 80%"></div></div>
                 <div class="satisfaction-text" id="satisfaction-text">80%</div>
             </div>
@@ -120,6 +139,113 @@
         </div>
     </div>
 
+    <div class="report-modal" id="report-modal">
+        <div class="report-content">
+            <button class="report-close" onclick="closeReportModal()">X</button>
+            <h2 class="report-title">📊 季度报表</h2>
+            <div class="report-layout">
+                <div class="report-left">
+                    <h3>待办列表</h3>
+                    <div class="report-quest-list" id="report-quest-list"></div>
+                </div>
+                <div class="report-center">
+                    <h3>背包卡牌</h3>
+                    <div class="report-card-list" id="report-card-list"></div>
+                </div>
+                <div class="report-right">
+                    <h3>结算预览</h3>
+                    <div class="report-preview" id="report-preview">
+                        <div class="preview-score">
+                            <span>当前得分:</span>
+                            <span id="report-current-score">0</span>
+                        </div>
+                        <div class="preview-rating">
+                            <span>评级:</span>
+                            <span id="report-rating">-</span>
+                        </div>
+                        <div class="preview-satisfaction">
+                            <span>满意度变化:</span>
+                            <span id="report-satisfaction-change">-</span>
+                        </div>
+                        <div class="preview-budget">
+                            <span>预算变化:</span>
+                            <span id="report-budget-change">-</span>
+                        </div>
+                    </div>
+                    <button class="btn-pixel report-confirm" onclick="confirmQuarterlyReport()">确认结算</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="recruit-modal" id="recruit-modal">
+        <div class="recruit-content">
+            <button class="recruit-close" onclick="closeRecruitModal()">X</button>
+            <h2 class="recruit-title">📱 招聘</h2>
+            <div class="recruit-info">
+                <span id="recruit-budget">预算: 0</span>
+                <span id="recruit-hc">📦 HC 0/3</span>
+                <span id="recruit-draws-left">本周剩余抽卡: 3</span>
+            </div>
+            <div class="pool-list" id="pool-list"></div>
+            <button class="btn-pixel recruit-draw" id="recruit-draw" disabled>抽卡 (10预算)</button>
+            <div class="recruit-backpack" id="recruit-backpack"></div>
+        </div>
+    </div>
+
+    <div class="recruit-confirm-modal" id="recruit-confirm-modal">
+        <div class="recruit-confirm-content">
+            <h3 class="confirm-title">确认录用？</h3>
+            <div class="confirm-card">
+                <div class="confirm-card-rarity" id="confirm-card-rarity">R</div>
+                <div class="confirm-card-name" id="confirm-card-name">员工名称</div>
+                <div class="confirm-card-desc" id="confirm-card-desc">员工描述</div>
+            </div>
+            <div class="confirm-buttons">
+                <button class="btn-pixel confirm-yes" id="confirm-recruit-yes">是</button>
+                <button class="btn-pixel confirm-no" id="confirm-recruit-no">否</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-animation" id="card-animation"></div>
+    <div class="variant-toast" id="variant-toast">
+        <div class="variant-toast-content"></div>
+    </div>
+    <div class="toast-modal" id="toast-modal">
+        <div class="toast-content">
+            <p class="toast-message" id="toast-message"></p>
+        </div>
+    </div>
+
+    <div class="borrow-modal" id="borrow-modal">
+        <div class="borrow-content">
+            <button class="borrow-close" onclick="closeBorrowModal()">X</button>
+            <h2 class="borrow-title">💰 银行贷款</h2>
+            <div class="borrow-info">
+                <p>当前负债: <span id="borrow-current-debt">0</span></p>
+                <p>负债上限: <span id="borrow-limit">100</span></p>
+                <p>周利息: <span id="borrow-interest">5%</span></p>
+                <p>可用额度: <span id="borrow-available">100</span></p>
+            </div>
+            <div class="borrow-actions">
+                <div class="borrow-section">
+                    <h3>借钱</h3>
+                    <input type="number" id="borrow-amount" min="1" placeholder="输入金额">
+                    <button class="btn-pixel" onclick="handleBorrow()">确认借款</button>
+                </div>
+                <div class="borrow-section">
+                    <h3>还款</h3>
+                    <input type="number" id="repay-amount" min="1" placeholder="输入金额">
+                    <button class="btn-pixel" onclick="handleRepay()">确认还款</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="js/game.js"></script>
+    <script src="js/recruit.js"></script>
+    <script src="js/report.js"></script>
+    <script src="js/gallery.js"></script>
 </body>
 </html>

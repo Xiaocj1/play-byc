@@ -497,3 +497,242 @@ body {
         gap: 10px;
     }
 }
+
+.museum-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 10015;
+}
+
+.museum-content {
+    display: flex;
+    flex-direction: column;
+    background: #1a1a2e;
+    border: 4px solid #ffd700;
+    box-shadow: 8px 8px 0 #0a0a0f;
+    padding: 30px;
+    max-width: 900px;
+    width: 95%;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.museum-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    border: 2px solid #ff4444;
+    color: #ff4444;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.museum-title {
+    color: #ffd700;
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 20px;
+    text-shadow: 0 0 20px #ffd700;
+}
+
+.museum-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.museum-tab {
+    font-family: 'Press Start 2P', monospace;
+    background: transparent;
+    color: #888;
+    border: 2px solid #888;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 10px;
+    transition: all 0.2s;
+}
+
+.museum-tab.active {
+    color: #ffd700;
+    border-color: #ffd700;
+    background: rgba(255, 215, 0, 0.1);
+}
+
+.museum-tab:hover {
+    border-color: #ffd700;
+}
+
+.museum-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.museum-card {
+    background: rgba(0, 0, 0, 0.5);
+    border: 3px solid #333;
+    padding: 25px 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.museum-card:hover {
+    border-color: #00ff41;
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+    transform: translateY(-3px);
+}
+
+.museum-card.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.museum-card.locked:hover {
+    border-color: #666;
+    box-shadow: none;
+    transform: none;
+}
+
+.museum-card-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.museum-card-name {
+    color: #00ff41;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.museum-card-subname {
+    color: #888;
+    font-size: 8px;
+}
+
+.museum-card-condition {
+    color: #666;
+    font-size: 8px;
+    font-style: italic;
+}
+
+.museum-detail-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 10020;
+}
+
+.museum-detail-content {
+    display: flex;
+    flex-direction: column;
+    background: #1a1a2e;
+    border: 4px solid #ffd700;
+    box-shadow: 8px 8px 0 #0a0a0f;
+    padding: 40px;
+    max-width: 600px;
+    width: 95%;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.museum-detail-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    border: 2px solid #ff4444;
+    color: #ff4444;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.museum-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #333;
+}
+
+.museum-detail-icon {
+    font-size: 64px;
+}
+
+.museum-detail-title h2 {
+    color: #ffd700;
+    font-size: 20px;
+    margin: 0 0 10px 0;
+}
+
+.museum-detail-subname {
+    color: #888;
+    font-size: 10px;
+    font-style: italic;
+}
+
+.museum-detail-section {
+    margin-bottom: 25px;
+}
+
+.museum-detail-section h3 {
+    color: #00bfff;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.museum-detail-section blockquote {
+    color: #fff;
+    font-size: 11px;
+    margin: 0 0 8px 0;
+    padding-left: 15px;
+    border-left: 3px solid #00ff41;
+}
+
+.museum-detail-section cite {
+    color: #666;
+    font-size: 9px;
+    font-style: italic;
+}
+
+.museum-detail-unlock {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px dashed #333;
+}
+
+.museum-detail-unlock h3 {
+    color: #ffd700;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.museum-detail-unlock p {
+    color: #aaa;
+    font-size: 10px;
+    line-height: 1.6;
+    font-style: italic;
+}

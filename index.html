@@ -41,6 +41,10 @@
                     <span class="btn-icon">🖼️</span>
                     <span class="btn-text">画廊</span>
                 </button>
+                <button class="pixel-btn btn-secondary" id="btn-museum">
+                    <span class="btn-icon">🏛️</span>
+                    <span class="btn-text">陈列馆</span>
+                </button>
                 <button class="pixel-btn btn-secondary" id="btn-toolchain">
                     <span class="btn-icon">⚙️</span>
                     <span class="btn-text">工具链</span>
@@ -138,6 +142,21 @@
         </div>
     </div>
 
+    <div class="museum-modal" id="museum-modal">
+        <div class="museum-content">
+            <button class="museum-close" onclick="closeMuseumModal()">X</button>
+            <h2 class="museum-title">🏛️ 产品陈列馆</h2>
+            <div class="museum-tabs" id="museum-tabs"></div>
+            <div class="museum-grid" id="museum-grid"></div>
+        </div>
+    </div>
+
+    <div class="museum-detail-modal" id="museum-detail-modal">
+        <div class="museum-detail-content" id="museum-detail-content">
+        </div>
+    </div>
+
+    <script src="js/museum.js"></script>
     <script src="js/home.js"></script>
 </body>
 </html>

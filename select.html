@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>公平事务所 - 选择创业方向</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/home.css">
+    <style>
+        body {
+            overflow: hidden;
+        }
+        .select-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+            z-index: 99999;
+        }
+        .select-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 24px;
+            color: #ffd700;
+            text-shadow: 0 0 20px #ffd700, 0 0 40px #ffd700;
+            margin-bottom: 60px;
+            text-align: center;
+            animation: titleGlow 2s ease-in-out infinite;
+        }
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 20px #ffd700, 0 0 40px #ffd700; }
+            50% { text-shadow: 0 0 30px #ffd700, 0 0 60px #ffd700, 0 0 80px #ffd700; }
+        }
+        .select-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            max-width: 1000px;
+            padding: 0 20px;
+        }
+        .select-card {
+            background: rgba(0, 0, 0, 0.7);
+            border: 4px solid #333;
+            padding: 40px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .select-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #ffd700, transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .select-card:hover {
+            border-color: #ffd700;
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.2);
+        }
+        .select-card:hover::before {
+            opacity: 1;
+        }
+        .select-card-icon {
+            font-size: 80px;
+            margin-bottom: 25px;
+        }
+        .select-card-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 20px;
+            color: #00ff41;
+            margin-bottom: 15px;
+        }
+        .select-card-desc {
+            font-size: 12px;
+            color: #fff;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+        .select-card-detail {
+            font-size: 10px;
+            color: #888;
+            line-height: 1.6;
+        }
+        .select-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .select-card.locked:hover {
+            border-color: #333;
+            transform: none;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="crt-effect"></div>
+    <div class="scanline"></div>
+    
+    <div class="select-page">
+        <h1 class="select-title">🚀 选择你的创业方向</h1>
+        <div class="select-cards">
+            <div class="select-card" onclick="selectDirection('tob')">
+                <div class="select-card-icon">💼</div>
+                <h2 class="select-card-title">To B</h2>
+                <p class="select-card-desc">服务企业，稳扎稳打</p>
+                <p class="select-card-detail">承接甲方项目<br>做定制开发<br>被大厂收购 / 成为头部服务商</p>
+            </div>
+            <div class="select-card" onclick="selectDirection('toc')">
+                <div class="select-card-icon">📱</div>
+                <h2 class="select-card-title">To C</h2>
+                <p class="select-card-desc">做产品，赌一个爆款</p>
+                <p class="select-card-detail">打造独立App<br>服务普通用户<br>App爆火 / 公司上市</p>
+            </div>
+            <div class="select-card" onclick="selectDirection('b2c')">
+                <div class="select-card-icon">🌐</div>
+                <h2 class="select-card-title">B2C</h2>
+                <p class="select-card-desc">做平台，赚抽成</p>
+                <p class="select-card-detail">连接服务商与用户<br>双边市场<br>平台垄断 / 成为行业标准</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = "fair_office_game_state";
+        
+        function selectDirection(direction) {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            let gameState;
+            
+            if (saved) {
+                gameState = JSON.parse(saved);
+            } else {
+                gameState = {
+                    week: 1,
+                    prdVersion: "V1.0.0",
+                    favors: {},
+                    progress: 0,
+                    satisfaction: 80,
+                    satisfactionHistory: [80],
+                    consecutiveLowSatisfactionWeeks: 0,
+                    prdHistory: [],
+                    weeklyLogs: [],
+                    currentEventIndex: 0,
+                    gameOver: false,
+                    budget: 100,
+                    toolchain: {},
+                    characterBuffs: {},
+                    quarterlyQuests: [],
+                    quarterlyScore: 0,
+                    fame: 50,
+                    debt: 0,
+                    debtLimit: 100
+                };
+            }
+            
+            gameState.direction = direction;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
+            
+            window.location.href = 'game.html';
+        }
+    </script>
+</body>
+</html>

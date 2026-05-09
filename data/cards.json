@@ -1,0 +1,293 @@
+{
+    "pools": [
+        {
+            "id": "rd",
+            "name": "研发",
+            "icon": "💻",
+            "cards": [
+                {
+                    "id": "rd_001",
+                    "name": "CRUD工程师",
+                    "rarity": "R",
+                    "durability": 5,
+                    "is_variant": false,
+                    "camp": "hell",
+                    "effect": {"type": "progress", "value": 3},
+                    "description": "熟练掌握增删改查"
+                },
+                {
+                    "id": "rd_002",
+                    "name": "架构师",
+                    "rarity": "SR",
+                    "durability": 4,
+                    "is_variant": false,
+                    "camp": "heaven",
+                    "effect": {"type": "progress", "value": 8},
+                    "description": "画PPT高手"
+                },
+                {
+                    "id": "rd_003",
+                    "name": "算法专家",
+                    "rarity": "SSR",
+                    "durability": 3,
+                    "is_variant": false,
+                    "camp": "heaven",
+                    "effect": {"type": "progress", "value": 15},
+                    "description": "调参大师"
+                },
+                {
+                    "id": "rd_004",
+                    "name": "管培生",
+                    "rarity": "R",
+                    "durability": 1,
+                    "is_variant": true,
+                    "camp": "neutral",
+                    "variant_pool": ["promote_ssr", "promote_sr", "runaway", "exam", "borrow", "nothing"],
+                    "description": "未来之星？"
+                },
+                {
+                    "id": "rd_005",
+                    "name": "外包老哥",
+                    "rarity": "R",
+                    "durability": 3,
+                    "is_variant": false,
+                    "camp": "hell",
+                    "effect": {"type": "progress", "value": 4},
+                    "description": "随叫随到"
+                }
+            ]
+        },
+        {
+            "id": "qa",
+            "name": "测试",
+            "icon": "🧪",
+            "cards": [
+                {
+                    "id": "qa_001",
+                    "name": "功能测试",
+                    "rarity": "R",
+                    "durability": 5,
+                    "is_variant": false,
+                    "camp": "hell",
+                    "effect": {"type": "satisfaction", "value": 5},
+                    "description": "点点点"
+                },
+                {
+                    "id": "qa_002",
+                    "name": "自动化测试",
+                    "rarity": "SR",
+                    "durability": 4,
+                    "is_variant": false,
+                    "camp": "heaven",
+                    "effect": {"type": "satisfaction", "value": 10},
+                    "description": "写脚本高手"
+                },
+                {
+                    "id": "qa_003",
+                    "name": "性能测试专家",
+                    "rarity": "SSR",
+                    "durability": 3,
+                    "is_variant": false,
+                    "camp": "justice",
+                    "effect": {"type": "satisfaction", "value": 15},
+                    "description": "压测王者"
+                },
+                {
+                    "id": "qa_004",
+                    "name": "管培生",
+                    "rarity": "R",
+                    "durability": 1,
+                    "is_variant": true,
+                    "camp": "neutral",
+                    "variant_pool": ["promote_ssr", "promote_sr", "runaway", "exam", "borrow", "nothing"],
+                    "description": "未来之星？"
+                },
+                {
+                    "id": "qa_005",
+                    "name": "测试组长",
+                    "rarity": "SR",
+                    "durability": 4,
+                    "is_variant": false,
+                    "camp": "hell",
+                    "effect": {"type": "satisfaction", "value": 8},
+                    "description": "Bug挖掘机"
+                }
+            ]
+        },
+        {
+            "id": "design",
+            "name": "设计",
+            "icon": "🎨",
+            "cards": [
+                {
+                    "id": "design_001",
+                    "name": "UI设计师",
+                    "rarity": "R",
+                    "durability": 5,
+                    "is_variant": false,
+                    "camp": "heaven",
+                    "effect": {"type": "satisfaction", "value": 4},
+                    "description": "像素级还原"
+                },
+                {
+                    "id": "design_002",
+                    "name": "UX研究员",
+                    "rarity": "SR",
+                    "durability": 4,
+                    "is_variant": false,
+                    "camp": "heaven",
+                    "effect": {"type": "satisfaction", "value": 9},
+                    "description": "洞察用户"
+                },
+                {
+                    "id": "design_003",
+                    "name": "视觉总监",
+                    "rarity": "SSR",
+                    "durability": 3,
+                    "is_variant": false,
+                    "camp": "heaven",
+                    "effect": {"type": "satisfaction", "value": 14},
+                    "description": "审美天花板"
+                },
+                {
+                    "id": "design_004",
+                    "name": "管培生",
+                    "rarity": "R",
+                    "durability": 1,
+                    "is_variant": true,
+                    "camp": "neutral",
+                    "variant_pool": ["promote_ssr", "promote_sr", "runaway", "exam", "borrow", "nothing"],
+                    "description": "未来之星？"
+                },
+                {
+                    "id": "design_005",
+                    "name": "动效设计师",
+                    "rarity": "SR",
+                    "durability": 4,
+                    "is_variant": false,
+                    "camp": "heaven",
+                    "effect": {"type": "satisfaction", "value": 7},
+                    "description": "丝滑流畅"
+                }
+            ]
+        },
+        {
+            "id": "operation",
+            "name": "运营",
+            "icon": "📊",
+            "cards": [
+                {
+                    "id": "op_001",
+                    "name": "内容运营",
+                    "rarity": "R",
+                    "durability": 5,
+                    "is_variant": false,
+                    "camp": "hell",
+                    "effect": {"type": "team_favor", "value": 5},
+                    "description": "写稿机器"
+                },
+                {
+                    "id": "op_002",
+                    "name": "活动运营",
+                    "rarity": "SR",
+                    "durability": 4,
+                    "is_variant": false,
+                    "camp": "hell",
+                    "effect": {"type": "team_favor", "value": 10},
+                    "description": "策划鬼才"
+                },
+                {
+                    "id": "op_003",
+                    "name": "增长黑客",
+                    "rarity": "SSR",
+                    "durability": 3,
+                    "is_variant": false,
+                    "camp": "justice",
+                    "effect": {"type": "team_favor", "value": 15},
+                    "description": "数据驱动"
+                },
+                {
+                    "id": "op_004",
+                    "name": "管培生",
+                    "rarity": "R",
+                    "durability": 1,
+                    "is_variant": true,
+                    "camp": "neutral",
+                    "variant_pool": ["promote_ssr", "promote_sr", "runaway", "exam", "borrow", "nothing"],
+                    "description": "未来之星？"
+                },
+                {
+                    "id": "op_005",
+                    "name": "产品运营",
+                    "rarity": "R",
+                    "durability": 4,
+                    "is_variant": false,
+                    "camp": "neutral",
+                    "effect": {"type": "team_favor", "value": 4},
+                    "description": "需求搬运工"
+                }
+            ]
+        }
+    ],
+    "variant_results": {
+        "promote_ssr": {
+            "name": "逆袭",
+            "rarity": "SSR",
+            "durability": 3,
+            "camp": "heaven",
+            "text": "🎉 管培生逆袭成功！直接晋升为SSR！",
+            "bonus": {"type": "budget", "value": 10}
+        },
+        "promote_sr": {
+            "name": "转正",
+            "rarity": "SR",
+            "durability": 4,
+            "camp": "heaven",
+            "text": "✨ 管培生转正成功！晋升为SR！",
+            "bonus": {"type": "budget", "value": 5}
+        },
+        "runaway": {
+            "name": "跑路",
+            "rarity": "R",
+            "camp": "neutral",
+            "text": "💨 管培生跑路了！人去楼空...",
+            "bonus": {"type": "budget", "value": 3}
+        },
+        "exam": {
+            "name": "考公",
+            "rarity": "R",
+            "camp": "neutral",
+            "text": "📚 管培生考上公务员了！从此告别996！",
+            "bonus": {"type": "budget", "value": 0}
+        },
+        "borrow": {
+            "name": "借调",
+            "rarity": "SR",
+            "durability": 3,
+            "camp": "justice",
+            "text": "🔄 管培生被借调到其他部门",
+            "bonus": {"type": "budget", "value": 2}
+        },
+        "nothing": {
+            "name": "躺平",
+            "rarity": "R",
+            "durability": 2,
+            "camp": "neutral",
+            "text": "😴 管培生选择躺平，继续观察中...",
+            "bonus": {"type": "budget", "value": 0}
+        }
+    },
+    "rarity_colors": {
+        "R": "#9ca3af",
+        "SR": "#22c55e",
+        "SSR": "#eab308"
+    },
+    "costs": {
+        "single_draw": 10,
+        "ten_draw": 90
+    },
+    "limits": {
+        "weekly_draws": 3
+    },
+    "initial_hc": 3
+}
