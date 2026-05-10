@@ -3,6 +3,7 @@ const GAME_STORAGE_KEY = "fair_office_game_state";
 
 let productsData = { products: [] };
 let unlockedProducts = [];
+let currentGameStats = null;
 
 function loadProductsData() {
     return fetch('data/products.json')
@@ -28,17 +29,19 @@ function isProductUnlocked(productId) {
     return unlockedProducts.some(p => p.id === productId);
 }
 
-function unlockProduct(productId) {
-    if (isProductUnlocked(productId)) return;
+function unlockProduct(productId, reason) {
+    if (isProductUnlocked(productId)) return false;
     
     const product = productsData.products.find(p => p.id === productId);
-    if (!product) return;
+    if (!product) return false;
     
     unlockedProducts.push({
         id: product.id,
-        unlockTime: Date.now()
+        unlockTime: Date.now(),
+        reason: reason || '达成解锁条件'
     });
     saveUnlockedProducts();
+    return true;
 }
 
 function getProductsByDirection(direction) {
@@ -80,18 +83,78 @@ function renderMuseumTabs(activeDirection) {
     renderMuseumGrid(activeDirection);
 }
 
+function getThresholdDisplayName(key) {
+    const names = {
+        'renewal_rate': '续约率',
+        '客单价': '客单价(万)',
+        'on_time_rate': '交付准时率',
+        'benchmark_clients': '标杆客户数',
+        'dau': 'DAU(万)',
+        'user_duration': '用户时长(分钟)',
+        'creator_rate': '创作者占比(%)',
+        'gmv': 'GMV(亿)',
+        'commission_rate': '抽成率(%)',
+        'growth_rate': '双边增长率(%)',
+        'dispute_rate': '纠纷率(%)'
+    };
+    return names[key] || key;
+}
+
+function getThresholdComparison(key, threshold, actual) {
+    const lowerIsBetter = ['dispute_rate'];
+    
+    if (lowerIsBetter.includes(key)) {
+        if (actual <= threshold) {
+            return { passed: true, text: `${getThresholdDisplayName(key)}: ${actual} ≤ ${threshold} ✅` };
+        } else {
+            return { passed: false, text: `${getThresholdDisplayName(key)}: ${actual} > ${threshold} ❌` };
+        }
+    } else {
+        if (actual >= threshold) {
+            return { passed: true, text: `${getThresholdDisplayName(key)}: ${actual} ≥ ${threshold} ✅` };
+        } else {
+            return { passed: false, text: `${getThresholdDisplayName(key)}: ${actual} < ${threshold} ❌` };
+        }
+    }
+}
+
 function showLockedProductHint(productId) {
     const product = productsData.products.find(p => p.id === productId);
-    if (!product) return;
+    if (!product || !currentGameStats) {
+        const toast = document.getElementById('toast-modal');
+        const message = document.getElementById('toast-message');
+        if (toast && message) {
+            message.textContent = `解锁条件：${product?.unlock_condition || '达成指定指标'}`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        return;
+    }
+    
+    const thresholds = product.unlock_thresholds || {};
+    const results = [];
+    let allPassed = true;
+    
+    for (const [key, threshold] of Object.entries(thresholds)) {
+        const actual = currentGameStats[key] || 0;
+        const result = getThresholdComparison(key, threshold, actual);
+        results.push(result);
+        if (!result.passed) allPassed = false;
+    }
     
     const toast = document.getElementById('toast-modal');
     const message = document.getElementById('toast-message');
     if (toast && message) {
-        message.textContent = `解锁条件：${product.unlock_condition}`;
+        if (allPassed) {
+            message.innerHTML = `✅ 已达成解锁条件<br><br>` + results.map(r => r.text).join('<br>');
+        } else {
+            message.innerHTML = `❌ 未达成解锁条件<br><br>` + results.map(r => {
+                const color = r.passed ? '#00ff41' : '#ff4444';
+                return `<span style="color: ${color}">${r.text}</span>`;
+            }).join('<br>');
+        }
         toast.classList.add('show');
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 3000);
+        setTimeout(() => toast.classList.remove('show'), 4000);
     }
 }
 
@@ -105,7 +168,9 @@ function renderMuseumGrid(direction) {
         const unlocked = isProductUnlocked(product.id);
         
         return `
-            <div class="museum-card ${unlocked ? '' : 'locked'}" onclick="${unlocked ? `showProductDetail('${product.id}')` : `showLockedProductHint('${product.id}')`}">
+            <div class="museum-card ${unlocked ? '' : 'locked'}" 
+                 onclick="${unlocked ? `showProductDetail('${product.id}')` : `showLockedProductHint('${product.id}')`}"
+                 onmouseenter="${!unlocked ? `showLockedProductHint('${product.id}')` : ''}">
                 ${unlocked ? `
                     <div class="museum-card-icon">${product.icon}</div>
                     <div class="museum-card-name">${product.name}</div>
@@ -113,7 +178,7 @@ function renderMuseumGrid(direction) {
                 ` : `
                     <div class="museum-card-icon">❓</div>
                     <div class="museum-card-name">？？？</div>
-                    <div class="museum-card-condition">${product.unlock_condition}</div>
+                    <div class="museum-card-condition">悬浮查看解锁条件</div>
                 `}
             </div>
         `;
@@ -169,29 +234,150 @@ function closeMuseumDetailModal() {
     }
 }
 
-function checkAndUnlockProducts() {
+function calculateGameStats() {
     const saved = localStorage.getItem(GAME_STORAGE_KEY);
-    if (!saved) return;
+    if (!saved) return null;
     
     const gameState = JSON.parse(saved);
     const direction = gameState.direction;
-    const progress = gameState.progress || 0;
+    const progress = Math.min(gameState.progress || 0, 100);
     const week = gameState.week || 1;
     
-    if (direction === 'toc' && progress >= 100) {
-        unlockProduct('wecom');
-        if (week > 24) unlockProduct('douyin');
-        if (week > 48) unlockProduct('taobao');
+    const avgFavor = Object.values(gameState.favors || {}).length > 0
+        ? Object.values(gameState.favors).reduce((a, b) => a + b, 0) / Object.values(gameState.favors).length
+        : 50;
+    
+    const satisfaction = gameState.satisfaction || 50;
+    
+    const stats = {
+        direction: direction,
+        week: week,
+        progress: progress,
+        satisfaction: satisfaction,
+        avg_favor: avgFavor,
+        fame: gameState.fame || 50,
+        budget: gameState.budget || 0
+    };
+    
+    if (direction === 'tob') {
+        stats.renewal_rate = Math.round((avgFavor * 0.8 + satisfaction * 0.2) * 0.9);
+        stats.客单价 = Math.round((gameState.budget / 10) + (week * 0.5));
+        stats.on_time_rate = Math.round(progress * 0.85 + satisfaction * 0.1);
+        stats.benchmark_clients = Math.floor(week / 12) + 1;
+    } else if (direction === 'toc') {
+        stats.dau = Math.round((progress * 10) + (week * 2) + (satisfaction * 0.5));
+        stats.user_duration = Math.round(15 + (progress * 0.4) + (avgFavor * 0.2));
+        stats.creator_rate = Math.round(3 + (avgFavor * 0.1));
+    } else if (direction === 'b2c') {
+        stats.gmv = Math.round((progress * 0.5) + (week * 0.3) + (satisfaction * 0.1));
+        stats.commission_rate = Math.round(2 + (avgFavor * 0.05));
+        stats.growth_rate = Math.round((progress * 0.5) + (week * 0.8));
+        stats.dispute_rate = Math.round(10 - (satisfaction * 0.08) - (avgFavor * 0.02));
     }
     
-    if (direction === 'tob' && progress >= 100) {
-        unlockProduct('yonyou');
-        if (week > 48) unlockProduct('salesforce');
+    return stats;
+}
+
+function checkAndUnlockProducts() {
+    const gameStats = calculateGameStats();
+    if (!gameStats) return;
+    
+    currentGameStats = gameStats;
+    
+    const direction = gameStats.direction;
+    const products = productsData.products.filter(p => p.direction === direction);
+    
+    let unlockedCount = 0;
+    
+    products.forEach(product => {
+        if (isProductUnlocked(product.id)) return;
+        
+        const thresholds = product.unlock_thresholds || {};
+        let allPassed = true;
+        
+        for (const [key, threshold] of Object.entries(thresholds)) {
+            const actual = gameStats[key] || 0;
+            const lowerIsBetter = ['dispute_rate'];
+            
+            if (lowerIsBetter.includes(key)) {
+                if (actual > threshold) {
+                    allPassed = false;
+                    break;
+                }
+            } else {
+                if (actual < threshold) {
+                    allPassed = false;
+                    break;
+                }
+            }
+        }
+        
+        if (allPassed) {
+            const reason = `游戏结束时达成所有指标`;
+            if (unlockProduct(product.id, reason)) {
+                unlockedCount++;
+                console.log(`🎉 产品图鉴解锁: ${product.name}`);
+            }
+        }
+    });
+    
+    if (unlockedCount > 0) {
+        console.log(`本局共解锁 ${unlockedCount} 个产品图鉴`);
+    }
+}
+
+function evaluateProductUnlock(productId) {
+    const gameStats = calculateGameStats();
+    if (!gameStats) return { unlocked: false, reason: '无游戏数据' };
+    
+    const product = productsData.products.find(p => p.id === productId);
+    if (!product) return { unlocked: false, reason: '产品不存在' };
+    
+    if (isProductUnlocked(productId)) {
+        return { unlocked: true, reason: '已解锁' };
     }
     
-    if (direction === 'b2c' && progress >= 100) {
-        unlockProduct('pdd_platform');
-        if (week > 48) unlockProduct('shopify');
+    if (product.direction !== gameStats.direction) {
+        return { unlocked: false, reason: '路线不匹配' };
+    }
+    
+    const thresholds = product.unlock_thresholds || {};
+    const failedConditions = [];
+    
+    for (const [key, threshold] of Object.entries(thresholds)) {
+        const actual = gameStats[key] || 0;
+        const lowerIsBetter = ['dispute_rate'];
+        
+        let passed;
+        if (lowerIsBetter.includes(key)) {
+            passed = actual <= threshold;
+        } else {
+            passed = actual >= threshold;
+        }
+        
+        if (!passed) {
+            failedConditions.push({
+                name: getThresholdDisplayName(key),
+                required: threshold,
+                actual: actual,
+                passed: false
+            });
+        }
+    }
+    
+    if (failedConditions.length === 0) {
+        return { 
+            unlocked: true, 
+            reason: '已达成所有条件',
+            stats: gameStats 
+        };
+    } else {
+        return { 
+            unlocked: false, 
+            reason: '未达成条件',
+            failedConditions: failedConditions,
+            stats: gameStats 
+        };
     }
 }
 

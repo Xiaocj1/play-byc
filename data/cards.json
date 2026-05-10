@@ -4,6 +4,7 @@
             "id": "rd",
             "name": "研发",
             "icon": "💻",
+            "position": "RD",
             "cards": [
                 {
                     "id": "rd_001",
@@ -12,6 +13,7 @@
                     "durability": 5,
                     "is_variant": false,
                     "camp": "hell",
+                    "position": "RD",
                     "effect": {"type": "progress", "value": 3},
                     "description": "熟练掌握增删改查"
                 },
@@ -22,6 +24,7 @@
                     "durability": 4,
                     "is_variant": false,
                     "camp": "heaven",
+                    "position": "RD",
                     "effect": {"type": "progress", "value": 8},
                     "description": "画PPT高手"
                 },
@@ -32,6 +35,7 @@
                     "durability": 3,
                     "is_variant": false,
                     "camp": "heaven",
+                    "position": "RD",
                     "effect": {"type": "progress", "value": 15},
                     "description": "调参大师"
                 },
@@ -42,6 +46,7 @@
                     "durability": 1,
                     "is_variant": true,
                     "camp": "neutral",
+                    "position": "RD",
                     "variant_pool": ["promote_ssr", "promote_sr", "runaway", "exam", "borrow", "nothing"],
                     "description": "未来之星？"
                 },
@@ -52,6 +57,7 @@
                     "durability": 3,
                     "is_variant": false,
                     "camp": "hell",
+                    "position": "RD",
                     "effect": {"type": "progress", "value": 4},
                     "description": "随叫随到"
                 }
@@ -61,6 +67,7 @@
             "id": "qa",
             "name": "测试",
             "icon": "🧪",
+            "position": "QA",
             "cards": [
                 {
                     "id": "qa_001",
@@ -69,6 +76,7 @@
                     "durability": 5,
                     "is_variant": false,
                     "camp": "hell",
+                    "position": "QA",
                     "effect": {"type": "satisfaction", "value": 5},
                     "description": "点点点"
                 },
@@ -79,6 +87,7 @@
                     "durability": 4,
                     "is_variant": false,
                     "camp": "heaven",
+                    "position": "QA",
                     "effect": {"type": "satisfaction", "value": 10},
                     "description": "写脚本高手"
                 },
@@ -89,6 +98,7 @@
                     "durability": 3,
                     "is_variant": false,
                     "camp": "justice",
+                    "position": "QA",
                     "effect": {"type": "satisfaction", "value": 15},
                     "description": "压测王者"
                 },
@@ -99,6 +109,7 @@
                     "durability": 1,
                     "is_variant": true,
                     "camp": "neutral",
+                    "position": "QA",
                     "variant_pool": ["promote_ssr", "promote_sr", "runaway", "exam", "borrow", "nothing"],
                     "description": "未来之星？"
                 },
@@ -109,6 +120,7 @@
                     "durability": 4,
                     "is_variant": false,
                     "camp": "hell",
+                    "position": "QA",
                     "effect": {"type": "satisfaction", "value": 8},
                     "description": "Bug挖掘机"
                 }
@@ -118,6 +130,7 @@
             "id": "design",
             "name": "设计",
             "icon": "🎨",
+            "position": "Design",
             "cards": [
                 {
                     "id": "design_001",
@@ -126,6 +139,7 @@
                     "durability": 5,
                     "is_variant": false,
                     "camp": "heaven",
+                    "position": "Design",
                     "effect": {"type": "satisfaction", "value": 4},
                     "description": "像素级还原"
                 },
@@ -136,6 +150,7 @@
                     "durability": 4,
                     "is_variant": false,
                     "camp": "heaven",
+                    "position": "Design",
                     "effect": {"type": "satisfaction", "value": 9},
                     "description": "洞察用户"
                 },
@@ -146,6 +161,7 @@
                     "durability": 3,
                     "is_variant": false,
                     "camp": "heaven",
+                    "position": "Design",
                     "effect": {"type": "satisfaction", "value": 14},
                     "description": "审美天花板"
                 },
@@ -156,6 +172,7 @@
                     "durability": 1,
                     "is_variant": true,
                     "camp": "neutral",
+                    "position": "Design",
                     "variant_pool": ["promote_ssr", "promote_sr", "runaway", "exam", "borrow", "nothing"],
                     "description": "未来之星？"
                 },
@@ -166,6 +183,7 @@
                     "durability": 4,
                     "is_variant": false,
                     "camp": "heaven",
+                    "position": "Design",
                     "effect": {"type": "satisfaction", "value": 7},
                     "description": "丝滑流畅"
                 }
@@ -175,6 +193,7 @@
             "id": "operation",
             "name": "运营",
             "icon": "📊",
+            "position": "Operation",
             "cards": [
                 {
                     "id": "op_001",
@@ -183,6 +202,7 @@
                     "durability": 5,
                     "is_variant": false,
                     "camp": "hell",
+                    "position": "Operation",
                     "effect": {"type": "team_favor", "value": 5},
                     "description": "写稿机器"
                 },
@@ -193,6 +213,7 @@
                     "durability": 4,
                     "is_variant": false,
                     "camp": "hell",
+                    "position": "Operation",
                     "effect": {"type": "team_favor", "value": 10},
                     "description": "策划鬼才"
                 },
@@ -203,6 +224,7 @@
                     "durability": 3,
                     "is_variant": false,
                     "camp": "justice",
+                    "position": "Operation",
                     "effect": {"type": "team_favor", "value": 15},
                     "description": "数据驱动"
                 },
@@ -213,6 +235,7 @@
                     "durability": 1,
                     "is_variant": true,
                     "camp": "neutral",
+                    "position": "Operation",
                     "variant_pool": ["promote_ssr", "promote_sr", "runaway", "exam", "borrow", "nothing"],
                     "description": "未来之星？"
                 },
@@ -223,6 +246,7 @@
                     "durability": 4,
                     "is_variant": false,
                     "camp": "neutral",
+                    "position": "Operation",
                     "effect": {"type": "team_favor", "value": 4},
                     "description": "需求搬运工"
                 }
@@ -282,6 +306,12 @@
         "SR": "#22c55e",
         "SSR": "#eab308"
     },
+    "position_colors": {
+        "RD": "#3b82f6",
+        "QA": "#ef4444",
+        "Design": "#8b5cf6",
+        "Operation": "#22c55e"
+    },
     "costs": {
         "single_draw": 10,
         "ten_draw": 90
@@ -289,5 +319,11 @@
     "limits": {
         "weekly_draws": 3
     },
-    "initial_hc": 3
+    "initial_hc": 3,
+    "counter_chain": {
+        "Operation": "Design",
+        "Design": "QA",
+        "QA": "RD",
+        "RD": "Operation"
+    }
 }

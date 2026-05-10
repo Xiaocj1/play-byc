@@ -1,12 +1,6 @@
+/* 通用样式 - 仅作为基础，皮肤CSS会覆盖 */
 .status-bar {
-    background: linear-gradient(90deg, #0d0d1a 0%, #1a1a2e 50%, #0d0d1a 100%);
-    padding: 15px 20px;
-    border-bottom: 3px solid #00ff41;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 20px;
+    /* 基础占位样式，由皮肤CSS完全控制 */
 }
 
 .status-columns {
@@ -39,11 +33,11 @@
 
 .container {
     max-width: 1200px;
-    margin: 20px auto;
-    padding: 0 20px;
+    margin: 5px auto;
+    padding: 0 15px;
     display: grid;
-    grid-template-columns: 1fr 350px;
-    gap: 20px;
+    grid-template-columns: 1fr 300px;
+    gap: 12px;
 }
 
 @media (max-width: 900px) {
@@ -55,25 +49,25 @@
 .main-area {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 12px;
 }
 
 .weekly-report {
-    padding: 25px;
+    padding: 15px;
     border-radius: 4px;
 }
 
 .report-title {
-    font-size: 14px;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
+    font-size: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
     border-bottom: 2px dashed #2c2416;
 }
 
 .report-section {
-    margin-bottom: 15px;
-    font-size: 10px;
-    line-height: 1.8;
+    margin-bottom: 10px;
+    font-size: 9px;
+    line-height: 1.6;
 }
 
 .report-section h4 {
@@ -87,36 +81,37 @@
 
 .fun-comment {
     background: rgba(44, 36, 22, 0.1);
-    padding: 12px;
-    border-left: 4px solid #8b7355;
-    margin-top: 15px;
+    padding: 8px;
+    border-left: 3px solid #8b7355;
+    margin-top: 10px;
     font-style: italic;
+    font-size: 8px;
 }
 
 .event-card {
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    padding: 25px;
-    border: 3px solid #00ff41;
+    padding: 15px;
+    border: 2px solid #00ff41;
     border-radius: 4px;
-    box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
 }
 
 .event-title {
-    font-size: 12px;
-    margin-bottom: 15px;
+    font-size: 11px;
+    margin-bottom: 10px;
     color: #ffd700;
 }
 
 .event-description {
-    font-size: 10px;
-    margin-bottom: 20px;
-    line-height: 1.6;
+    font-size: 9px;
+    margin-bottom: 12px;
+    line-height: 1.5;
 }
 
 .event-options {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
 }
 
 .option-btn {
@@ -154,20 +149,28 @@
 .sidebar {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 4px;
 }
 
 .character-panel, .progress-panel, .satisfaction-panel {
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    padding: 20px;
-    border: 2px solid #00ff41;
+    padding: 10px;
+    border: 1.5px solid #00ff41;
     border-radius: 4px;
 }
 
+.progress-panel {
+    margin-bottom: 2px;
+}
+
+.satisfaction-panel {
+    margin-top: 0;
+}
+
 .panel-title {
-    font-size: 12px;
+    font-size: 9px;
     color: #ffd700;
-    margin-bottom: 15px;
+    margin-bottom: 8px;
     text-align: center;
 }
 
@@ -252,11 +255,11 @@
 }
 
 .progress-bar, .satisfaction-bar {
-    height: 20px;
+    height: 10px;
     background: #1a1a2e;
     border-radius: 4px;
     overflow: hidden;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
 }
 
 .progress-fill {
@@ -276,7 +279,7 @@
 .satisfaction-fill.red { background: #ff4444; }
 
 .progress-text, .satisfaction-text {
-    font-size: 10px;
+    font-size: 8px;
     color: #00ff41;
     text-align: center;
 }

@@ -8,11 +8,16 @@
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/game.css">
     <link rel="stylesheet" href="css/modals.css">
+    <link rel="stylesheet" href="css/skin-jira.css">
+    <link rel="stylesheet" href="css/skin-zentao.css">
+    <link rel="stylesheet" href="css/skin-feishu.css">
+    <link rel="stylesheet" href="css/skin-dingtalk.css">
 </head>
 <body>
     <div class="crt-effect"></div>
     <div class="scanline"></div>
 
+    <div class="status-bar-wrapper">
     <div class="status-bar">
         <button class="btn-back-home" id="btn-back-home">🏠 返回主页</button>
         
@@ -57,10 +62,33 @@
             <button class="btn-pixel" onclick="saveGame()">💾 保存</button>
         </div>
     </div>
+    </div>
 
     <div class="save-notification" id="save-notification">游戏已保存!</div>
 
+    <div class="main-wrapper">
     <div class="container">
+        <div class="sidebar-left">
+            <div class="character-panel">
+                <h3 class="panel-title">团队成员</h3>
+                <div id="portraits-container" class="portraits-container"></div>
+            </div>
+        </div>
+
+        <div class="sidebar-right">
+            <div class="progress-panel">
+                <h3 class="panel-title">项目进度</h3>
+                <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width: 0%"></div></div>
+                <div class="progress-text" id="progress-text">0%</div>
+            </div>
+
+            <div class="satisfaction-panel">
+                <h3 class="panel-title" id="satisfaction-panel-title"></h3>
+                <div class="satisfaction-bar"><div class="satisfaction-fill green" id="satisfaction-fill" style="width: 80%"></div></div>
+                <div class="satisfaction-text" id="satisfaction-text">80%</div>
+            </div>
+        </div>
+
         <div class="main-area">
             <div class="weekly-report paper-texture">
                 <h3 class="report-title" id="report-title">第一周周报</h3>
@@ -87,25 +115,6 @@
                 <h3 class="event-title" id="event-title">凌晨三点的需求</h3>
                 <p class="event-description" id="event-description">甲方在群里@了你，发来59秒语音。</p>
                 <div class="event-options" id="event-options"></div>
-            </div>
-        </div>
-
-        <div class="sidebar">
-            <div class="character-panel">
-                <h3 class="panel-title">团队成员</h3>
-                <div id="portraits-container" class="portraits-container"></div>
-            </div>
-
-            <div class="progress-panel">
-                <h3 class="panel-title">项目进度</h3>
-                <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width: 0%"></div></div>
-                <div class="progress-text" id="progress-text">0%</div>
-            </div>
-
-            <div class="satisfaction-panel">
-                <h3 class="panel-title" id="satisfaction-panel-title"></h3>
-                <div class="satisfaction-bar"><div class="satisfaction-fill green" id="satisfaction-fill" style="width: 80%"></div></div>
-                <div class="satisfaction-text" id="satisfaction-text">80%</div>
             </div>
         </div>
     </div>
@@ -243,6 +252,49 @@
         </div>
     </div>
 
+    <div class="ipo-modal" id="ipo-modal">
+        <div class="ipo-content">
+            <button class="ipo-close" onclick="closeIPOModal()">X</button>
+            <h2 class="ipo-title" id="ipo-title">📈 IPO机会来临！</h2>
+            <p class="ipo-description" id="ipo-description">恭喜！您的公司已达到上市标准。是否申请上市？</p>
+            <div class="ipo-buttons">
+                <button class="btn-pixel ipo-accept" id="ipo-accept">接受上市</button>
+                <button class="btn-pixel ipo-reject" id="ipo-reject">拒绝上市</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="acquisition-modal" id="acquisition-modal">
+        <div class="acquisition-content">
+            <button class="acquisition-close" onclick="closeAcquisitionModal()">X</button>
+            <h2 class="acquisition-title" id="acquisition-title">💰 收购邀请</h2>
+            <p class="acquisition-description" id="acquisition-description">有大厂向您抛出橄榄枝！是否接受收购？</p>
+            <div class="acquisition-buttons">
+                <button class="btn-pixel acquisition-accept" id="acquisition-accept">接受收购</button>
+                <button class="btn-pixel acquisition-reject" id="acquisition-reject">拒绝收购</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="financing-modal" id="financing-modal">
+        <div class="financing-content">
+            <button class="financing-close" onclick="closeFinancingModal()">X</button>
+            <h2 class="financing-title" id="financing-title">💸 融资机会</h2>
+            <p class="financing-description" id="financing-description">有投资机构愿意投资您的公司！</p>
+            <div class="financing-details">
+                <p>💰 融资金额: <span id="financing-amount">0</span></p>
+                <p>🏆 名声提升: <span id="financing-fame">0</span></p>
+                <p id="financing-covenant-row" style="display: none;">⚠️ 对赌条款: <span id="financing-covenant"></span></p>
+            </div>
+            <div class="financing-buttons">
+                <button class="btn-pixel financing-accept" id="financing-accept">接受融资</button>
+                <button class="btn-pixel financing-reject" id="financing-reject">拒绝融资</button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script src="js/museum.js"></script>
     <script src="js/game.js"></script>
     <script src="js/recruit.js"></script>
     <script src="js/report.js"></script>

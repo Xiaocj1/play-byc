@@ -2,6 +2,7 @@ const CARDS_KEY = "fair_office_cards";
 const HC_KEY = "fair_office_hc";
 const WEEKLY_DRAWS_KEY = "fair_office_weekly_draws";
 const UNLOCKED_CARDS_KEY = "fair_office_unlocked_cards";
+const FIRST_DRAW_KEY = "fair_office_first_draw";
 
 let cardsData = null;
 let currentPool = null;
@@ -9,16 +10,33 @@ let backpack = [];
 let hc = 3;
 let weeklyDraws = 0;
 let unlockedCards = [];
+let storiesData = null;
+let hasShownFirstDrawStory = false;
 
 async function loadCardsData() {
     try {
-        cardsData = await fetch('data/cards.json').then(r => r.json());
+        const [cards, stories] = await Promise.all([
+            fetch('data/cards.json').then(r => r.json()),
+            fetch('data/stories.json').then(r => r.json())
+        ]);
+        cardsData = cards;
+        storiesData = stories;
         loadBackpack();
         loadHC();
         loadWeeklyDraws();
         loadUnlockedCards();
+        checkFirstDraw();
     } catch (error) {
         console.error('Failed to load cards data:', error);
+    }
+}
+
+function checkFirstDraw() {
+    const saved = localStorage.getItem(FIRST_DRAW_KEY);
+    if (!saved) {
+        hasShownFirstDrawStory = false;
+    } else {
+        hasShownFirstDrawStory = true;
     }
 }
 
@@ -160,6 +178,18 @@ function drawFromPool(poolId) {
         return null;
     }
     
+    if (!hasShownFirstDrawStory && storiesData) {
+        showFirstDrawStory(() => {
+            performDraw(poolId);
+        });
+    } else {
+        performDraw(poolId);
+    }
+    
+    return true;
+}
+
+function performDraw(poolId) {
     let card = drawCard(currentPool);
     if (!card) return null;
     
@@ -172,8 +202,11 @@ function drawFromPool(poolId) {
     if (card) {
         showCardAnimation(card, () => {
             confirmRecruit(card);
-
         });
+        
+        if (card.rarity === 'SSR') {
+            showSSRStory();
+        }
     } else {
         saveWeeklyDraws();
         saveGame();
@@ -181,6 +214,66 @@ function drawFromPool(poolId) {
     }
     
     return card;
+}
+
+function showFirstDrawStory(callback) {
+    const story = storiesData.card_stories.first_draw;
+    if (!story) {
+        if (callback) callback();
+        return;
+    }
+    
+    const modal = document.createElement('div');
+    modal.id = 'first-draw-story-modal';
+    modal.className = 'story-modal';
+    modal.innerHTML = `
+        <div class="story-content">
+            <div class="story-close" onclick="closeFirstDrawStory()">×</div>
+            <h2 class="story-title">${story.title}</h2>
+            <div class="story-text">${story.intro}</div>
+            <button class="story-button" onclick="closeFirstDrawStoryAndDraw()">开始招募</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    window.closeFirstDrawStoryAndDraw = function() {
+        closeFirstDrawStory();
+        hasShownFirstDrawStory = true;
+        localStorage.setItem(FIRST_DRAW_KEY, 'true');
+        if (callback) callback();
+    };
+}
+
+function closeFirstDrawStory() {
+    const modal = document.getElementById('first-draw-story-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function showSSRStory() {
+    const story = storiesData.card_stories.ssr_draw;
+    if (!story) return;
+    
+    const modal = document.createElement('div');
+    modal.id = 'ssr-story-modal';
+    modal.className = 'story-modal';
+    modal.innerHTML = `
+        <div class="story-content">
+            <div class="story-close" onclick="closeSSRStory()">×</div>
+            <h2 class="story-title">${story.title}</h2>
+            <div class="story-text">${story.intro}</div>
+            <button class="story-button" onclick="closeSSRStory()">太棒了！</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+function closeSSRStory() {
+    const modal = document.getElementById('ssr-story-modal');
+    if (modal) {
+        modal.remove();
+    }
 }
 
 function confirmRecruit(card) {

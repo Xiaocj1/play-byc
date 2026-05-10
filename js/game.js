@@ -113,66 +113,52 @@ function calculateInterest() {
     return interest;
 }
 
-const directionTexts = {
-    'tob': {
-        name: 'To B',
-        icon: '💼',
-        taskSource: '甲方需求',
-        satisfactionName: '甲方满意度',
-        fameName: '行业口碑',
-        reportName: '项目验收',
-        cardRole: '外包团队',
-        successEnding: '被大厂收购 / 成为头部服务商',
-        failureEnding: '被甲方拉黑',
-        cardPoolTheme: '外包',
-        weeklyStoryPrefix: '第一个客户',
-        fameIcon: '🏢',
-        satisfactionIcon: '👨‍💼'
-    },
-    'toc': {
-        name: 'To C',
-        icon: '📱',
-        taskSource: '用户反馈',
-        satisfactionName: '用户满意度',
-        fameName: '应用评分',
-        reportName: '数据复盘',
-        cardRole: '合伙人',
-        successEnding: 'App爆火 / 公司上市',
-        failureEnding: 'App凉了',
-        cardPoolTheme: '产品',
-        weeklyStoryPrefix: '第一个用户',
-        fameIcon: '⭐',
-        satisfactionIcon: '😊'
-    },
-    'b2c': {
-        name: 'B2C',
-        icon: '🌐',
-        taskSource: '服务商订单',
-        satisfactionName: '双边满意度',
-        fameName: '平台信用分',
-        reportName: '双边增长复盘',
-        cardRole: '服务商',
-        successEnding: '平台垄断 / 成为行业标准',
-        failureEnding: '平台跑路',
-        cardPoolTheme: '平台',
-        weeklyStoryPrefix: '第一个服务商',
-        fameIcon: '🏛️',
-        satisfactionIcon: '🤝'
-    }
-};
-
-function getDirectionText(key) {
+function getDirectionConfig() {
     const dir = gameState.direction || 'tob';
-    if (!directionTexts[dir]) {
-        return directionTexts['tob'][key] || '';
-    }
-    return directionTexts[dir][key] || '';
+    return data.directionConfig[dir] || data.directionConfig['tob'];
 }
 
-function triggerVictory() {
+function getProgressConfig() {
+    return getDirectionConfig();
+}
+
+function getDirectionPhaseByProgress(progress) {
+    const config = getDirectionConfig();
+    const phases = config.phases || [];
+    const weightsPhases = weightsData.phases || [];
+    
+    for (const wPhase of weightsPhases) {
+        if (progress >= wPhase.min_progress && progress < wPhase.max_progress) {
+            const dirPhase = phases.find(p => p.id === wPhase.id);
+            return dirPhase || wPhase;
+        }
+    }
+    return phases[phases.length - 1] || { name: '未知阶段', code: 'SDLC-00' };
+}
+
+function getDirectionText(key) {
+    const config = getDirectionConfig();
+    return config[key] || '';
+}
+
+function triggerVictory(endingType = 'success') {
     gameState.gameOver = true;
-    gameState.ending = 'victory';
+    gameState.ending = endingType;
     saveGame();
+    checkAndUnlockProducts();
+    showEndingModalForVictory(endingType);
+}
+
+function triggerGameOver(reason) {
+    gameState.gameOver = true;
+    gameState.ending = 'failure';
+    gameState.failureReason = reason;
+    saveGame();
+    
+    if (typeof clearBackpack === 'function') {
+        clearBackpack();
+    }
+    
     showGameOverModal();
 }
 
@@ -196,7 +182,22 @@ let gameState = {
     quarterlyScore: 0,
     fame: 50,
     debt: 0,
-    debtLimit: 100
+    debtLimit: 100,
+    okrBonus: 0,
+    financingRound: 0,
+    financingDebt: 0,
+    consecutiveProfitableQuarters: 0,
+    totalAssets: 0,
+    dau: 0,
+    ltv: 2,
+    gmv: 0,
+    commissionRate: 5,
+    disputeRate: 5,
+    benchmarkClients: 0,
+    renewalRate: 70,
+    toBPhase: 0,
+    declinedIPO: false,
+    triggerAcquisition: false
 };
 
 function showBorrowModal() {
@@ -261,7 +262,9 @@ let data = {
     endings: { endings: [] },
     tools: { categories: [] },
     weights: { phases: [], efficiency_buff: {} },
-    buffs: { buffs: [], buff_rules: {} }
+    buffs: { buffs: [], buff_rules: {} },
+    financing: { rounds: [] },
+    directionConfig: {}
 };
 
 let weightsData = { phases: [], efficiency_buff: { threshold: 80, min_bonus: 0.05, max_bonus: 1.0 } };
@@ -269,7 +272,7 @@ let buffsData = { buffs: [], buff_rules: { max_buffs_per_character: 3, buff_dura
 
 async function loadAllData() {
     try {
-        const [weeklyReports, prdTemplates, events, characters, ranksData, endings, tools, weights, buffs] = await Promise.all([
+        const [weeklyReports, prdTemplates, events, characters, ranksData, endings, tools, weights, buffs, financing, directionConfig] = await Promise.all([
             fetch('data/weekly_reports.json').then(r => r.json()),
             fetch('data/prd_templates.json').then(r => r.json()),
             fetch('data/events.json').then(r => r.json()),
@@ -278,7 +281,9 @@ async function loadAllData() {
             fetch('data/endings.json').then(r => r.json()),
             fetch('data/tools.json').then(r => r.json()),
             fetch('data/weights.json').then(r => r.json()),
-            fetch('data/buffs.json').then(r => r.json())
+            fetch('data/buffs.json').then(r => r.json()),
+            fetch('data/financing.json').then(r => r.json()),
+            fetch('data/direction_config.json').then(r => r.json())
         ]);
         
         data.weekly_reports = weeklyReports;
@@ -290,6 +295,8 @@ async function loadAllData() {
         data.tools = tools;
         data.weights = weights;
         data.buffs = buffs;
+        data.financing = financing;
+        data.directionConfig = directionConfig;
         toolsData = tools;
         weightsData = weights;
         buffsData = buffs;
@@ -302,7 +309,9 @@ async function loadAllData() {
         
         if (gameState.toolchain) {
             selectedTools = { ...gameState.toolchain };
-        }        
+        }
+        
+        initToolchainSkin();
         initGame();
         startDirectionLabelUpdates();
         
@@ -338,33 +347,433 @@ function loadGameState() {
     }
 }
 
+function initToolchainSkin() {
+    const toolchainId = localStorage.getItem(TOOLCHAIN_KEY);
+    if (!toolchainId) return;
+    
+    document.body.classList.add(`skin-${toolchainId}`);
+    
+    const toolchain = gameState.toolchain;
+    if (toolchain) {
+        applyToolchainStyles(toolchain);
+        renderToolchainLayout(toolchainId);
+    }
+}
+
+function applyToolchainStyles(toolchain) {
+    const root = document.documentElement;
+    root.style.setProperty('--bg-color', toolchain.background);
+    root.style.setProperty('--primary-color', toolchain.primary);
+    root.style.setProperty('--secondary-color', toolchain.secondary);
+    root.style.setProperty('--accent-color', toolchain.accent);
+    root.style.setProperty('--text-color', toolchain.text);
+    root.style.setProperty('--border-color', toolchain.border);
+}
+
+function renderToolchainLayout(toolchainId) {
+    const container = document.querySelector('.container');
+    if (!container) return;
+    
+    switch(toolchainId) {
+        case 'jira':
+            renderJiraLayout();
+            break;
+        case 'zentao':
+            renderZentaoLayout();
+            break;
+        case 'feishu':
+            renderFeishuLayout();
+            break;
+        case 'dingtalk':
+            renderDingtalkLayout();
+            break;
+    }
+}
+
+function renderJiraLayout() {
+    const mainArea = document.querySelector('.main-area');
+    const sidebarLeft = document.querySelector('.sidebar-left');
+    const sidebarRight = document.querySelector('.sidebar-right');
+    if (!mainArea) return;
+    
+    if (sidebarLeft) sidebarLeft.style.display = 'none';
+    if (sidebarRight) sidebarRight.style.display = 'none';
+    
+    let sidebar = document.querySelector('.sidebar');
+    if (!sidebar && document.querySelector('.container')) {
+        sidebar = document.createElement('div');
+        sidebar.className = 'sidebar';
+        document.querySelector('.container').appendChild(sidebar);
+    }
+    
+    mainArea.innerHTML = `
+        <div class="jira-kanban">
+            <div class="kanban-col">
+                <div class="kanban-col-header todo">
+                    <span class="kanban-col-icon">📋</span>
+                    <span class="kanban-col-title">To Do</span>
+                    <span class="kanban-col-count">3</span>
+                </div>
+                <div class="kanban-col-body">
+                    <div class="jira-ticket">
+                        <div class="jira-ticket-key">FAIR-1</div>
+                        <div class="jira-ticket-title">完成需求评审</div>
+                        <div class="jira-ticket-meta">🔴 高优先级</div>
+                    </div>
+                    <div class="jira-ticket">
+                        <div class="jira-ticket-key">FAIR-2</div>
+                        <div class="jira-ticket-title">设计稿确认</div>
+                        <div class="jira-ticket-meta">🟡 中优先级</div>
+                    </div>
+                    <div class="jira-ticket">
+                        <div class="jira-ticket-key">FAIR-3</div>
+                        <div class="jira-ticket-title">技术方案设计</div>
+                        <div class="jira-ticket-meta">🟢 低优先级</div>
+                    </div>
+                </div>
+            </div>
+            <div class="kanban-col">
+                <div class="kanban-col-header progress">
+                    <span class="kanban-col-icon">🔄</span>
+                    <span class="kanban-col-title">In Progress</span>
+                    <span class="kanban-col-count">2</span>
+                </div>
+                <div class="kanban-col-body">
+                    <div class="jira-ticket">
+                        <div class="jira-ticket-key">FAIR-4</div>
+                        <div class="jira-ticket-title">核心功能开发</div>
+                        <div class="jira-ticket-meta">🔴 高优先级</div>
+                    </div>
+                    <div class="jira-ticket">
+                        <div class="jira-ticket-key">FAIR-5</div>
+                        <div class="jira-ticket-title">接口联调</div>
+                        <div class="jira-ticket-meta">🟡 中优先级</div>
+                    </div>
+                </div>
+            </div>
+            <div class="kanban-col">
+                <div class="kanban-col-header done">
+                    <span class="kanban-col-icon">✅</span>
+                    <span class="kanban-col-title">Done</span>
+                    <span class="kanban-col-count">2</span>
+                </div>
+                <div class="kanban-col-body">
+                    <div class="jira-ticket completed">
+                        <div class="jira-ticket-key">FAIR-6</div>
+                        <div class="jira-ticket-title">项目初始化</div>
+                        <div class="jira-ticket-meta">✅ 已完成</div>
+                    </div>
+                    <div class="jira-ticket completed">
+                        <div class="jira-ticket-key">FAIR-7</div>
+                        <div class="jira-ticket-title">环境搭建</div>
+                        <div class="jira-ticket-meta">✅ 已完成</div>
+                    </div>
+                </div>
+            </div>
+            <div class="kanban-col event-col">
+                <div class="kanban-col-header events">
+                    <span class="kanban-col-icon">📣</span>
+                    <span class="kanban-col-title">本周事件</span>
+                </div>
+                <div class="kanban-col-body">
+                    <div class="jira-event-card">
+                        <h3 class="event-title" id="event-title">等待事件...</h3>
+                        <p class="event-description" id="event-description">选择一个选项继续</p>
+                        <div class="event-options" id="event-options"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    if (sidebar) {
+        sidebar.innerHTML = `
+            <div class="character-panel">
+                <h3 class="panel-title">🧑‍💻 团队成员</h3>
+                <div id="portraits-container" class="portraits-container"></div>
+            </div>
+            <div class="progress-panel">
+                <h3 class="panel-title">${getProgressConfig().progressName}</h3>
+                <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width: ${gameState.progress}%"></div></div>
+                <div class="progress-text" id="progress-text">${gameState.progress.toFixed(1)}%</div>
+            </div>
+            <div class="satisfaction-panel">
+                <h3 class="panel-title" id="satisfaction-panel-title">满意度</h3>
+                <div class="satisfaction-bar"><div class="satisfaction-fill green" id="satisfaction-fill" style="width: ${gameState.satisfaction}%"></div></div>
+                <div class="satisfaction-text" id="satisfaction-text">${gameState.satisfaction}%</div>
+            </div>
+        `;
+        renderCharacterCards();
+    }
+}
+
+function renderZentaoLayout() {
+    const mainArea = document.querySelector('.main-area');
+    if (!mainArea) return;
+    
+    mainArea.innerHTML = `
+        <div class="project-header">
+            <h2>公平事务所 - 当前项目</h2>
+            <span>进度: ${gameState.progress}%</span>
+        </div>
+        <table class="task-table">
+            <thead>
+                <tr>
+                    <th>需求</th>
+                    <th>任务</th>
+                    <th>Bug</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>用户登录模块</td>
+                    <td>前端页面开发</td>
+                    <td></td>
+                </tr>
+                <tr class="task-row-urgent">
+                    <td>数据统计面板</td>
+                    <td>后端接口开发</td>
+                    <td>页面加载缓慢</td>
+                </tr>
+                <tr>
+                    <td>报表导出功能</td>
+                    <td>文档编写</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="zentao-event-modal">
+            <div class="zentao-event-card">
+                <h3 class="event-title" id="event-title">事件标题</h3>
+                <p class="event-description" id="event-description">事件描述</p>
+                <div class="event-options" id="event-options"></div>
+            </div>
+        </div>
+    `;
+    
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar) {
+        sidebar.innerHTML = `
+            <div class="character-panel">
+                <h3 class="panel-title">团队成员</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>角色</th>
+                            <th>好感度</th>
+                            <th>磨损</th>
+                        </tr>
+                    </thead>
+                    <tbody id="team-table-body"></tbody>
+                </table>
+            </div>
+            <div class="progress-panel">
+                <h3 class="panel-title">${getProgressConfig().progressName}</h3>
+                <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width: ${gameState.progress}%"></div></div>
+                <div class="progress-text" id="progress-text">${gameState.progress}%</div>
+            </div>
+            <div class="satisfaction-panel">
+                <h3 class="panel-title" id="satisfaction-panel-title"></h3>
+                <div class="satisfaction-bar"><div class="satisfaction-fill green" id="satisfaction-fill" style="width: ${gameState.satisfaction}%"></div></div>
+                <div class="satisfaction-text" id="satisfaction-text">${gameState.satisfaction}%</div>
+            </div>
+        `;
+        renderTeamTable();
+    }
+}
+
+function renderTeamTable() {
+    const tbody = document.getElementById('team-table-body');
+    if (!tbody) return;
+    
+    const characters = gameState.characters || [];
+    tbody.innerHTML = characters.map(char => `
+        <tr>
+            <td>${char.name}</td>
+            <td>${char.favor || 0}</td>
+            <td>${char.wear || 0}</td>
+        </tr>
+    `).join('');
+}
+
+function renderFeishuLayout() {
+    const container = document.querySelector('.container');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="sidebar">
+            <div class="character-panel">
+                <h3 class="panel-title">团队协作</h3>
+                <div id="portraits-container" class="portraits-container"></div>
+            </div>
+            <div class="progress-panel">
+                <h3 class="panel-title">📊 ${getProgressConfig().progressName}</h3>
+                <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width: ${gameState.progress}%"></div></div>
+                <div class="progress-text" id="progress-text">${gameState.progress.toFixed(1)}%</div>
+            </div>
+            <div class="satisfaction-panel">
+                <h3 class="panel-title" id="satisfaction-panel-title">❤️ 甲方满意度</h3>
+                <div class="satisfaction-bar"><div class="satisfaction-fill" id="satisfaction-fill" style="width: ${gameState.satisfaction}%"></div></div>
+                <div class="satisfaction-text" id="satisfaction-text">${gameState.satisfaction}%</div>
+            </div>
+        </div>
+        <div class="main-area">
+            <div class="document-section">
+                <div class="document-title">📄 PRD 文档</div>
+                <div class="prd-section">
+                    <h4>版本 ${gameState.prdVersion}</h4>
+                    <p class="document-content">${getCurrentPRDContent()}</p>
+                </div>
+            </div>
+            <div class="document-section">
+                <div class="document-title">📝 本周周报</div>
+                <div class="document-content">${getCurrentWeeklyReport()}</div>
+            </div>
+        </div>
+        <div class="event-area">
+            <div class="document-title">💬 消息</div>
+            <div class="feishu-comment-bubble">
+                <h3 class="event-title" id="event-title">事件标题</h3>
+                <p class="event-description" id="event-description">事件描述</p>
+                <div class="event-options" id="event-options"></div>
+            </div>
+        </div>
+    `;
+    
+    renderCharacterCards();
+    renderEventOptions();
+}
+
+function getCurrentPRDContent() {
+    return '当前版本主要功能包括：用户登录认证、数据统计展示、报表导出功能。下版本计划新增移动端适配和多语言支持。';
+}
+
+function getCurrentWeeklyReport() {
+    return `**本周工作：**
+- 完成核心功能开发
+- 修复线上Bug 3个
+- 代码审查通过
+
+**下周计划：**
+- 进行系统联调
+- 编写测试用例
+- 准备上线部署`;
+}
+
+function renderDingtalkLayout() {
+    const container = document.querySelector('.container');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="sidebar">
+            <div class="character-panel" id="dingtalk-team">
+                <h3 class="panel-title">🧑‍💻 团队成员</h3>
+            </div>
+            <div class="progress-panel">
+                <h3 class="panel-title">📊 ${getProgressConfig().progressName}</h3>
+                <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width: ${gameState.progress}%"></div></div>
+                <div class="progress-text" id="progress-text">${gameState.progress.toFixed(1)}%</div>
+            </div>
+            <div class="satisfaction-panel">
+                <h3 class="panel-title" id="satisfaction-panel-title">❤️ ${getDirectionText('satisfactionName')}</h3>
+                <div class="satisfaction-bar"><div class="satisfaction-fill" id="satisfaction-fill" style="width: ${gameState.satisfaction}%"></div></div>
+                <div class="satisfaction-text" id="satisfaction-text">${gameState.satisfaction}%</div>
+            </div>
+        </div>
+        <div class="main-area">
+            <div class="task-flow">
+                <div class="task-flow-header">
+                    <span class="active">已读</span>
+                    <span>未回</span>
+                </div>
+                <div id="dingtalk-tasks"></div>
+            </div>
+        </div>
+        <div class="event-area">
+            <div class="message-bubble">
+                <div class="message-avatar">📢</div>
+                <div class="message-content">
+                    <div class="message-sender">系统</div>
+                    <h3 class="event-title" id="event-title">事件标题</h3>
+                    <p class="event-description" id="event-description">事件描述</p>
+                    <div class="event-options" id="event-options"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    const tasks = document.getElementById('dingtalk-tasks');
+    if (tasks) {
+        tasks.innerHTML = `
+            <div class="task-item">
+                <div class="task-avatar">💼</div>
+                <div class="task-content">
+                    <div class="task-title">项目进度同步</div>
+                    <div class="task-meta">今天 14:30</div>
+                </div>
+                <div class="task-status">已读 ✅</div>
+            </div>
+            <div class="task-item unread">
+                <div class="task-avatar">📊</div>
+                <div class="task-content">
+                    <div class="task-title">周报提交提醒</div>
+                    <div class="task-meta">今天 09:00</div>
+                </div>
+                <div class="task-status">待处理</div>
+            </div>
+        `;
+    }
+    
+    renderDingtalkTeam();
+    renderEventOptions();
+}
+
+function renderDingtalkTeam() {
+    const teamContainer = document.getElementById('dingtalk-team');
+    if (!teamContainer) return;
+    
+    const characters = gameState.characters || [];
+    teamContainer.innerHTML = `
+        <h3 class="panel-title">🧑‍💻 团队成员</h3>
+        <div class="portraits-container" id="portraits-container"></div>
+    `;
+    
+    renderCharacterCards();
+}
+
+function renderEventOptions() {
+    const optionsContainer = document.getElementById('event-options');
+    if (!optionsContainer || !gameState.currentEvent) return;
+    
+    optionsContainer.innerHTML = gameState.currentEvent.options.map((opt, idx) => `
+        <button class="btn-pixel" onclick="handleEventChoice(${idx})">${opt.text}</button>
+    `).join('');
+}
+
 function updateDirectionLabels() {
-    const dir = gameState.direction || 'tob';
-    const dt = directionTexts[dir] || directionTexts['tob'];
+    const config = getDirectionConfig();
     
     const fameLabel = document.getElementById('fame-label');
     const satisfactionPanelTitle = document.getElementById('satisfaction-panel-title');
     
     if (fameLabel) {
-        const newFameText = `${dt.fameIcon} ${dt.fameName}:`;
+        const newFameText = `${config.fameIcon} ${config.fameName}:`;
         if (fameLabel.textContent !== newFameText) {
             fameLabel.textContent = newFameText;
         }
     }
     if (satisfactionPanelTitle) {
-        if (satisfactionPanelTitle.textContent !== dt.satisfactionName) {
-            satisfactionPanelTitle.textContent = dt.satisfactionName;
+        if (satisfactionPanelTitle.textContent !== config.satisfactionName) {
+            satisfactionPanelTitle.textContent = config.satisfactionName;
         }
     }
 }
 
-// 持续更新标签，确保万无一失
 let directionLabelInterval = null;
 function startDirectionLabelUpdates() {
     if (directionLabelInterval) {
         clearInterval(directionLabelInterval);
     }
-    // 降低更新频率，避免不必要的重复更新
     directionLabelInterval = setInterval(updateDirectionLabels, 1000);
 }
 
@@ -413,12 +822,6 @@ function updateUI() {
     document.getElementById('fame-value').textContent = gameState.fame;
     document.getElementById('debt-value').textContent = `${gameState.debt}/${gameState.debtLimit}`;
     
-    if (gameState.budget < 20) {
-        document.getElementById('budget-value').classList.add('cashflow-low');
-    } else {
-        document.getElementById('budget-value').classList.remove('cashflow-low');
-    }
-
     updateDirectionLabels();
 
     updateHCDisplay();
@@ -426,8 +829,66 @@ function updateUI() {
     updateProgressUI();
     updateSatisfactionUI();
     updateWeeklyReport();
+    updateBusinessMetrics();
     renderPRDHistory();
     renderWeeklyLogs();
+}
+
+function updateBusinessMetrics() {
+    const direction = gameState.direction;
+    const metricsDiv = document.getElementById('business-metrics');
+    if (!metricsDiv) return;
+    
+    let metricsHTML = '';
+    
+    if (direction === 'tob') {
+        metricsHTML = `
+            <div class="metric-item">
+                <span class="metric-label">标杆客户:</span>
+                <span class="metric-value">${gameState.benchmarkClients}</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-label">续约率:</span>
+                <span class="metric-value">${gameState.renewalRate}%</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-label">回款阶段:</span>
+                <span class="metric-value">Phase ${gameState.toBPhase + 1}</span>
+            </div>
+        `;
+    } else if (direction === 'toc') {
+        metricsHTML = `
+            <div class="metric-item">
+                <span class="metric-label">DAU(万):</span>
+                <span class="metric-value">${gameState.dau}</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-label">LTV(元):</span>
+                <span class="metric-value">${gameState.ltv}</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-label">季收入:</span>
+                <span class="metric-value">${calculateToCRevenue()}</span>
+            </div>
+        `;
+    } else if (direction === 'b2c') {
+        metricsHTML = `
+            <div class="metric-item">
+                <span class="metric-label">GMV(亿):</span>
+                <span class="metric-value">${gameState.gmv}</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-label">抽成率:</span>
+                <span class="metric-value">${gameState.commissionRate}%</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-label">纠纷率:</span>
+                <span class="metric-value ${gameState.disputeRate > 30 ? 'warning' : ''}">${gameState.disputeRate}%</span>
+            </div>
+        `;
+    }
+    
+    metricsDiv.innerHTML = metricsHTML;
 }
 
 function updateHCDisplay() {
@@ -443,6 +904,7 @@ function updateHCDisplay() {
 
 function renderCharacterCards() {
     const container = document.getElementById('portraits-container');
+    if (!container) return;
     container.innerHTML = '';
 
     data.characters.characters.forEach(character => {
@@ -574,17 +1036,20 @@ function closeCharacterStatus() {
 
 function updateProgressUI() {
     const progress = Math.min(gameState.progress, 100);
-    document.getElementById('progress-fill').style.width = `${progress}%`;
     
-    const phase = getCurrentPhase();
-    const phaseName = phase.name || '未知阶段';
-    const phaseCode = phase.code || 'SDLC-00';
-    
+    const progressFill = document.getElementById('progress-fill');
     const progressText = document.getElementById('progress-text');
+    if (!progressFill || !progressText) return;
+    
+    progressFill.style.width = `${progress}%`;
+    
+    const phase = getDirectionPhaseByProgress(progress);
+    const weightsPhase = getCurrentPhase();
+    
     const phaseElement = document.createElement('span');
     phaseElement.className = 'phase-link';
-    phaseElement.textContent = `${phaseName}·${phaseCode}`;
-    phaseElement.onclick = () => showPhaseRant(phase);
+    phaseElement.textContent = `${phase.name}·${phase.code}`;
+    phaseElement.onclick = () => showPhaseRant(weightsPhase);
     
     progressText.innerHTML = '';
     progressText.appendChild(document.createTextNode(`${progress.toFixed(2)}% (`));
@@ -641,6 +1106,8 @@ function updateSatisfactionUI() {
     const satisfaction = gameState.satisfaction;
     const fill = document.getElementById('satisfaction-fill');
     const text = document.getElementById('satisfaction-text');
+    
+    if (!fill || !text) return;
 
     fill.style.width = `${satisfaction}%`;
     text.textContent = `${satisfaction}%`;
@@ -661,12 +1128,20 @@ function updateSatisfactionUI() {
 function updateWeeklyReport() {
     const reportIndex = Math.min(gameState.week - 1, data.weekly_reports.reports.length - 1);
     const report = data.weekly_reports.reports[reportIndex];
-    document.getElementById('report-title').textContent = report.title;
-    document.getElementById('report-summary').textContent = report.summary;
-    document.getElementById('report-completed').textContent = report.completed;
-    document.getElementById('report-next').textContent = report.next_plan;
-    document.getElementById('report-risk').textContent = report.risk;
-    document.getElementById('report-fun').textContent = report.fun_comment;
+    
+    const titleEl = document.getElementById('report-title');
+    const summaryEl = document.getElementById('report-summary');
+    const completedEl = document.getElementById('report-completed');
+    const nextEl = document.getElementById('report-next');
+    const riskEl = document.getElementById('report-risk');
+    const funEl = document.getElementById('report-fun');
+    
+    if (titleEl) titleEl.textContent = report.title;
+    if (summaryEl) summaryEl.textContent = report.summary;
+    if (completedEl) completedEl.textContent = report.completed;
+    if (nextEl) nextEl.textContent = report.next_plan;
+    if (riskEl) riskEl.textContent = report.risk;
+    if (funEl) funEl.textContent = report.fun_comment;
 }
 
 function renderEvent() {
@@ -675,13 +1150,30 @@ function renderEvent() {
     const events = data.events.events;
     if (events.length === 0) return;
 
-    const eventIndex = gameState.currentEventIndex % events.length;
-    const event = events[eventIndex];
+    const direction = gameState.direction;
+    
+    const availableEvents = events.filter(event => {
+        if (!event.direction) return true;
+        return event.direction === direction;
+    });
+    
+    if (availableEvents.length === 0) {
+        console.warn('No events available for current direction:', direction);
+        return;
+    }
 
-    document.getElementById('event-title').textContent = event.title;
-    document.getElementById('event-description').textContent = event.description;
+    const eventIndex = gameState.currentEventIndex % availableEvents.length;
+    const event = availableEvents[eventIndex];
+    gameState.currentEvent = event;
 
+    const eventTitle = document.getElementById('event-title');
+    const eventDescription = document.getElementById('event-description');
     const optionsContainer = document.getElementById('event-options');
+    
+    if (eventTitle) eventTitle.textContent = event.title;
+    if (eventDescription) eventDescription.textContent = event.description;
+    
+    if (!optionsContainer) return;
     optionsContainer.innerHTML = '';
 
     event.options.forEach((option) => {
@@ -722,6 +1214,21 @@ function handleChoice(option, event) {
         let satisfactionChange = effects.satisfaction + toolchainEffects.satisfaction;
         gameState.satisfaction = Math.max(0, Math.min(100, gameState.satisfaction + satisfactionChange));
     }
+    if (effects.budget) {
+        gameState.budget += effects.budget;
+    }
+    if (effects.dau) {
+        gameState.dau = Math.max(0, gameState.dau + effects.dau);
+    }
+    if (effects.gmv) {
+        gameState.gmv = Math.max(0, gameState.gmv + effects.gmv);
+    }
+    if (effects.disputeRate) {
+        gameState.disputeRate = Math.max(0, Math.min(100, gameState.disputeRate + effects.disputeRate));
+    }
+    if (effects.benchmarkClients) {
+        gameState.benchmarkClients += effects.benchmarkClients;
+    }
 
     updatePRDVersion(option.prd_effect);
 
@@ -743,7 +1250,8 @@ function handleChoice(option, event) {
     updateUI();
     renderEvent();
 
-    checkEnding();
+    checkWinConditions();
+    checkLoseConditions();
 }
 
 function handleWeekChange() {
@@ -760,31 +1268,156 @@ function handleWeekChange() {
     checkEfficiencyBuffs();
 
     calculateWeeklyProgress();
+    updateBusinessKPI();
 
-    if (gameState.progress >= 100) {
-        triggerVictory();
-        return;
-    }
+    gameState.totalAssets = gameState.budget - gameState.debt;
 
-    if (gameState.budget <= 0) {
-        if (gameState.debt >= gameState.debtLimit) {
-            triggerGameOver();
-            return;
-        } else {
-            if (typeof showToast === 'function') {
-                showToast('⚠️ 资金不足！可以考虑借钱续命');
-            }
-        }
-    }
+    checkWinConditions();
+    checkLoseConditions();
 
-    const weekInQuarter = getWeekInQuarter();
-    
-    if (weekInQuarter === 12 && typeof showToast === 'function') {
-        showToast('⚠️ 本周是本季度最后一周，结束后将进入季度报表！');
-    }
-
-    if (typeof checkQuarterEnd === 'function' && checkQuarterEnd()) {
+    if (checkQuarterEnd()) {
+        calculateQuarterlyRevenue();
+        checkFinancingEvent();
         showReportModal();
+    }
+}
+
+function updateBusinessKPI() {
+    const direction = gameState.direction;
+    const okrBonus = gameState.okrBonus || 0;
+    
+    if (direction === 'toc') {
+        gameState.dau = Math.max(0, Math.round(
+            gameState.dau + 
+            (gameState.progress * 0.1) + 
+            (gameState.satisfaction * 0.5) + 
+            okrBonus * 2 -
+            Math.random() * 5
+        ));
+        gameState.ltv = Math.max(1, Math.round(
+            2 + (gameState.satisfaction * 0.05)
+        ));
+    } else if (direction === 'b2c') {
+        gameState.gmv = Math.max(0, Math.round(
+            gameState.gmv + 
+            (gameState.progress * 0.05) + 
+            (gameState.satisfaction * 0.1) + 
+            okrBonus * 0.5
+        ));
+        gameState.disputeRate = Math.max(0, Math.min(100, Math.round(
+            5 - (gameState.satisfaction * 0.05) + 
+            Math.random() * 2
+        )));
+    } else if (direction === 'tob') {
+        if (gameState.progress >= 100) {
+            gameState.toBPhase = (gameState.toBPhase + 1) % 3;
+            gameState.progress = 0;
+            gameState.benchmarkClients++;
+        }
+        gameState.renewalRate = Math.round(
+            70 + (gameState.satisfaction * 0.2) - 
+            (gameState.consecutiveLowSatisfactionWeeks * 5)
+        );
+    }
+}
+
+function calculateQuarterlyRevenue() {
+    const direction = gameState.direction;
+    let revenue = 0;
+    
+    if (direction === 'tob') {
+        const phases = [30, 40, 30];
+        const phaseRevenue = phases[gameState.toBPhase] * 10;
+        const satisfactionMultiplier = 0.5 + (gameState.satisfaction / 100);
+        revenue = Math.round(phaseRevenue * satisfactionMultiplier);
+    } else if (direction === 'toc') {
+        const quarterDays = 90;
+        revenue = Math.round(gameState.dau * 10000 * gameState.ltv * (quarterDays / 365));
+    } else if (direction === 'b2c') {
+        revenue = Math.round(gameState.gmv * 100000000 * (gameState.commissionRate / 100));
+    }
+    
+    if (revenue > 0) {
+        gameState.budget += revenue;
+        if (revenue > 0) {
+            gameState.consecutiveProfitableQuarters++;
+        } else {
+            gameState.consecutiveProfitableQuarters = 0;
+        }
+        showToast(`💰 季度收入 +${revenue}`);
+    }
+}
+
+function calculateToCRevenue() {
+    const quarterDays = 90;
+    return Math.round(gameState.dau * 10000 * gameState.ltv * (quarterDays / 365));
+}
+
+function checkFinancingEvent() {
+    const rounds = data.financing.rounds || [];
+    if (rounds.length === 0) return;
+    
+    const availableRounds = rounds.filter(r => 
+        r.minQuarter <= getCurrentQuarter() && 
+        r.maxQuarter >= getCurrentQuarter() &&
+        gameState.financingRound < r.round
+    );
+    
+    if (availableRounds.length > 0 && Math.random() < 0.3) {
+        const round = availableRounds[Math.floor(Math.random() * availableRounds.length)];
+        showFinancingEvent(round);
+    }
+}
+
+function showFinancingEvent(round) {
+    const modal = document.getElementById('financing-modal');
+    if (!modal) return;
+    
+    document.getElementById('financing-title').textContent = round.title;
+    document.getElementById('financing-description').textContent = round.description;
+    document.getElementById('financing-amount').textContent = round.amount;
+    document.getElementById('financing-fame').textContent = round.fameBonus;
+    
+    if (round.hasCovenant) {
+        document.getElementById('financing-covenant').textContent = round.covenantText;
+        document.getElementById('financing-covenant-row').style.display = 'block';
+    } else {
+        document.getElementById('financing-covenant-row').style.display = 'none';
+    }
+    
+    const acceptBtn = document.getElementById('financing-accept');
+    const rejectBtn = document.getElementById('financing-reject');
+    
+    acceptBtn.onclick = () => acceptFinancing(round);
+    rejectBtn.onclick = () => closeFinancingModal();
+    
+    modal.style.display = 'flex';
+}
+
+function acceptFinancing(round) {
+    gameState.budget += round.amount;
+    addFame(round.fameBonus);
+    gameState.financingRound = round.round;
+    
+    if (round.hasCovenant) {
+        gameState.activeCovenant = {
+            round: round.round,
+            type: round.covenantType,
+            target: round.covenantTarget,
+            quarter: getCurrentQuarter()
+        };
+    }
+    
+    showToast(`🎉 获得${round.title}融资！资金 +${round.amount}，名声 +${round.fameBonus}`);
+    closeFinancingModal();
+    saveGame();
+    updateUI();
+}
+
+function closeFinancingModal() {
+    const modal = document.getElementById('financing-modal');
+    if (modal) {
+        modal.style.display = 'none';
     }
 }
 
@@ -875,6 +1508,9 @@ function calculateWeeklyProgress() {
     
     const toolchainEffects = getToolchainEffects();
     baseProgress += toolchainEffects.progress;
+    
+    const okrBonus = gameState.okrBonus || 0;
+    baseProgress += okrBonus * 0.5;
     
     const currentPhase = getCurrentPhase();
     const { weightedSum, totalWeight } = calculateWeightedEfficiency(currentPhase);
@@ -996,6 +1632,7 @@ function updatePRDVersion(change) {
 
 function renderPRDHistory() {
     const container = document.getElementById('prd-history');
+    if (!container) return;
     container.innerHTML = '';
 
     gameState.prdHistory.slice().reverse().forEach(entry => {
@@ -1012,6 +1649,8 @@ function renderPRDHistory() {
 
 function renderWeeklyLogs() {
     const reportSection = document.querySelector('.weekly-report');
+    if (!reportSection) return;
+    
     let logDiv = document.getElementById('weekly-logs');
     if (!logDiv) {
         logDiv = document.createElement('div');
@@ -1041,109 +1680,162 @@ function closePRDModal() {
     document.getElementById('prd-modal').classList.remove('active');
 }
 
-function checkEnding() {
+function checkWinConditions() {
     if (gameState.gameOver) return;
 
-    const favorValues = Object.values(gameState.favors);
-    const avgFavor = favorValues.length > 0 ? Math.round(favorValues.reduce((a, b) => a + b, 0) / favorValues.length) : 0;
-    const projectProgress = Math.min(gameState.progress, 100);
-    const satisfaction = gameState.satisfaction;
+    const totalAssets = gameState.budget - gameState.debt;
+    
+    let marketPositionMet = false;
+    let targetDesc = '';
+    
+    if (gameState.direction === 'tob') {
+        marketPositionMet = gameState.benchmarkClients >= 5;
+        targetDesc = '5个标杆客户';
+    } else if (gameState.direction === 'toc') {
+        marketPositionMet = gameState.dau > 500;
+        targetDesc = 'DAU > 500万';
+    } else if (gameState.direction === 'b2c') {
+        marketPositionMet = gameState.gmv > 10;
+        targetDesc = 'GMV > 10亿';
+    }
 
-    const currentStats = {
-        project_progress: projectProgress,
-        avg_favor: avgFavor,
-        jiafang_manyi: satisfaction
-    };
+    if (totalAssets >= 2000 && marketPositionMet) {
+        showIPOOption();
+        return;
+    }
 
-    const endings = data.endings.endings.sort((a, b) => a.priority - b.priority);
+    if (totalAssets >= 1000 && gameState.consecutiveProfitableQuarters >= 8 && !gameState.declinedIPO) {
+        showIPOOption();
+        return;
+    }
 
-    for (const ending of endings) {
-        if (checkTriggerCondition(ending.trigger, currentStats)) {
-            triggerEnding(ending);
-            return;
-        }
+    if (totalAssets >= 500 && marketPositionMet && Math.random() < 0.1) {
+        gameState.triggerAcquisition = true;
+        showAcquisitionOption();
     }
 }
 
-function checkTriggerCondition(trigger, stats) {
-    for (const [key, condition] of Object.entries(trigger)) {
-        const statValue = stats[key];
+function checkLoseConditions() {
+    if (gameState.gameOver) return;
 
-        for (const [operator, value] of Object.entries(condition)) {
-            let conditionMet = false;
-
-            switch (operator) {
-                case '==':
-                case '===':
-                    conditionMet = statValue === value;
-                    break;
-                case '<':
-                    conditionMet = statValue < value;
-                    break;
-                case '<=':
-                    conditionMet = statValue <= value;
-                    break;
-                case '>':
-                    conditionMet = statValue > value;
-                    break;
-                case '>=':
-                    conditionMet = statValue >= value;
-                    break;
-            }
-
-            if (!conditionMet) {
-                return false;
-            }
-        }
+    if (gameState.budget <= 0 && gameState.debt >= gameState.debtLimit) {
+        triggerGameOver('bankruptcy');
+        return;
     }
 
-    return true;
-}
-
-function triggerEnding(ending) {
-    gameState.gameOver = true;
-    unlockEnding(ending.id);
-    
-    let prestigeGained = 2;
-    
-    if (ending.id === 'ending_perfect') {
-        prestigeGained += 3;
+    if (gameState.direction === 'toc' && gameState.dau <= 0) {
+        triggerGameOver('dau_zero');
+        return;
     }
-    
-    const unlockedEndings = JSON.parse(localStorage.getItem(ENDINGS_KEY) || '[]');
-    if (unlockedEndings.length === 1) {
-        prestigeGained += 1;
+
+    if (gameState.direction === 'b2c' && gameState.disputeRate > 30) {
+        triggerGameOver('high_dispute');
+        return;
     }
-    
-    addPrestige(prestigeGained);
-    
-    showEndingModal(ending);
-}
 
-function unlockEnding(endingId) {
-    const unlockedEndings = JSON.parse(localStorage.getItem(ENDINGS_KEY) || '[]');
-
-    if (!unlockedEndings.includes(endingId)) {
-        unlockedEndings.push(endingId);
-        localStorage.setItem(ENDINGS_KEY, JSON.stringify(unlockedEndings));
+    if (gameState.direction === 'tob' && gameState.satisfaction < 25) {
+        triggerGameOver('client_rage');
+        return;
     }
 }
 
-function showEndingModal(ending) {
+function showIPOOption() {
+    const modal = document.getElementById('ipo-modal');
+    if (!modal) return;
+    
+    document.getElementById('ipo-title').textContent = '📈 IPO机会来临！';
+    document.getElementById('ipo-description').textContent = `恭喜！您的公司已达到上市标准（资产≥2000万，${getDirectionText('fameName')}达标）。是否申请上市？`;
+    
+    const acceptBtn = document.getElementById('ipo-accept');
+    const rejectBtn = document.getElementById('ipo-reject');
+    
+    acceptBtn.onclick = () => acceptIPO();
+    rejectBtn.onclick = () => rejectIPO();
+    
+    modal.style.display = 'flex';
+}
+
+function acceptIPO() {
+    closeIPOModal();
+    triggerVictory('ipo');
+}
+
+function rejectIPO() {
+    gameState.declinedIPO = true;
+    closeIPOModal();
+    showToast('您选择继续低调经营...');
+    saveGame();
+}
+
+function closeIPOModal() {
+    const modal = document.getElementById('ipo-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function showAcquisitionOption() {
+    const modal = document.getElementById('acquisition-modal');
+    if (!modal) return;
+    
+    document.getElementById('acquisition-title').textContent = '💰 收购邀请';
+    document.getElementById('acquisition-description').textContent = '有大厂向您抛出橄榄枝！是否接受收购？';
+    
+    const acceptBtn = document.getElementById('acquisition-accept');
+    const rejectBtn = document.getElementById('acquisition-reject');
+    
+    acceptBtn.onclick = () => acceptAcquisition();
+    rejectBtn.onclick = () => rejectAcquisition();
+    
+    modal.style.display = 'flex';
+}
+
+function acceptAcquisition() {
+    closeAcquisitionModal();
+    triggerVictory('acquisition');
+}
+
+function rejectAcquisition() {
+    gameState.triggerAcquisition = false;
+    closeAcquisitionModal();
+    showToast('您拒绝了收购邀请，继续独立发展...');
+    saveGame();
+}
+
+function closeAcquisitionModal() {
+    const modal = document.getElementById('acquisition-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function showEndingModalForVictory(endingType) {
     const modal = document.getElementById('ending-modal');
     const stats = document.getElementById('ending-stats');
     const badge = document.getElementById('ending-badge');
-    const unlockedEndings = JSON.parse(localStorage.getItem(ENDINGS_KEY) || '[]');
-    const isNew = !unlockedEndings.includes(ending.id);
-
-    if (isNew) {
-        badge.textContent = '🎉 新结局解锁!';
-        badge.classList.add('ending-new');
-    } else {
-        badge.textContent = '结局解锁';
-        badge.classList.remove('ending-new');
-    }
-
+    const endingTitle = document.getElementById('ending-title');
+    const endingDesc = document.getElementById('ending-description');
+    
+    const titles = {
+        'ipo': '🏛️ 上市敲钟',
+        'acquisition': '💰 被收购',
+        'success': '✨ 事业成功',
+        'silent': '🤫 闷声发财'
+    };
+    
+    const descriptions = {
+        'ipo': '恭喜！您的公司成功上市，敲响了资本市场的钟声。股票开盘即翻倍，您终于实现了财务自由——虽然代码可能还是那个烂代码。',
+        'acquisition': '大厂收购了您的公司。您拿着巨额现金离开，留下一群迷茫的员工在会议室里面面相觑。',
+        'success': '您成功达成了目标！公司发展蒸蒸日上，未来可期——如果996能少一点的话。',
+        'silent': '您选择了闷声发财的道路，连续盈利两年却拒绝上市。股东们很困惑，但您的银行账户很满意。'
+    };
+    
+    endingTitle.textContent = titles[endingType] || titles['success'];
+    endingDesc.textContent = descriptions[endingType] || descriptions['success'];
+    
+    badge.textContent = '🎉 胜利!';
+    badge.classList.add('ending-new');
+    
     const avgFavor = Math.round((gameState.favors.aisaike + gameState.favors.moganna + gameState.favors.xiaokui) / 3);
 
     stats.innerHTML = `
@@ -1152,45 +1844,23 @@ function showEndingModal(ending) {
             <span class="ending-stat-value">第 ${gameState.week} 周</span>
         </div>
         <div class="ending-stat-row">
-            <span class="ending-stat-label">PRD版本:</span>
-            <span class="ending-stat-value">${gameState.prdVersion}</span>
-        </div>
-        <div class="ending-stat-row">
-            <span class="ending-stat-label">项目进度:</span>
-            <span class="ending-stat-value ${Math.min(gameState.progress, 100) >= 100 ? 'perfect' : 'good'}">${Math.min(gameState.progress, 100)}%</span>
+            <span class="ending-stat-label">总资产:</span>
+            <span class="ending-stat-value">${gameState.budget - gameState.debt}</span>
         </div>
         <div class="ending-stat-row">
             <span class="ending-stat-label">${getDirectionText('satisfactionName')}:</span>
-            <span class="ending-stat-value ${gameState.satisfaction >= 90 ? 'perfect' : gameState.satisfaction >= 70 ? 'good' : 'bad'}">${gameState.satisfaction}%</span>
+            <span class="ending-stat-value">${gameState.satisfaction}%</span>
         </div>
         <div class="ending-stat-row">
             <span class="ending-stat-label">团队好感度:</span>
-            <span class="ending-stat-value ${avgFavor >= 80 ? 'perfect' : avgFavor >= 50 ? 'good' : 'bad'}">${avgFavor}%</span>
+            <span class="ending-stat-value">${avgFavor}%</span>
         </div>
     `;
 
-    const endingTitle = document.getElementById('ending-title');
-    const endingDesc = document.getElementById('ending-description');
-    
-    if (gameState.ending === 'victory') {
-        endingTitle.textContent = getDirectionText('successEnding');
-        endingDesc.textContent = `恭喜！${getDirectionText('successEnding')}！`;
-    } else {
-        endingTitle.textContent = ending.name;
-        endingDesc.textContent = ending.description;
-    }
-
     modal.classList.add('active');
-}
-
-function triggerGameOver() {
-    gameState.gameOver = true;
     
-    if (typeof clearBackpack === 'function') {
-        clearBackpack();
-    }
-    
-    showGameOverModal();
+    unlockEnding(`ending_${endingType}`);
+    addPrestige(5);
 }
 
 function showGameOverModal() {
@@ -1198,7 +1868,15 @@ function showGameOverModal() {
     const stats = document.getElementById('game-over-stats');
     const message = document.getElementById('game-over-message');
 
-    message.textContent = getDirectionText('failureEnding');
+    const reasons = {
+        'bankruptcy': '💀 资金链断裂，公司破产清算',
+        'dau_zero': '📉 用户流失殆尽，产品凉了',
+        'high_dispute': '🔥 纠纷率过高，平台崩盘',
+        'client_rage': '🤬 甲方震怒，合同终止',
+        'default': getDirectionText('failureEnding')
+    };
+    
+    message.textContent = reasons[gameState.failureReason] || reasons['default'];
 
     stats.innerHTML = `
         <div class="game-over-stat">
@@ -1210,7 +1888,7 @@ function showGameOverModal() {
             <span class="game-over-stat-value">${gameState.prdVersion}</span>
         </div>
         <div class="game-over-stat">
-            <span class="game-over-stat-label">项目进度:</span>
+            <span class="game-over-stat-label">${getProgressConfig().progressName}:</span>
             <span class="game-over-stat-value">${Math.min(gameState.progress, 100)}%</span>
         </div>
         <div class="game-over-stat">
@@ -1220,6 +1898,15 @@ function showGameOverModal() {
     `;
 
     modal.classList.add('active');
+}
+
+function unlockEnding(endingId) {
+    const unlockedEndings = JSON.parse(localStorage.getItem(ENDINGS_KEY) || '[]');
+
+    if (!unlockedEndings.includes(endingId)) {
+        unlockedEndings.push(endingId);
+        localStorage.setItem(ENDINGS_KEY, JSON.stringify(unlockedEndings));
+    }
 }
 
 function addPrestige(amount) {

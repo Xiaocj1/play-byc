@@ -1,0 +1,379 @@
+/* === 飞书皮肤 === */
+body.skin-feishu {
+    background-color: #f0efe9;
+    color: #2c3e50;
+}
+
+.skin-feishu .status-bar {
+    background: rgba(255, 255, 255, 0.95);
+    border-bottom: 1px solid rgba(224, 221, 213, 0.8);
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    position: relative;
+    z-index: 100;
+}
+
+.skin-feishu .status-columns {
+    display: flex;
+    gap: 30px;
+    flex: 1;
+}
+
+.skin-feishu .status-column {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.skin-feishu .status-item {
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #1f1f1f;
+}
+
+.skin-feishu .status-value {
+    color: #3370ff;
+}
+
+.skin-feishu .status-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.skin-feishu .btn-pixel {
+    background: #3370ff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 14px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.skin-feishu .btn-pixel:hover {
+    background: #2860e8;
+}
+
+.skin-feishu .btn-back-home {
+    background: #f5f4f0;
+    color: #1f1f1f;
+    border: 1px solid #e0ddd5;
+    border-radius: 4px;
+    padding: 8px 14px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.skin-feishu .container {
+    display: grid;
+    grid-template-columns: 260px 1fr 280px;
+    gap: 16px;
+    padding: 10px 16px;
+    background: #e8e6df;
+    height: calc(100vh - 45px);
+    position: relative;
+}
+
+.skin-feishu .sidebar {
+    order: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.skin-feishu .character-panel {
+    background: #ffffff;
+    border: 1px solid #e0ddd5;
+    border-radius: 8px;
+    padding: 16px;
+    flex: 1;
+}
+
+.skin-feishu .character-panel .panel-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f1f1f;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e8e6df;
+}
+
+.skin-feishu .portraits-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.skin-feishu .portrait-item {
+    background: #f5f4f0;
+    border: 1px solid #e0ddd5;
+    border-radius: 8px;
+    padding: 12px 14px;
+    text-align: center;
+    min-width: 70px;
+    transition: all 0.2s ease;
+}
+
+.skin-feishu .portrait-item:hover {
+    background: #e8e6df;
+    transform: translateY(-2px);
+}
+
+.skin-feishu .portrait-item .portrait-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1f1f1f;
+    margin-bottom: 4px;
+}
+
+.skin-feishu .portrait-item .portrait-stats {
+    font-size: 11px;
+    color: #666;
+}
+
+.skin-feishu .character-card {
+    background: #f5f4f0;
+    border: 1px solid #e0ddd5;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+}
+
+.skin-feishu .character-card:hover {
+    background: #e8e6df;
+    transform: translateY(-2px);
+}
+
+.skin-feishu .character-portrait {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e8e6df;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 2px solid #3370ff;
+}
+
+.skin-feishu .character-portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.skin-feishu .character-portrait .placeholder {
+    font-size: 16px;
+    color: #3370ff;
+}
+
+.skin-feishu .character-card-name {
+    font-size: 13px;
+    color: #1f1f1f;
+    font-weight: 500;
+}
+
+.skin-feishu .character-card-role {
+    font-size: 11px;
+    color: #666;
+}
+
+.skin-feishu .character-card-favor-bar {
+    width: 50px;
+    height: 4px;
+    background: #e8e6df;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.skin-feishu .character-card-favor-fill {
+    height: 100%;
+    background: #3370ff;
+    border-radius: 2px;
+}
+
+.skin-feishu .character-card-favor-value {
+    font-size: 11px;
+    color: #3370ff;
+}
+
+.skin-feishu .character-card-buffs {
+    display: flex;
+    gap: 4px;
+}
+
+.skin-feishu .main-area {
+    order: 2;
+    background: #ffffff;
+    border: 1px solid #e0ddd5;
+    border-radius: 8px;
+    padding: 16px;
+    overflow-y: auto;
+}
+
+.skin-feishu .document-section {
+    margin-bottom: 20px;
+}
+
+.skin-feishu .document-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: #1f1f1f;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e8e6df;
+}
+
+.skin-feishu .document-content {
+    font-size: 13px;
+    line-height: 1.8;
+    color: #2c3e50;
+}
+
+.skin-feishu .prd-section {
+    background: #faf9f5;
+    padding: 14px;
+    border-radius: 6px;
+    margin-bottom: 14px;
+}
+
+.skin-feishu .prd-section h4 {
+    font-size: 13px;
+    color: #1f1f1f;
+    margin-bottom: 8px;
+}
+
+.skin-feishu .event-area {
+    order: 3;
+    background: #ffffff;
+    border: 1px solid #e0ddd5;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.skin-feishu .event-bubble {
+    background: #f5f4f0;
+    border-radius: 12px 12px 12px 4px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    font-size: 13px;
+}
+
+.skin-feishu .event-bubble-sender {
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #3370ff;
+}
+
+.skin-feishu .feishu-comment-bubble {
+    background: #ffffff;
+    border: 1px solid #e0ddd5;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.skin-feishu .feishu-comment-bubble .event-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1f1f1f;
+    margin-bottom: 12px;
+}
+
+.skin-feishu .feishu-comment-bubble .event-description {
+    font-size: 14px;
+    color: #2c3e50;
+    line-height: 1.7;
+    margin-bottom: 16px;
+}
+
+.skin-feishu .feishu-comment-bubble .event-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.skin-feishu .feishu-comment-bubble .option-btn {
+    background: #3370ff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.skin-feishu .feishu-comment-bubble .option-btn:hover {
+    background: #2860e8;
+    transform: translateY(-1px);
+}
+
+.skin-feishu .btn-pixel {
+    background: #f5f4f0;
+    border: 1px solid #e0ddd5;
+    border-radius: 6px;
+    color: #2c3e50;
+    padding: 8px 16px;
+    font-size: 13px;
+}
+
+.skin-feishu .btn-pixel:hover {
+    background: #e8e6df;
+}
+
+.skin-feishu .progress-panel,
+.skin-feishu .satisfaction-panel {
+    background: #ffffff;
+    border: 1px solid #e0ddd5;
+    border-radius: 8px;
+    padding: 14px;
+}
+
+.skin-feishu .progress-panel .panel-title,
+.skin-feishu .satisfaction-panel .panel-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1f1f1f;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e8e6df;
+}
+
+.skin-feishu .progress-bar,
+.skin-feishu .satisfaction-bar {
+    height: 10px;
+    border-radius: 5px;
+    background: #e8e6df;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.skin-feishu .progress-fill {
+    background: linear-gradient(90deg, #3370ff, #5370ff);
+    height: 100%;
+    border-radius: 5px;
+}
+
+.skin-feishu .satisfaction-fill {
+    background: linear-gradient(90deg, #00c48c, #00a86b);
+    height: 100%;
+    border-radius: 5px;
+}
+
+.skin-feishu .progress-text,
+.skin-feishu .satisfaction-text {
+    font-size: 12px;
+    color: #666;
+}

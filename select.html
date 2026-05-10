@@ -26,6 +26,74 @@
             justify-content: center;
             background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
             z-index: 99999;
+            display: none;
+        }
+        .story-modal {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 100000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .story-content {
+            background: linear-gradient(180deg, #1a1a2e 0%, #0a0a0f 100%);
+            border: 3px solid #ffd700;
+            padding: 25px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.3);
+        }
+        .story-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 14px;
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #ffd700;
+        }
+        .story-text {
+            font-size: 12px;
+            color: #e5e5e5;
+            line-height: 1.8;
+            white-space: pre-line;
+            margin-bottom: 20px;
+        }
+        .story-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            font-size: 12px;
+            color: #000;
+            background: linear-gradient(180deg, #ffd700 0%, #b8860b 100%);
+            border: none;
+            cursor: pointer;
+            font-family: 'Press Start 2P', monospace;
+            transition: all 0.3s;
+        }
+        .story-button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        .story-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            color: #888;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .story-close:hover {
+            color: #ffd700;
         }
         .select-title {
             font-family: 'Press Start 2P', monospace;
@@ -112,7 +180,16 @@
     <div class="crt-effect"></div>
     <div class="scanline"></div>
     
-    <div class="select-page">
+    <div class="story-modal" id="story-modal">
+        <div class="story-content">
+            <div class="story-close" onclick="closeStoryModal()">×</div>
+            <h2 class="story-title" id="story-title">📝 创始人手记</h2>
+            <div class="story-text" id="story-text"></div>
+            <button class="story-button" id="story-button" onclick="handleStoryChoice()">开始创业</button>
+        </div>
+    </div>
+
+    <div class="select-page" id="select-page">
         <h1 class="select-title">🚀 选择你的创业方向</h1>
         <div class="select-cards">
             <div class="select-card" onclick="selectDirection('tob')">
@@ -138,8 +215,93 @@
 
     <script>
         const STORAGE_KEY = "fair_office_game_state";
-        
+        const STORY_KEY = "fair_office_story_state";
+        const TOOLCHAIN_KEY = "fair_office_toolchain";
+        let storiesData = null;
+        let toolchainData = null;
+        let currentStory = 'opening';
+        let currentDirection = null;
+
+        async function loadStories() {
+            try {
+                const [stories, toolchain] = await Promise.all([
+                    fetch('data/stories.json').then(r => r.json()),
+                    fetch('data/toolchain.json').then(r => r.json())
+                ]);
+                storiesData = stories;
+                toolchainData = toolchain;
+                checkStoryProgress();
+            } catch (error) {
+                console.error('Failed to load data:', error);
+                showSelectPage();
+            }
+        }
+
+        function checkStoryProgress() {
+            const saved = localStorage.getItem(STORY_KEY);
+            if (!saved || saved === 'opening') {
+                showOpeningStory();
+            } else {
+                showSelectPage();
+            }
+        }
+
+        function showOpeningStory() {
+            const story = storiesData.founder_notes.opening;
+            document.getElementById('story-title').textContent = story.title;
+            document.getElementById('story-text').textContent = story.content;
+            document.getElementById('story-button').textContent = story.choices[0].text;
+            document.getElementById('story-modal').style.display = 'flex';
+            document.getElementById('select-page').style.display = 'none';
+        }
+
+        function handleStoryChoice() {
+            if (currentStory === 'opening') {
+                localStorage.setItem(STORY_KEY, 'opening_done');
+                closeStoryModal();
+                showSelectPage();
+            }
+        }
+
+        function closeStoryModal() {
+            document.getElementById('story-modal').style.display = 'none';
+            document.getElementById('select-page').style.display = 'flex';
+        }
+
+        function showSelectPage() {
+            document.getElementById('story-modal').style.display = 'none';
+            document.getElementById('select-page').style.display = 'flex';
+        }
+
         function selectDirection(direction) {
+            currentDirection = direction;
+            
+            const story = storiesData.founder_notes.direction_intro[direction];
+            if (story) {
+                document.getElementById('story-title').textContent = story.title;
+                document.getElementById('story-text').textContent = story.content;
+                document.getElementById('story-button').textContent = '确认选择';
+                currentStory = 'direction';
+                document.getElementById('story-modal').style.display = 'flex';
+                document.getElementById('select-page').style.display = 'none';
+            } else {
+                startGame(direction);
+            }
+        }
+
+        function selectToolchain(direction) {
+            const availableToolchains = toolchainData.direction_default[direction];
+            if (!availableToolchains || availableToolchains.length === 0) {
+                return 'feishu';
+            }
+            
+            const randomIndex = Math.floor(Math.random() * availableToolchains.length);
+            return availableToolchains[randomIndex];
+        }
+
+        function startGame(direction) {
+            localStorage.removeItem(STORY_KEY);
+
             const saved = localStorage.getItem(STORAGE_KEY);
             let gameState;
             
@@ -165,15 +327,45 @@
                     quarterlyScore: 0,
                     fame: 50,
                     debt: 0,
-                    debtLimit: 100
+                    debtLimit: 100,
+                    okrBonus: 0,
+                    financingRound: 0,
+                    financingDebt: 0,
+                    consecutiveProfitableQuarters: 0,
+                    totalAssets: 0,
+                    dau: 0,
+                    ltv: 2,
+                    gmv: 0,
+                    commissionRate: 5,
+                    disputeRate: 5,
+                    benchmarkClients: 0,
+                    renewalRate: 70,
+                    toBPhase: 0,
+                    declinedIPO: false,
+                    triggerAcquisition: false
                 };
             }
             
             gameState.direction = direction;
+            
+            const toolchainId = selectToolchain(direction);
+            gameState.toolchain = toolchainData.toolchains[toolchainId];
+            localStorage.setItem(TOOLCHAIN_KEY, toolchainId);
+            
             localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
             
             window.location.href = 'game.html';
         }
+
+        document.getElementById('story-button').addEventListener('click', function() {
+            if (currentStory === 'direction' && currentDirection) {
+                startGame(currentDirection);
+            } else {
+                handleStoryChoice();
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', loadStories);
     </script>
 </body>
 </html>

@@ -762,6 +762,331 @@
           "weekly_effect": "大家好好休息，准备迎接新挑战"
         }
       ]
+    },
+    {
+      "id": "event_tob_001",
+      "title": "甲方突然要求变更合同",
+      "description": "甲方提出要修改合同条款，要求增加更多免费维护期。",
+      "direction": "tob",
+      "options": [
+        {
+          "text": "接受变更，维持客户关系",
+          "effects": {"xiaokui": 5, "satisfaction": 10, "renewalRate": 5},
+          "prd_effect": "合同变更：增加免费维护期",
+          "weekly_effect": "甲方很满意，但团队压力增大"
+        },
+        {
+          "text": "谈判争取补偿",
+          "effects": {"xiaokui": 3, "satisfaction": -5},
+          "budget": 20,
+          "prd_effect": "合同谈判：争取额外费用",
+          "weekly_effect": "获得补偿，但甲方关系有些紧张"
+        },
+        {
+          "text": "拒绝变更",
+          "effects": {"xiaokui": -5, "satisfaction": -20, "renewalRate": -10},
+          "prd_effect": "合同变更：拒绝甲方要求",
+          "weekly_effect": "甲方不满，续约风险增加"
+        }
+      ]
+    },
+    {
+      "id": "event_tob_002",
+      "title": "关键项目延期",
+      "description": "由于技术难题，一个重要项目可能无法按时交付。",
+      "direction": "tob",
+      "options": [
+        {
+          "text": "加班赶工，保证交付",
+          "effects": {"aisaike": -8, "moganna": -5, "progress": 15},
+          "budget": -15,
+          "prd_effect": "项目计划：加班赶工",
+          "weekly_effect": "项目按时交付，但团队疲惫不堪"
+        },
+        {
+          "text": "提前沟通，申请延期",
+          "effects": {"xiaokui": 5, "satisfaction": -15},
+          "prd_effect": "项目沟通：申请延期",
+          "weekly_effect": "甲方同意延期，但满意度下降"
+        },
+        {
+          "text": "分阶段交付核心功能",
+          "effects": {"aisaike": 3, "moganna": 3, "xiaokui": 3, "satisfaction": -5},
+          "prd_effect": "项目策略：分阶段交付",
+          "weekly_effect": "双方达成妥协，项目继续推进"
+        }
+      ]
+    },
+    {
+      "id": "event_tob_003",
+      "title": "核心员工被甲方挖角",
+      "description": "甲方HR私下联系了艾萨克，开出了更高的薪水。",
+      "direction": "tob",
+      "options": [
+        {
+          "text": "加薪留人",
+          "effects": {"aisaike": 8, "satisfaction": -5},
+          "budget": -20,
+          "prd_effect": "人事决策：加薪挽留",
+          "weekly_effect": "艾萨克留下了，但人力成本增加"
+        },
+        {
+          "text": "坦诚沟通，描绘未来",
+          "effects": {"aisaike": 5, "xiaokui": 3},
+          "prd_effect": "团队沟通：职业发展",
+          "weekly_effect": "艾萨克感受到重视，决定留下"
+        },
+        {
+          "text": "放手让他去",
+          "effects": {"aisaike": -3, "moganna": -2, "progress": -10},
+          "prd_effect": "人事变动：员工离职",
+          "weekly_effect": "艾萨克离职，项目进度受阻"
+        }
+      ]
+    },
+    {
+      "id": "event_toc_001",
+      "title": "用户流失严重",
+      "description": "数据分析显示，用户留存率大幅下降，DAU持续走低。",
+      "direction": "toc",
+      "options": [
+        {
+          "text": "紧急迭代新版本",
+          "effects": {"aisaike": -6, "moganna": -4, "progress": 10},
+          "prd_effect": "产品迭代：紧急更新",
+          "weekly_effect": "新版本上线，但用户是否买账还不确定"
+        },
+        {
+          "text": "加大运营推广",
+          "effects": {"xiaokui": 5, "dau": 20},
+          "budget": -30,
+          "prd_effect": "运营策略：加大推广",
+          "weekly_effect": "用户量有所回升，但成本不菲"
+        },
+        {
+          "text": "调研分析原因",
+          "effects": {"xinzhu": 4, "xiaokui": 3, "satisfaction": -5},
+          "prd_effect": "用户研究：流失原因分析",
+          "weekly_effect": "找到问题根源，但需要时间解决"
+        }
+      ]
+    },
+    {
+      "id": "event_toc_002",
+      "title": "买量成本飙升",
+      "description": "广告投放成本越来越高，ROI持续下降。",
+      "direction": "toc",
+      "options": [
+        {
+          "text": "继续加大投放",
+          "effects": {"xiaokui": 3, "dau": 30},
+          "budget": -50,
+          "prd_effect": "投放策略：持续加码",
+          "weekly_effect": "用户增长，但现金流压力增大"
+        },
+        {
+          "text": "优化投放策略",
+          "effects": {"xiaokui": 4, "dau": 10},
+          "prd_effect": "投放优化：精准投放",
+          "weekly_effect": "成本下降，但增长放缓"
+        },
+        {
+          "text": "转向自然增长",
+          "effects": {"xinzhu": 5, "dau": -5},
+          "prd_effect": "增长策略：自然增长",
+          "weekly_effect": "成本降低，但用户量暂时下降"
+        }
+      ]
+    },
+    {
+      "id": "event_toc_003",
+      "title": "应用商店审核延迟",
+      "description": "新版本提交审核已经一周了，仍然没有通过。",
+      "direction": "toc",
+      "options": [
+        {
+          "text": "加急审核",
+          "effects": {"xiaokui": 3, "satisfaction": -5},
+          "budget": -15,
+          "prd_effect": "审核策略：加急处理",
+          "weekly_effect": "审核通过，但花费不菲"
+        },
+        {
+          "text": "检查并修改问题",
+          "effects": {"moganna": 4, "aisaike": 2},
+          "prd_effect": "审核修复：修改问题",
+          "weekly_effect": "问题修复，等待重新审核"
+        },
+        {
+          "text": "联系客服询问",
+          "effects": {"xiaokui": 2, "satisfaction": -3},
+          "prd_effect": "审核沟通：询问进度",
+          "weekly_effect": "仍在排队中，继续等待"
+        }
+      ]
+    },
+    {
+      "id": "event_b2c_001",
+      "title": "服务商集体抗议",
+      "description": "多个服务商联名抗议，认为平台抽成过高。",
+      "direction": "b2c",
+      "options": [
+        {
+          "text": "降低抽成",
+          "effects": {"satisfaction": 10, "disputeRate": -5},
+          "prd_effect": "平台政策：降低抽成",
+          "weekly_effect": "服务商满意，但收入减少"
+        },
+        {
+          "text": "沟通协商",
+          "effects": {"xiaokui": 5, "satisfaction": -5, "disputeRate": 5},
+          "prd_effect": "平台沟通：协商解决",
+          "weekly_effect": "暂时平息，但问题仍在"
+        },
+        {
+          "text": "强硬回应",
+          "effects": {"xiaokui": -5, "satisfaction": -15, "disputeRate": 10},
+          "prd_effect": "平台立场：维持政策",
+          "weekly_effect": "部分服务商退出，纠纷增加"
+        }
+      ]
+    },
+    {
+      "id": "event_b2c_002",
+      "title": "用户投诉暴增",
+      "description": "用户投诉量突然激增，涉及虚假宣传和服务质量问题。",
+      "direction": "b2c",
+      "options": [
+        {
+          "text": "成立专项处理小组",
+          "effects": {"xiaokui": 5, "moganna": 3, "disputeRate": -8},
+          "budget": -20,
+          "prd_effect": "客服策略：专项处理",
+          "weekly_effect": "投诉得到妥善处理，用户满意"
+        },
+        {
+          "text": "加强商家审核",
+          "effects": {"moganna": 5, "gmv": -5},
+          "prd_effect": "平台治理：加强审核",
+          "weekly_effect": "问题商家减少，但GMV下降"
+        },
+        {
+          "text": "发放优惠券安抚",
+          "effects": {"xiaokui": 3, "satisfaction": 5},
+          "budget": -25,
+          "prd_effect": "用户关怀：发放优惠券",
+          "weekly_effect": "用户情绪平复，但成本增加"
+        }
+      ]
+    },
+    {
+      "id": "event_b2c_003",
+      "title": "竞争对手降价",
+      "description": "竞品平台突然宣布大幅降价，吸引了大量用户和商家。",
+      "direction": "b2c",
+      "options": [
+        {
+          "text": "跟进降价",
+          "effects": {"satisfaction": 10, "gmv": 10},
+          "budget": -30,
+          "prd_effect": "价格策略：跟进降价",
+          "weekly_effect": "用户回流，但利润减少"
+        },
+        {
+          "text": "强化服务质量",
+          "effects": {"xinzhu": 5, "moganna": 4, "satisfaction": 5},
+          "prd_effect": "平台策略：品质优先",
+          "weekly_effect": "服务提升，但用户仍在流失"
+        },
+        {
+          "text": "推出新功能",
+          "effects": {"aisaike": -5, "xiaokui": 3, "gmv": 5},
+          "prd_effect": "产品迭代：新功能上线",
+          "weekly_effect": "新功能吸引部分用户"
+        }
+      ]
+    },
+    {
+      "id": "event_b2c_004",
+      "title": "监管部门约谈",
+      "description": "监管部门就平台合规问题进行约谈，要求整改。",
+      "direction": "b2c",
+      "options": [
+        {
+          "text": "积极配合整改",
+          "effects": {"moganna": 5, "xiaokui": 3, "disputeRate": -5},
+          "budget": -35,
+          "prd_effect": "合规整改：积极配合",
+          "weekly_effect": "监管通过，但花费巨大"
+        },
+        {
+          "text": "拖延观望",
+          "effects": {"satisfaction": -10, "disputeRate": 10},
+          "prd_effect": "合规策略：拖延观望",
+          "weekly_effect": "风险增加，可能面临处罚"
+        },
+        {
+          "text": "公关应对",
+          "effects": {"xiaokui": 4, "satisfaction": -5},
+          "prd_effect": "公关策略：危机公关",
+          "weekly_effect": "舆论暂时平息，但问题未解决"
+        }
+      ]
+    },
+    {
+      "id": "event_toc_004",
+      "title": "版本被应用商店下架",
+      "description": "由于违规内容，应用被应用商店强制下架。",
+      "direction": "toc",
+      "options": [
+        {
+          "text": "紧急整改并申诉",
+          "effects": {"aisaike": -6, "moganna": -4, "satisfaction": -10},
+          "prd_effect": "紧急处理：下架整改",
+          "weekly_effect": "提交申诉，等待审核"
+        },
+        {
+          "text": "发布公告安抚用户",
+          "effects": {"xiaokui": 5, "dau": -15},
+          "prd_effect": "用户沟通：下架说明",
+          "weekly_effect": "用户表示理解，但流失严重"
+        },
+        {
+          "text": "准备备用方案",
+          "effects": {"aisaike": 3, "xiaokui": 2},
+          "prd_effect": "应急预案：备用方案",
+          "weekly_effect": "准备就绪，等待上架"
+        }
+      ]
+    },
+    {
+      "id": "event_tob_004",
+      "title": "甲方拖欠款项",
+      "description": "甲方以各种理由拖延支付项目款项。",
+      "direction": "tob",
+      "options": [
+        {
+          "text": "上门催款",
+          "effects": {"xiaokui": -3, "satisfaction": -10},
+          "budget": 30,
+          "prd_effect": "回款策略：上门催款",
+          "weekly_effect": "追回款项，但甲方不满"
+        },
+        {
+          "text": "协商分期",
+          "effects": {"xiaokui": 3, "satisfaction": 0},
+          "budget": 15,
+          "prd_effect": "回款策略：分期收款",
+          "weekly_effect": "收到部分款项，缓解现金流"
+        },
+        {
+          "text": "法律途径",
+          "effects": {"xiaokui": -5, "satisfaction": -20, "renewalRate": -15},
+          "budget": 40,
+          "prd_effect": "回款策略：法律途径",
+          "weekly_effect": "追回款项，但彻底得罪甲方"
+        }
+      ]
     }
   ]
 }

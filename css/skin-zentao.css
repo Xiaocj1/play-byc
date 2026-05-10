@@ -1,0 +1,163 @@
+/* === 禅道皮肤 === */
+body.skin-zentao {
+    background-color: #f5f5f5;
+    color: #333333;
+}
+
+.skin-zentao .status-bar {
+    background: #ffffff;
+    border-bottom: 2px solid #dddddd;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.skin-zentao .status-columns {
+    display: flex;
+    gap: 30px;
+    flex: 1;
+}
+
+.skin-zentao .status-column {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.skin-zentao .status-item {
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #333333;
+}
+
+.skin-zentao .status-value {
+    color: #0066cc;
+}
+
+.skin-zentao .status-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.skin-zentao .btn-pixel {
+    background: #ffffff;
+    border: 1px solid #dddddd;
+    color: #333333;
+    border-radius: 4px;
+    padding: 8px 14px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.skin-zentao .btn-pixel:hover {
+    background: #f0f0f0;
+}
+
+.skin-zentao .btn-back-home {
+    background: #ffffff;
+    color: #333333;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    padding: 8px 14px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.skin-zentao .container {
+    display: block;
+    padding: 20px;
+}
+
+.skin-zentao .main-area {
+    background: #ffffff;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.skin-zentao .project-header {
+    background: #f8f8f8;
+    padding: 15px 20px;
+    border-bottom: 1px solid #dddddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.skin-zentao .task-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.skin-zentao .task-table th,
+.skin-zentao .task-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eeeeee;
+    text-align: left;
+}
+
+.skin-zentao .task-table th {
+    background: #f5f5f5;
+    font-weight: bold;
+}
+
+.skin-zentao .task-row-urgent {
+    position: relative;
+}
+
+.skin-zentao .task-row-urgent::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: #dc3545;
+}
+
+.skin-zentao .sidebar {
+    margin-top: 20px;
+}
+
+.skin-zentao .character-panel {
+    background: #ffffff;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+}
+
+.skin-zentao .character-panel table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.skin-zentao .character-panel th,
+.skin-zentao .character-panel td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #eeeeee;
+    font-size: 12px;
+}
+
+.skin-zentao .btn-pixel {
+    background: #ffffff;
+    border: 1px solid #cccccc;
+    color: #333333;
+}
+
+.skin-zentao .event-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: #dddddd;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    max-width: 500px;
+    width: 90%;
+}

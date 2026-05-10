@@ -1421,3 +1421,129 @@
     font-size: 10px;
     line-height: 1.6;
 }
+
+.ipo-modal, .acquisition-modal, .financing-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    justify-content: center;
+    align-items: center;
+    z-index: 25000;
+    padding: 20px;
+}
+
+.ipo-content, .acquisition-content, .financing-content {
+    background: #1a1a2e;
+    border: 4px solid #ffd700;
+    box-shadow: 8px 8px 0 #0a0a0f;
+    padding: 30px;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+}
+
+.acquisition-content {
+    border-color: #ff9500;
+}
+
+.financing-content {
+    border-color: #00bfff;
+}
+
+.ipo-close, .acquisition-close, .financing-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: 2px solid #ff4444;
+    color: #ff4444;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.ipo-title, .acquisition-title, .financing-title {
+    color: #ffd700;
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+.acquisition-title {
+    color: #ff9500;
+}
+
+.financing-title {
+    color: #00bfff;
+}
+
+.ipo-description, .acquisition-description, .financing-description {
+    color: #aaa;
+    font-size: 10px;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+.financing-details {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 15px;
+    margin-bottom: 25px;
+    border: 2px solid #333;
+}
+
+.financing-details p {
+    font-size: 10px;
+    color: #aaa;
+    margin: 8px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.financing-details span {
+    color: #00ff41;
+}
+
+#financing-covenant-row {
+    color: #ff9500 !important;
+}
+
+#financing-covenant {
+    color: #ff9500 !important;
+}
+
+.ipo-buttons, .acquisition-buttons, .financing-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.ipo-accept, .acquisition-accept, .financing-accept {
+    background: #1a1a2e;
+    color: #00ff41;
+    border-color: #00ff41;
+    font-size: 12px;
+    padding: 15px 30px;
+}
+
+.ipo-accept:hover, .acquisition-accept:hover, .financing-accept:hover {
+    background: #00ff41;
+    color: #1a1a2e;
+}
+
+.ipo-reject, .acquisition-reject, .financing-reject {
+    background: #1a1a2e;
+    color: #ff4444;
+    border-color: #ff4444;
+    font-size: 12px;
+    padding: 15px 30px;
+}
+
+.ipo-reject:hover, .acquisition-reject:hover, .financing-reject:hover {
+    background: #ff4444;
+    color: #1a1a2e;
+}

@@ -1,5 +1,8 @@
 let questsData = null;
 let quarterlyQuests = [];
+let negotiationState = null;
+let currentBattleIndex = 0;
+let battleResults = [];
 
 async function loadQuestsData() {
     try {
@@ -56,6 +59,9 @@ function closeReportModal() {
     if (modal) {
         modal.style.display = 'none';
     }
+    negotiationState = null;
+    currentBattleIndex = 0;
+    battleResults = [];
 }
 
 function renderReportModal() {
@@ -122,6 +128,7 @@ function renderAvailableCardsForQuest(quest) {
             <button class="card-select-btn" onclick="selectCardForQuest(${quest.instanceId}, ${card.instanceId})">
                 <span class="card-select-name">${card.name}</span>
                 <span class="card-select-dur">耐久:${card.durability}</span>
+                <span class="card-select-pos" style="color: ${cardsData.position_colors[card.position] || '#888'}">${card.position}</span>
             </button>
         `).join('') + 
         '</div>';
@@ -160,7 +167,9 @@ function useCardOnQuest(card, quest) {
     
     const score = Math.round(quest.base_score * bonusMultiplier);
     
-    card.durability--;
+    if (!noDurabilityLoss) {
+        card.durability--;
+    }
     
     const result = {
         questName: quest.name,
@@ -216,7 +225,10 @@ function renderCardList() {
     container.innerHTML = '<div class="report-cards-grid">' +
         cards.map(card => `
             <div class="report-card-item" style="border-color: ${cardsData.rarity_colors[card.rarity]}">
-                <div class="report-card-name">${card.name}</div>
+                <div class="report-card-header">
+                    <span class="report-card-name">${card.name}</span>
+                    <span class="report-card-position" style="color: ${cardsData.position_colors[card.position] || '#888'}">${card.position}</span>
+                </div>
                 <div class="report-card-info">
                     <span class="report-card-camp" style="color: ${questsData.camp_colors[card.camp] || '#888'}">${questsData.camp_names[card.camp] || '中立'}</span>
                     <span class="report-card-dur">耐久: ${card.durability}</span>
@@ -330,6 +342,273 @@ function checkQuarterEnd() {
         return true;
     }
     return false;
+}
+
+function startNegotiation() {
+    const availableCards = getBackpack().filter(c => !c.is_variant && c.durability > 0);
+    
+    if (availableCards.length === 0) {
+        showToast('没有可用卡牌进行谈判！');
+        return;
+    }
+    
+    const opponentCards = generateOpponentCards();
+    
+    negotiationState = {
+        playerCards: [...availableCards],
+        opponentCards: opponentCards,
+        playerScore: 0,
+        opponentScore: 0,
+        currentRound: 1
+    };
+    
+    currentBattleIndex = 0;
+    battleResults = [];
+    
+    renderNegotiationModal();
+}
+
+function generateOpponentCards() {
+    const positions = ['Operation', 'Design', 'QA', 'RD'];
+    const cards = [];
+    
+    for (let i = 0; i < 3; i++) {
+        const position = positions[Math.floor(Math.random() * positions.length)];
+        const pool = cardsData.pools.find(p => p.position === position);
+        if (pool && pool.cards) {
+            const availableCards = pool.cards.filter(c => !c.is_variant);
+            if (availableCards.length > 0) {
+                const card = availableCards[Math.floor(Math.random() * availableCards.length)];
+                cards.push({
+                    ...card,
+                    instanceId: Date.now() + Math.random() + i,
+                    durability: card.durability
+                });
+            }
+        }
+    }
+    
+    return cards;
+}
+
+function renderNegotiationModal() {
+    const modal = document.getElementById('negotiation-modal');
+    if (!modal) return;
+    
+    const content = document.getElementById('negotiation-content');
+    if (!content) return;
+    
+    const progressBar = document.getElementById('negotiation-progress');
+    if (progressBar) {
+        progressBar.innerHTML = `
+            <div class="negotiation-round">第 ${negotiationState.currentRound}/3 回合</div>
+            <div class="negotiation-score">
+                <span>我方: ${negotiationState.playerScore}</span>
+                <span>对方: ${negotiationState.opponentScore}</span>
+            </div>
+        `;
+    }
+    
+    const playerCardsDiv = document.getElementById('negotiation-player-cards');
+    const opponentCardsDiv = document.getElementById('negotiation-opponent-cards');
+    const battleResultDiv = document.getElementById('negotiation-result');
+    
+    if (battleResults.length > 0) {
+        const lastResult = battleResults[battleResults.length - 1];
+        battleResultDiv.innerHTML = `
+            <div class="battle-result ${lastResult.win ? 'win' : 'lose'}">
+                ${lastResult.win ? '✓ 克制成功！' : '✗ 被克制！'}
+                ${lastResult.message}
+            </div>
+        `;
+    } else {
+        battleResultDiv.innerHTML = '';
+    }
+    
+    playerCardsDiv.innerHTML = negotiationState.playerCards.map(card => `
+        <button class="negotiation-card player" 
+                onclick="selectNegotiationCard(${card.instanceId})"
+                style="border-color: ${cardsData.position_colors[card.position] || '#888'}">
+            <div class="negotiation-card-icon">${getPositionIcon(card.position)}</div>
+            <div class="negotiation-card-name">${card.name}</div>
+            <div class="negotiation-card-pos">${card.position}</div>
+            <div class="negotiation-card-dur">耐久: ${card.durability}</div>
+        </button>
+    `).join('');
+    
+    opponentCardsDiv.innerHTML = negotiationState.opponentCards.map((card, index) => `
+        <div class="negotiation-card opponent" 
+             style="border-color: ${cardsData.position_colors[card.position] || '#888'}">
+            <div class="negotiation-card-icon">${getPositionIcon(card.position)}</div>
+            <div class="negotiation-card-name">${card.name}</div>
+            <div class="negotiation-card-pos">${card.position}</div>
+            <div class="negotiation-card-dur">耐久: ${card.durability}</div>
+        </div>
+    `).join('');
+    
+    modal.style.display = 'flex';
+}
+
+function getPositionIcon(position) {
+    const icons = {
+        'Operation': '📊',
+        'Design': '🎨',
+        'QA': '🧪',
+        'RD': '💻'
+    };
+    return icons[position] || '❓';
+}
+
+function selectNegotiationCard(cardInstanceId) {
+    if (!negotiationState || currentBattleIndex >= 3) return;
+    
+    const playerCard = negotiationState.playerCards.find(c => c.instanceId === cardInstanceId);
+    if (!playerCard) return;
+    
+    const opponentCard = negotiationState.opponentCards[currentBattleIndex];
+    if (!opponentCard) return;
+    
+    const result = calculateBattleResult(playerCard, opponentCard);
+    
+    battleResults.push(result);
+    
+    if (!result.win) {
+        playerCard.durability--;
+        
+        const backpackIndex = backpack.findIndex(c => c.instanceId === playerCard.instanceId);
+        if (backpackIndex !== -1) {
+            backpack[backpackIndex].durability--;
+            if (backpack[backpackIndex].durability <= 0) {
+                backpack.splice(backpackIndex, 1);
+                result.cardDestroyed = true;
+            }
+            saveBackpack();
+        }
+        
+        const playerIndex = negotiationState.playerCards.findIndex(c => c.instanceId === cardInstanceId);
+        if (playerIndex !== -1) {
+            if (negotiationState.playerCards[playerIndex].durability <= 0) {
+                negotiationState.playerCards.splice(playerIndex, 1);
+            }
+        }
+    }
+    
+    if (result.win) {
+        negotiationState.playerScore++;
+    } else {
+        negotiationState.opponentScore++;
+    }
+    
+    currentBattleIndex++;
+    negotiationState.currentRound++;
+    
+    if (currentBattleIndex >= 3 || 
+        negotiationState.playerScore >= 2 || 
+        negotiationState.opponentScore >= 2) {
+        endNegotiation();
+    } else {
+        renderNegotiationModal();
+    }
+}
+
+function calculateBattleResult(playerCard, opponentCard) {
+    const counterChain = cardsData.counter_chain;
+    
+    const playerPos = playerCard.position;
+    const opponentPos = opponentCard.position;
+    
+    if (counterChain[playerPos] === opponentPos) {
+        return {
+            win: true,
+            message: `${playerPos} 克制 ${opponentPos}！`,
+            cardDestroyed: false
+        };
+    } else if (counterChain[opponentPos] === playerPos) {
+        return {
+            win: false,
+            message: `${opponentPos} 克制 ${playerPos}！`,
+            cardDestroyed: false
+        };
+    } else {
+        const playerPower = getCardPower(playerCard);
+        const opponentPower = getCardPower(opponentCard);
+        
+        if (playerPower > opponentPower) {
+            return {
+                win: true,
+                message: `战力比拼胜利！(${playerPower} vs ${opponentPower})`,
+                cardDestroyed: false
+            };
+        } else if (opponentPower > playerPower) {
+            return {
+                win: false,
+                message: `战力比拼失败！(${playerPower} vs ${opponentPower})`,
+                cardDestroyed: false
+            };
+        } else {
+            const win = Math.random() > 0.5;
+            return {
+                win: win,
+                message: `平局判定，${win ? '我方' : '对方'}获胜！`,
+                cardDestroyed: false
+            };
+        }
+    }
+}
+
+function getCardPower(card) {
+    const rarityBonus = {
+        'R': 1,
+        'SR': 2,
+        'SSR': 3
+    };
+    return card.durability * (rarityBonus[card.rarity] || 1);
+}
+
+function endNegotiation() {
+    const modal = document.getElementById('negotiation-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    
+    const resultDiv = document.getElementById('negotiation-final-result');
+    if (!resultDiv) return;
+    
+    let resultText;
+    let okrBonus = 0;
+    
+    if (negotiationState.playerScore >= 2) {
+        resultText = `🎉 谈判胜利！(${negotiationState.playerScore}:${negotiationState.opponentScore})`;
+        okrBonus = 10;
+        gameState.okrBonus = (gameState.okrBonus || 0) + okrBonus;
+        showToast(`${resultText}\n下季度 OKR +${okrBonus} 点`);
+    } else {
+        resultText = `😔 谈判失败！(${negotiationState.playerScore}:${negotiationState.opponentScore})`;
+        showToast(resultText);
+    }
+    
+    resultDiv.innerHTML = `<div class="final-result ${negotiationState.playerScore >= 2 ? 'win' : 'lose'}">${resultText}</div>`;
+    
+    setTimeout(() => {
+        resultDiv.innerHTML = '';
+    }, 3000);
+    
+    saveGame();
+    updateUI();
+    
+    negotiationState = null;
+    currentBattleIndex = 0;
+    battleResults = [];
+}
+
+function closeNegotiationModal() {
+    const modal = document.getElementById('negotiation-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    negotiationState = null;
+    currentBattleIndex = 0;
+    battleResults = [];
 }
 
 window.addEventListener('DOMContentLoaded', loadQuestsData);
