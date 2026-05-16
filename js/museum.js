@@ -1,8 +1,14 @@
 const PRODUCTS_KEY = "fair_office_unlocked_products";
+const ENDINGS_GALLERY_KEY = "fair_office_unlocked_endings_gallery";
+const REAL_FAILED_PRODUCTS_KEY = "fair_office_unlocked_real_failed_products";
 const GAME_STORAGE_KEY = "fair_office_game_state";
 
 let productsData = { products: [] };
+let endingsGalleryData = { endings: [] };
+let realFailedProductsData = null;
 let unlockedProducts = [];
+let unlockedEndingsGallery = [];
+let unlockedRealFailedProducts = [];
 let currentGameStats = null;
 
 function loadProductsData() {
@@ -12,6 +18,45 @@ function loadProductsData() {
             productsData = data;
             loadUnlockedProducts();
         });
+}
+
+function loadEndingsGalleryData() {
+    return fetch('data/ending_gallery.json')
+        .then(r => r.json())
+        .then(data => {
+            endingsGalleryData = data;
+            loadUnlockedEndingsGallery();
+        });
+}
+
+function loadUnlockedEndingsGallery() {
+    const saved = localStorage.getItem(ENDINGS_GALLERY_KEY);
+    if (saved) {
+        unlockedEndingsGallery = JSON.parse(saved);
+    }
+}
+
+function saveUnlockedEndingsGallery() {
+    localStorage.setItem(ENDINGS_GALLERY_KEY, JSON.stringify(unlockedEndingsGallery));
+}
+
+function isEndingGalleryUnlocked(endingId) {
+    return unlockedEndingsGallery.some(e => e.id === endingId);
+}
+
+function unlockEndingGallery(endingId, reason) {
+    if (isEndingGalleryUnlocked(endingId)) return false;
+    
+    const ending = endingsGalleryData.endings.find(e => e.id === endingId);
+    if (!ending) return false;
+    
+    unlockedEndingsGallery.push({
+        id: ending.id,
+        unlockTime: Date.now(),
+        reason: reason || '达成解锁条件'
+    });
+    saveUnlockedEndingsGallery();
+    return true;
 }
 
 function loadUnlockedProducts() {
@@ -52,15 +97,14 @@ function showMuseumModal() {
     const modal = document.getElementById('museum-modal');
     if (!modal) return;
     
-    if (productsData.products.length === 0) {
-        loadProductsData().then(() => {
-            renderMuseumTabs('toc');
-            modal.style.display = 'flex';
-        });
-    } else {
-        renderMuseumTabs('toc');
+    const loadProducts = productsData.products.length === 0 ? loadProductsData() : Promise.resolve();
+    const loadEndings = endingsGalleryData.endings.length === 0 ? loadEndingsGalleryData() : Promise.resolve();
+    const loadRealFailed = !realFailedProductsData ? loadRealFailedProductsData() : Promise.resolve();
+    
+    Promise.all([loadProducts, loadEndings, loadRealFailed]).then(() => {
+        renderMuseumTabs('products');
         modal.style.display = 'flex';
-    }
+    });
 }
 
 function closeMuseumModal() {
@@ -70,17 +114,46 @@ function closeMuseumModal() {
     }
 }
 
-function renderMuseumTabs(activeDirection) {
+function renderMuseumTabs(activeTab, activeDirection) {
     const tabs = document.getElementById('museum-tabs');
     if (!tabs) return;
     
-    tabs.innerHTML = `
-        <button class="museum-tab ${activeDirection === 'toc' ? 'active' : ''}" onclick="renderMuseumTabs('toc')">To C</button>
-        <button class="museum-tab ${activeDirection === 'tob' ? 'active' : ''}" onclick="renderMuseumTabs('tob')">To B</button>
-        <button class="museum-tab ${activeDirection === 'b2c' ? 'active' : ''}" onclick="renderMuseumTabs('b2c')">B2C</button>
+    // 如果没指定activeTab，默认为'products'
+    if (!activeTab) activeTab = 'products';
+    if (!activeDirection) activeDirection = 'all';
+    
+    // 渲染顶层标签（产品/结局/真实失败产品）
+    const tabTypeHTML = `
+        <div class="museum-tab-group">
+            <button class="museum-tab ${activeTab === 'products' ? 'active' : ''}" onclick="renderMuseumTabs('products', '${activeDirection}')">📦 产品图鉴</button>
+            <button class="museum-tab ${activeTab === 'endings' ? 'active' : ''}" onclick="renderMuseumTabs('endings', 'all')">🎭 结局图鉴</button>
+            <button class="museum-tab ${activeTab === 'real_failed' ? 'active' : ''}" onclick="renderMuseumTabs('real_failed', 'all')">🏚️ 真实失败产品</button>
+        </div>
     `;
     
-    renderMuseumGrid(activeDirection);
+    // 如果选中"产品"，显示方向标签
+    let directionHTML = '';
+    if (activeTab === 'products') {
+        directionHTML = `
+            <div class="museum-tab-group">
+                <button class="museum-tab small ${activeDirection === 'all' ? 'active' : ''}" onclick="renderMuseumTabs('products', 'all')">全部</button>
+                <button class="museum-tab small ${activeDirection === 'toc' ? 'active' : ''}" onclick="renderMuseumTabs('products', 'toc')">To C</button>
+                <button class="museum-tab small ${activeDirection === 'tob' ? 'active' : ''}" onclick="renderMuseumTabs('products', 'tob')">To B</button>
+                <button class="museum-tab small ${activeDirection === 'b2c' ? 'active' : ''}" onclick="renderMuseumTabs('products', 'b2c')">B2C</button>
+            </div>
+        `;
+    }
+    
+    tabs.innerHTML = tabTypeHTML + directionHTML;
+    
+    // 根据选中的标签渲染网格
+    if (activeTab === 'products') {
+        renderMuseumGrid(activeDirection);
+    } else if (activeTab === 'endings') {
+        renderEndingsGalleryGrid();
+    } else if (activeTab === 'real_failed') {
+        renderRealFailedProductsGrid();
+    }
 }
 
 function getThresholdDisplayName(key) {
@@ -185,6 +258,47 @@ function renderMuseumGrid(direction) {
     }).join('');
 }
 
+function renderEndingsGalleryGrid() {
+    const grid = document.getElementById('museum-grid');
+    if (!grid) return;
+    
+    const endings = endingsGalleryData.endings || [];
+    
+    grid.innerHTML = endings.map(ending => {
+        const unlocked = isEndingGalleryUnlocked(ending.id);
+        
+        return `
+            <div class="museum-card ${unlocked ? '' : 'locked'}" 
+                 onclick="${unlocked ? `showEndingDetail('${ending.id}')` : `showLockedEndingHint('${ending.id}')`}"
+                 onmouseenter="${!unlocked ? `showLockedEndingHint('${ending.id}')` : ''}">
+                ${unlocked ? `
+                    <div class="museum-card-icon">${ending.icon}</div>
+                    <div class="museum-card-name">${ending.name}</div>
+                    <div class="museum-card-subname">${ending.subname}</div>
+                    ${ending.type === 'victory' ? '<div class="museum-card-type victory">胜利</div>' : '<div class="museum-card-type failure">失败</div>'}
+                ` : `
+                    <div class="museum-card-icon">❓</div>
+                    <div class="museum-card-name">？？？</div>
+                    <div class="museum-card-condition">达成结局后解锁</div>
+                `}
+            </div>
+        `;
+    }).join('');
+}
+
+function showLockedEndingHint(endingId) {
+    const ending = endingsGalleryData.endings.find(e => e.id === endingId);
+    if (!ending) return;
+    
+    const toast = document.getElementById('toast-modal');
+    const message = document.getElementById('toast-message');
+    if (toast && message) {
+        message.innerHTML = `📜 结局类型：${ending.type === 'victory' ? '胜利' : '失败'}<br>🎯 方向：${ending.direction === 'all' ? '通用' : ending.direction.toUpperCase()}<br>💡 ${ending.unlock_desc}`;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+}
+
 function showProductDetail(productId) {
     const product = productsData.products.find(p => p.id === productId);
     if (!product) return;
@@ -221,6 +335,55 @@ function showProductDetail(productId) {
         <div class="museum-detail-unlock">
             <h3>📜 图鉴解锁文案</h3>
             <p>${product.unlock_desc}</p>
+        </div>
+    `;
+    
+    modal.style.display = 'flex';
+}
+
+function showEndingDetail(endingId) {
+    const ending = endingsGalleryData.endings.find(e => e.id === endingId);
+    if (!ending) return;
+    
+    const modal = document.getElementById('museum-detail-modal');
+    const content = document.getElementById('museum-detail-content');
+    
+    if (!modal || !content) return;
+    
+    const typeLabel = ending.type === 'victory' ? '🏆 胜利结局' : '💔 失败结局';
+    const directionLabel = ending.direction === 'all' ? '通用' : ending.direction.toUpperCase();
+    
+    content.innerHTML = `
+        <button class="museum-detail-close" onclick="closeMuseumDetailModal()">X</button>
+        <div class="museum-detail-header">
+            <div class="museum-detail-icon">${ending.icon}</div>
+            <div class="museum-detail-title">
+                <h2>${ending.name}</h2>
+                <p class="museum-detail-subname">${ending.subname}</p>
+                <div class="museum-detail-tags">
+                    <span class="tag ${ending.type}">${typeLabel}</span>
+                    <span class="tag">📌 ${directionLabel}</span>
+                </div>
+            </div>
+        </div>
+        <div class="museum-detail-section">
+            <h3>👤 创始人/PM说</h3>
+            <blockquote>"${ending.founder_quote}"</blockquote>
+            <cite>—— ${ending.founder_source}</cite>
+        </div>
+        <div class="museum-detail-section">
+            <h3>🇨🇳 国内用户说</h3>
+            <blockquote>"${ending.domestic_quote}"</blockquote>
+            <cite>—— ${ending.domestic_source}</cite>
+        </div>
+        <div class="museum-detail-section">
+            <h3>🌏 国外用户说</h3>
+            <blockquote>"${ending.international_quote}"</blockquote>
+            <cite>—— ${ending.international_source}</cite>
+        </div>
+        <div class="museum-detail-unlock">
+            <h3>📜 图鉴解锁文案</h3>
+            <p>${ending.unlock_desc}</p>
         </div>
     `;
     
@@ -379,6 +542,121 @@ function evaluateProductUnlock(productId) {
             stats: gameStats 
         };
     }
+}
+
+function loadRealFailedProductsData() {
+    return fetch('data/real_failed_products.json')
+        .then(r => r.json())
+        .then(data => {
+            realFailedProductsData = data;
+            loadUnlockedRealFailedProducts();
+        })
+        .catch(err => {
+            console.error('加载真实失败产品数据失败:', err);
+            realFailedProductsData = { real_failed_products: [] };
+        });
+}
+
+function unlockAllRealFailedProducts() {
+    const allProducts = realFailedProductsData.real_failed_products || [];
+    allProducts.forEach(product => {
+        if (!isRealFailedProductUnlocked(product.id)) {
+            unlockedRealFailedProducts.push({
+                id: product.id,
+                unlockTime: Date.now(),
+                reason: '真实历史案例'
+            });
+        }
+    });
+    saveUnlockedRealFailedProducts();
+}
+
+function loadUnlockedRealFailedProducts() {
+    const saved = localStorage.getItem(REAL_FAILED_PRODUCTS_KEY);
+    if (saved) {
+        unlockedRealFailedProducts = JSON.parse(saved);
+    } else {
+        // 首次加载，默认解锁所有真实失败产品
+        unlockAllRealFailedProducts();
+    }
+}
+
+function saveUnlockedRealFailedProducts() {
+    localStorage.setItem(REAL_FAILED_PRODUCTS_KEY, JSON.stringify(unlockedRealFailedProducts));
+}
+
+function isRealFailedProductUnlocked(productId) {
+    return unlockedRealFailedProducts.some(p => p.id === productId);
+}
+
+function renderRealFailedProductsGrid() {
+    const grid = document.getElementById('museum-grid');
+    if (!grid) return;
+    
+    const products = (realFailedProductsData && realFailedProductsData.real_failed_products) || [];
+    
+    grid.innerHTML = products.map(product => {
+        return `
+            <div class="museum-card" 
+                 onclick="showRealFailedProductDetail('${product.id}')">
+                <div class="museum-card-icon">${product.icon}</div>
+                <div class="museum-card-name">${product.name}</div>
+                <div class="museum-card-subname">${product.subname}</div>
+                <div class="museum-card-type failure">真实失败</div>
+            </div>
+        `;
+    }).join('');
+}
+
+function showRealFailedProductDetail(productId) {
+    if (!realFailedProductsData || !realFailedProductsData.real_failed_products) return;
+    
+    const product = realFailedProductsData.real_failed_products.find(p => p.id === productId);
+    if (!product) return;
+    
+    const modal = document.getElementById('museum-detail-modal');
+    const content = document.getElementById('museum-detail-content');
+    
+    if (!modal || !content) return;
+    
+    content.innerHTML = `
+        <button class="museum-detail-close" onclick="closeMuseumDetailModal()">X</button>
+        <div class="museum-detail-header">
+            <div class="museum-detail-icon">${product.icon}</div>
+            <div class="museum-detail-title">
+                <h2>${product.name}</h2>
+                <p class="museum-detail-subname">${product.subname}</p>
+                <div class="museum-detail-tags">
+                    <span class="tag failure">🏚️ 真实失败产品</span>
+                </div>
+            </div>
+        </div>
+        <div class="museum-detail-section">
+            <h3>👤 创始人/PM说</h3>
+            <blockquote>"${product.founder_quote}"</blockquote>
+            <cite>—— ${product.founder_source}</cite>
+        </div>
+        <div class="museum-detail-section">
+            <h3>🇨🇳 国内用户说</h3>
+            <blockquote>"${product.domestic_quote}"</blockquote>
+            <cite>—— ${product.domestic_source}</cite>
+        </div>
+        <div class="museum-detail-section">
+            <h3>🌏 国外用户/媒体说</h3>
+            <blockquote>"${product.international_quote}"</blockquote>
+            <cite>—— ${product.international_source}</cite>
+        </div>
+        <div class="museum-detail-section">
+            <h3>⚰️ 失败原因</h3>
+            <p>${product.fail_reason}</p>
+        </div>
+        <div class="museum-detail-unlock">
+            <h3>📜 图鉴解说</h3>
+            <p>${product.unlock_desc}</p>
+        </div>
+    `;
+    
+    modal.style.display = 'flex';
 }
 
 window.addEventListener('DOMContentLoaded', loadProductsData);

@@ -10,25 +10,22 @@ body {
     font-family: 'Press Start 2P', monospace;
     background: #0a0a0f;
     color: #00ff41;
-    min-height: 100vh;
-    overflow-x: hidden;
+    height: 100vh;
+    overflow: hidden;
 }
 
 .status-bar-wrapper {
-    transform: scale(0.75);
-    transform-origin: top left;
-    width: 133.33%;
+    height: auto;
     position: relative;
     z-index: 100;
 }
 
 .main-wrapper {
-    transform: scale(0.9);
-    transform-origin: top left;
-    width: 111.11%;
-    margin-top: -10px;
+    height: calc(100vh - 60px);
     position: relative;
     z-index: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 /* CRT效果已移除 */

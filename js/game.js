@@ -180,6 +180,8 @@ let gameState = {
     characterBuffs: {},
     quarterlyQuests: [],
     quarterlyScore: 0,
+    pendingVariants: [],
+    totalReports: 0,
     fame: 50,
     debt: 0,
     debtLimit: 100,
@@ -188,7 +190,8 @@ let gameState = {
     financingDebt: 0,
     consecutiveProfitableQuarters: 0,
     totalAssets: 0,
-    dau: 0,
+    dau: 10,  // ToC模式初始日活用户（万）
+    consecutiveZeroDauWeeks: 0,  // ToC模式：连续DAU=0的周数
     ltv: 2,
     gmv: 0,
     commissionRate: 5,
@@ -197,7 +200,24 @@ let gameState = {
     renewalRate: 70,
     toBPhase: 0,
     declinedIPO: false,
-    triggerAcquisition: false
+    triggerAcquisition: false,
+    // PMF关键事件相关字段
+    pmfReached: false,  // 是否已达到PMF（Product-Market Fit）
+    pmfChoiceMade: false,  // 是否已经做出关键选择
+    growthStrategy: null,  // 增长策略：'aggressive', 'monetization', 'balanced'
+    dauMultiplier: 1.0,  // DAU增长倍数
+    ltvMultiplier: 1.0,   // LTV增长倍数
+    
+    // 甩锅大会相关字段
+    teamFavorCap: 100,        // 团队好感度上限（会永久降低）
+    blameMeetings: 0,          // 已召开甩锅大会次数
+    lastBlameWeek: 0,          // 上次甩锅大会周数
+    blameHistory: [],           // 甩锅历史记录
+    blameGrowthPoints: 0,      // 甩锅成长点
+    blameExperiences: [],       // 已获得的经验之谈ID列表
+    permanentEfficiencyPenalty: 0,   // 效率永久降低（%）
+    permanentDurabilityPenalty: 0,    // 耐久度上限永久降低（%）
+    blameMeetingActive: false   // 甩锅大会是否正在进行中
 };
 
 function showBorrowModal() {
@@ -272,7 +292,7 @@ let buffsData = { buffs: [], buff_rules: { max_buffs_per_character: 3, buff_dura
 
 async function loadAllData() {
     try {
-        const [weeklyReports, prdTemplates, events, characters, ranksData, endings, tools, weights, buffs, financing, directionConfig] = await Promise.all([
+        const [weeklyReports, prdTemplates, events, characters, ranksData, endings, tools, weights, buffs, financing, directionConfig, missions] = await Promise.all([
             fetch('data/weekly_reports.json').then(r => r.json()),
             fetch('data/prd_templates.json').then(r => r.json()),
             fetch('data/events.json').then(r => r.json()),
@@ -283,7 +303,8 @@ async function loadAllData() {
             fetch('data/weights.json').then(r => r.json()),
             fetch('data/buffs.json').then(r => r.json()),
             fetch('data/financing.json').then(r => r.json()),
-            fetch('data/direction_config.json').then(r => r.json())
+            fetch('data/direction_config.json').then(r => r.json()),
+            fetch('data/missions.json').then(r => r.json())
         ]);
         
         data.weekly_reports = weeklyReports;
@@ -297,6 +318,7 @@ async function loadAllData() {
         data.buffs = buffs;
         data.financing = financing;
         data.directionConfig = directionConfig;
+        data.missions = missions;
         toolsData = tools;
         weightsData = weights;
         buffsData = buffs;
@@ -412,23 +434,13 @@ function renderJiraLayout() {
                 <div class="kanban-col-header todo">
                     <span class="kanban-col-icon">📋</span>
                     <span class="kanban-col-title">To Do</span>
-                    <span class="kanban-col-count">3</span>
+                    <span class="kanban-col-count" id="todo-count">0</span>
                 </div>
-                <div class="kanban-col-body">
-                    <div class="jira-ticket">
-                        <div class="jira-ticket-key">FAIR-1</div>
-                        <div class="jira-ticket-title">完成需求评审</div>
-                        <div class="jira-ticket-meta">🔴 高优先级</div>
-                    </div>
-                    <div class="jira-ticket">
-                        <div class="jira-ticket-key">FAIR-2</div>
-                        <div class="jira-ticket-title">设计稿确认</div>
-                        <div class="jira-ticket-meta">🟡 中优先级</div>
-                    </div>
-                    <div class="jira-ticket">
-                        <div class="jira-ticket-key">FAIR-3</div>
-                        <div class="jira-ticket-title">技术方案设计</div>
-                        <div class="jira-ticket-meta">🟢 低优先级</div>
+                <div class="kanban-col-body" id="todo-body">
+                    <div class="jira-event-card">
+                        <h3 class="event-title" id="event-title">等待事件...</h3>
+                        <p class="event-description" id="event-description">选择一个选项继续</p>
+                        <div class="event-options" id="event-options"></div>
                     </div>
                 </div>
             </div>
@@ -470,27 +482,43 @@ function renderJiraLayout() {
                     </div>
                 </div>
             </div>
-            <div class="kanban-col event-col">
-                <div class="kanban-col-header events">
-                    <span class="kanban-col-icon">📣</span>
-                    <span class="kanban-col-title">本周事件</span>
-                </div>
-                <div class="kanban-col-body">
-                    <div class="jira-event-card">
-                        <h3 class="event-title" id="event-title">等待事件...</h3>
-                        <p class="event-description" id="event-description">选择一个选项继续</p>
-                        <div class="event-options" id="event-options"></div>
-                    </div>
-                </div>
-            </div>
         </div>
     `;
     
     if (sidebar) {
+        console.log('JIRA Layout: Rendering sidebar');
+        
+        const containerEl = document.querySelector('.container');
+        console.log('Container exists:', !!containerEl);
+        
+        let charactersHtml = '';
+        if (data.characters && data.characters.characters) {
+            data.characters.characters.forEach(character => {
+                const like = gameState.favors[character.id] || 50;
+                const portraitUrl = character.portrait || null;
+                
+                charactersHtml += `
+                    <div style="display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; margin-bottom: 8px; min-height: 50px;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                            ${portraitUrl ? `<img src="${portraitUrl}" alt="${character.name}" style="width: 100%; height: 100%; object-fit: cover;" />` : `<span style="color: white; font-weight: bold; font-size: 14px;">${character.name.charAt(0)}</span>`}
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: #fff; font-size: 13px;">${character.name}</div>
+                            <div style="font-size: 11px; color: rgba(255,255,255,0.6);">${character.role}</div>
+                            <div style="height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; overflow: hidden; width: 100px; margin-top: 4px;">
+                                <div style="height: 100%; background: linear-gradient(90deg, #10b981, #34d399); width: ${like}%;"></div>
+                            </div>
+                        </div>
+                        <div style="font-size: 12px; color: rgba(255,255,255,0.8);">${like}</div>
+                    </div>
+                `;
+            });
+        }
+        
         sidebar.innerHTML = `
             <div class="character-panel">
                 <h3 class="panel-title">🧑‍💻 团队成员</h3>
-                <div id="portraits-container" class="portraits-container"></div>
+                <div id="portraits-container" class="portraits-container">${charactersHtml}</div>
             </div>
             <div class="progress-panel">
                 <h3 class="panel-title">${getProgressConfig().progressName}</h3>
@@ -503,7 +531,18 @@ function renderJiraLayout() {
                 <div class="satisfaction-text" id="satisfaction-text">${gameState.satisfaction}%</div>
             </div>
         `;
-        renderCharacterCards();
+        
+        if (!sidebar.parentElement) {
+            if (containerEl) {
+                containerEl.appendChild(sidebar);
+                console.log('Sidebar added to container');
+            } else {
+                document.body.appendChild(sidebar);
+                console.log('Sidebar added to body');
+            }
+        }
+    } else {
+        console.log('JIRA Layout: sidebar is null');
     }
 }
 
@@ -513,32 +552,36 @@ function renderZentaoLayout() {
     
     mainArea.innerHTML = `
         <div class="project-header">
-            <h2>公平事务所 - 当前项目</h2>
-            <span>进度: ${gameState.progress}%</span>
+            <h2>公平事务所</h2>
+            <span>任务总数 3</span>
         </div>
         <table class="task-table">
             <thead>
                 <tr>
-                    <th>需求</th>
-                    <th>任务</th>
-                    <th>Bug</th>
+                    <th>编号</th>
+                    <th>任务名称</th>
+                    <th>指派</th>
+                    <th>状态</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>用户登录模块</td>
-                    <td>前端页面开发</td>
-                    <td></td>
+                    <td>#1285</td>
+                    <td>用户登录页面开发</td>
+                    <td>艾萨克</td>
+                    <td>开发中</td>
                 </tr>
                 <tr class="task-row-urgent">
-                    <td>数据统计面板</td>
-                    <td>后端接口开发</td>
-                    <td>页面加载缓慢</td>
+                    <td>#1286</td>
+                    <td>数据统计接口优化</td>
+                    <td>艾萨克</td>
+                    <td>待解决</td>
                 </tr>
                 <tr>
-                    <td>报表导出功能</td>
-                    <td>文档编写</td>
-                    <td></td>
+                    <td>#1287</td>
+                    <td>测试用例补充</td>
+                    <td>莫甘娜</td>
+                    <td>待开始</td>
                 </tr>
             </tbody>
         </table>
@@ -743,11 +786,74 @@ function renderDingtalkTeam() {
 
 function renderEventOptions() {
     const optionsContainer = document.getElementById('event-options');
-    if (!optionsContainer || !gameState.currentEvent) return;
+    if (!optionsContainer) return;
     
-    optionsContainer.innerHTML = gameState.currentEvent.options.map((opt, idx) => `
-        <button class="btn-pixel" onclick="handleEventChoice(${idx})">${opt.text}</button>
-    `).join('');
+    if (!gameState.currentEvent) {
+        renderEvent();
+        if (!gameState.currentEvent) return;
+    }
+    
+    optionsContainer.innerHTML = '';
+    
+    gameState.currentEvent.options.forEach((option) => {
+        const optionDiv = document.createElement('div');
+        optionDiv.className = 'option-wrapper';
+        
+        const button = document.createElement('button');
+        button.className = 'option-btn';
+        button.textContent = option.text;
+        button.onclick = () => handleChoice(option, gameState.currentEvent);
+        
+        const bonusInfo = getBonusInfoForOption(option);
+        let bonusHtml = '';
+        if (bonusInfo) {
+            if (bonusInfo.available) {
+                const positionNames = {
+                    'RD': '💻 研发',
+                    'QA': '🧪 测试',
+                    '设计': '🎨 设计',
+                    '运营': '📈 运营',
+                    '产品': '📋 产品'
+                };
+                bonusHtml = `
+                    <div class="option-bonus available">
+                        <span class="bonus-icon">✓</span>
+                        <span class="bonus-text">有${positionNames[bonusInfo.position] || bonusInfo.position}员工(${bonusInfo.card.name})，效果 +${Math.round((bonusInfo.multiplier - 1) * 100)}%</span>
+                    </div>
+                `;
+            } else {
+                const positionNames = {
+                    'RD': '💻 研发',
+                    'QA': '🧪 测试',
+                    '设计': '🎨 设计',
+                    '运营': '📈 运营',
+                    '产品': '📋 产品'
+                };
+                bonusHtml = `
+                    <div class="option-bonus unavailable">
+                        <span class="bonus-icon">⚠️</span>
+                        <span class="bonus-text">需要${positionNames[bonusInfo.position] || bonusInfo.position}员工</span>
+                    </div>
+                `;
+            }
+        }
+        
+        let effectsHtml = '';
+        if (option.effects) {
+            const effectParts = [];
+            if (option.effects.progress) effectParts.push(`进度 ${option.effects.progress > 0 ? '+' : ''}${option.effects.progress}`);
+            if (option.effects.satisfaction) effectParts.push(`满意度 ${option.effects.satisfaction > 0 ? '+' : ''}${option.effects.satisfaction}`);
+            if (option.effects.fame) effectParts.push(`名声 ${option.effects.fame > 0 ? '+' : ''}${option.effects.fame}`);
+            if (option.effects.budget) effectParts.push(`资金 ${option.effects.budget > 0 ? '+' : ''}${option.effects.budget}`);
+            if (effectParts.length > 0) {
+                effectsHtml = `<div class="option-effects">${effectParts.join(' | ')}</div>`;
+            }
+        }
+        
+        optionDiv.innerHTML = effectsHtml + bonusHtml;
+        optionDiv.appendChild(button);
+        optionsContainer.appendChild(optionDiv);
+    });
 }
 
 function updateDirectionLabels() {
@@ -811,19 +917,31 @@ function initGame() {
     
     updateUI();
     renderEvent();
+    
+    // 恢复报表待处理状态：如果刷新前报表未确认，重新打开报表模态框
+    if (gameState.reportPending) {
+        if (typeof showReportModal === 'function') {
+            setTimeout(() => {
+                showReportModal();
+            }, 500);
+        }
+    }
 }
 
 function updateUI() {
     if (gameState.gameOver) return;
-
+    
     document.getElementById('week-number').textContent = formatQuarterWeek();
     document.getElementById('prd-version').textContent = gameState.prdVersion;
-    document.getElementById('budget-value').textContent = gameState.budget;
+    const targetBudget = 10000;
+    const currentBudget = gameState.budget;
+    const percentage = ((currentBudget / targetBudget) * 100).toFixed(1);
+    document.getElementById('budget-value').textContent = `${currentBudget.toLocaleString()}万 / ${targetBudget.toLocaleString()}万 (${percentage}%)`;
     document.getElementById('fame-value').textContent = gameState.fame;
     document.getElementById('debt-value').textContent = `${gameState.debt}/${gameState.debtLimit}`;
     
     updateDirectionLabels();
-
+    
     updateHCDisplay();
     renderCharacterCards();
     updateProgressUI();
@@ -832,6 +950,12 @@ function updateUI() {
     updateBusinessMetrics();
     renderPRDHistory();
     renderWeeklyLogs();
+    
+    // 实时更新抽卡页面的资金显示
+    const recruitBudgetEl = document.getElementById('recruit-budget');
+    if (recruitBudgetEl && document.getElementById('recruit-modal').style.display === 'flex') {
+        recruitBudgetEl.textContent = `资金: ${gameState.budget.toLocaleString()}万`;
+    }
 }
 
 function updateBusinessMetrics() {
@@ -904,8 +1028,21 @@ function updateHCDisplay() {
 
 function renderCharacterCards() {
     const container = document.getElementById('portraits-container');
-    if (!container) return;
+    console.log('renderCharacterCards: container found:', !!container);
+    if (!container) {
+        console.log('renderCharacterCards: container is null, looking for all containers');
+        const allContainers = document.querySelectorAll('.portraits-container');
+        console.log('renderCharacterCards: found containers:', allContainers.length);
+        return;
+    }
     container.innerHTML = '';
+    console.log('renderCharacterCards: data.characters:', data.characters ? 'loaded' : 'not loaded');
+    console.log('renderCharacterCards: characters count:', data.characters?.characters?.length || 0);
+
+    if (!data.characters || !data.characters.characters) {
+        console.log('renderCharacterCards: No characters data');
+        return;
+    }
 
     data.characters.characters.forEach(character => {
         const like = gameState.favors[character.id] || 50;
@@ -931,6 +1068,17 @@ function renderCharacterCards() {
         const card = document.createElement('div');
         card.className = 'character-card';
         card.dataset.characterId = character.id;
+        card.style.cssText = `
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            padding: 8px !important;
+            background: rgba(0, 255, 0, 0.3) !important;
+            border: 2px solid green !important;
+            border-radius: 8px !important;
+            margin-bottom: 8px !important;
+            min-height: 50px !important;
+        `;
 
         card.innerHTML = `
             <div class="character-portrait" id="portrait-${character.id}" onclick="showCharacterStatus('${character.id}')">
@@ -958,7 +1106,27 @@ function renderCharacterCards() {
         }
 
         container.appendChild(card);
+        
+        const rect = card.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        console.log('renderCharacterCards: Added character card for:', character.name);
+        console.log('Card position:', {
+            left: rect.left,
+            top: rect.top,
+            width: rect.width,
+            height: rect.height,
+            visible: rect.width > 0 && rect.height > 0
+        });
+        console.log('Container position:', {
+            left: containerRect.left,
+            top: containerRect.top,
+            width: containerRect.width,
+            height: containerRect.height
+        });
     });
+    
+    console.log('renderCharacterCards: Total cards added:', container.children.length);
+    console.log('renderCharacterCards: Container innerHTML length:', container.innerHTML.length);
 }
 
 function getFavorTrend(characterId) {
@@ -1188,8 +1356,14 @@ function renderEvent() {
 function handleChoice(option, event) {
     if (gameState.gameOver) return;
 
-    const effects = option.effects;
+    let effects = { ...option.effects };
     const toolchainEffects = getToolchainEffects();
+    
+    const bonusInfo = getBonusInfoForOption(option);
+    if (bonusInfo && bonusInfo.available) {
+        effects = applyChoiceBonus(effects, bonusInfo);
+        showToast(`🎯 ${bonusInfo.card.name} 助阵，效果 +${Math.round((bonusInfo.multiplier - 1) * 100)}%！`);
+    }
 
     data.characters.characters.forEach(character => {
         if (effects[character.id]) {
@@ -1270,6 +1444,25 @@ function handleWeekChange() {
     calculateWeeklyProgress();
     updateBusinessKPI();
 
+    // 检查PMF并触发关键事件
+    checkPMFAndTriggerEvent();
+
+    // 如果PMF已达到但尚未做出选择，暂停游戏逻辑
+    if (gameState.pmfReached && !gameState.pmfChoiceMade) {
+        // 清除主按钮的事件监听，防止用户继续操作
+        disableGameButtons();
+        return;
+    }
+
+    // 检查甩锅大会触发条件
+    checkBlameMeeting();
+    
+    // 如果甩锅大会已触发，暂停游戏逻辑
+    if (gameState.blameMeetingActive) {
+        disableGameButtons();
+        return;
+    }
+
     gameState.totalAssets = gameState.budget - gameState.debt;
 
     checkWinConditions();
@@ -1282,21 +1475,53 @@ function handleWeekChange() {
     }
 }
 
+function disableGameButtons() {
+    // 禁用所有游戏按钮，直到用户做出PMF选择
+    const buttons = document.querySelectorAll('.status-buttons button, .event-options button');
+    buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        btn.style.cursor = 'not-allowed';
+    });
+}
+
+function enableGameButtons() {
+    // 恢复游戏按钮
+    const buttons = document.querySelectorAll('.status-buttons button, .event-options button');
+    buttons.forEach(btn => {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+    });
+    
+    // 清除背景模糊效果
+    const mainWrapper = document.querySelector('.main-wrapper');
+    if (mainWrapper) {
+        mainWrapper.style.filter = 'none';
+    }
+}
+
 function updateBusinessKPI() {
     const direction = gameState.direction;
     const okrBonus = gameState.okrBonus || 0;
     
     if (direction === 'toc') {
-        gameState.dau = Math.max(0, Math.round(
-            gameState.dau + 
+        // ToC模式：确保DAU有基础增长，避免快速失败
+        const baseGrowth = 3;  // 每周期基础增长3万用户
+        const dauGrowth = baseGrowth + 
             (gameState.progress * 0.1) + 
             (gameState.satisfaction * 0.5) + 
             okrBonus * 2 -
-            Math.random() * 5
-        ));
-        gameState.ltv = Math.max(1, Math.round(
-            2 + (gameState.satisfaction * 0.05)
-        ));
+            Math.random() * 3;
+        
+        // 应用DAU增长倍数
+        const dauMultiplier = gameState.pmfChoiceMade ? gameState.dauMultiplier : 1.0;
+        gameState.dau = Math.max(0, Math.round(gameState.dau + dauGrowth * dauMultiplier));
+        
+        // 应用LTV增长倍数
+        const ltvBase = 2 + (gameState.satisfaction * 0.05);
+        const ltvMultiplier = gameState.pmfChoiceMade ? gameState.ltvMultiplier : 1.0;
+        gameState.ltv = Math.max(1, Math.round(ltvBase * ltvMultiplier));
     } else if (direction === 'b2c') {
         gameState.gmv = Math.max(0, Math.round(
             gameState.gmv + 
@@ -1313,11 +1538,21 @@ function updateBusinessKPI() {
             gameState.toBPhase = (gameState.toBPhase + 1) % 3;
             gameState.progress = 0;
             gameState.benchmarkClients++;
+            // 完成一个阶段，增加行业口碑
+            addFame(5);
+            showToast('🎉 项目阶段完成！行业口碑 +5');
         }
         gameState.renewalRate = Math.round(
             70 + (gameState.satisfaction * 0.2) - 
             (gameState.consecutiveLowSatisfactionWeeks * 5)
         );
+        
+        // ToB模式：根据客户满意度更新行业口碑
+        if (gameState.satisfaction >= 60) {
+            addFame(1);  // 高满意度慢慢增加口碑
+        } else if (gameState.satisfaction < 40) {
+            addFame(-2); // 低满意度减少口碑
+        }
     }
 }
 
@@ -1503,6 +1738,122 @@ function removeBuffFromCharacter(characterId, buffId) {
     }
 }
 
+function getRarityBonusValue(rarity) {
+    const bonuses = {
+        'R': 0.5,
+        'SR': 1.0,
+        'SSR': 2.0
+    };
+    return bonuses[rarity] || 0;
+}
+
+function findCardByPosition(position) {
+    if (!backpack || backpack.length === 0) return null;
+    
+    const positionMap = {
+        'RD': ['RD', '研发'],
+        'QA': ['QA', '测试'],
+        '设计': ['设计'],
+        '运营': ['运营'],
+        '产品': ['产品']
+    };
+    
+    const positions = positionMap[position] || [position];
+    
+    let bestCard = null;
+    let bestRarity = 0;
+    const rarityOrder = { 'R': 1, 'SR': 2, 'SSR': 3 };
+    
+    backpack.forEach(card => {
+        if (positions.includes(card.position) && !card.isTraining) {
+            const cardRarityValue = rarityOrder[card.rarity] || 0;
+            if (!bestCard || cardRarityValue > bestRarity) {
+                bestCard = card;
+                bestRarity = cardRarityValue;
+            }
+        }
+    });
+    
+    return bestCard;
+}
+
+function getCardBonusMultiplier(rarity) {
+    const multipliers = {
+        'R': 1.5,
+        'SR': 2.0,
+        'SSR': 2.5
+    };
+    return multipliers[rarity] || 1.0;
+}
+
+function calculatePassiveBonuses() {
+    if (!backpack || backpack.length === 0) return { progressBonus: 0, satisfactionBonus: 0 };
+    
+    let progressBonus = 0;
+    let satisfactionBonus = 0;
+    
+    const positionCounts = {
+        'RD': { count: 0, bonus: 0 },
+        'QA': { count: 0, bonus: 0 },
+        '设计': { count: 0, bonus: 0 },
+        '运营': { count: 0, bonus: 0 },
+        '产品': { count: 0, bonus: 0 }
+    };
+    
+    backpack.forEach(card => {
+        if (card.isTraining) return;
+        
+        if (positionCounts[card.position]) {
+            positionCounts[card.position].count++;
+            positionCounts[card.position].bonus += getRarityBonusValue(card.rarity);
+        }
+    });
+    
+    progressBonus += positionCounts['RD'].bonus * 0.5;
+    progressBonus += positionCounts['QA'].bonus * 0.3;
+    progressBonus += positionCounts['设计'].bonus * 0.2;
+    
+    satisfactionBonus += positionCounts['运营'].bonus * 0.3;
+    satisfactionBonus += positionCounts['产品'].bonus * 0.2;
+    
+    return { progressBonus, satisfactionBonus };
+}
+
+function getBonusInfoForOption(option) {
+    if (!option.bonusCondition) return null;
+    
+    const card = findCardByPosition(option.bonusCondition.position);
+    if (!card) {
+        return { available: false, position: option.bonusCondition.position };
+    }
+    
+    return {
+        available: true,
+        card: card,
+        multiplier: getCardBonusMultiplier(card.rarity),
+        position: option.bonusCondition.position
+    };
+}
+
+function applyChoiceBonus(effects, bonusInfo) {
+    if (!bonusInfo || !bonusInfo.available) return effects;
+    
+    const multiplier = bonusInfo.multiplier;
+    const bonusEffects = bonusInfo.bonusEffects || {};
+    
+    const resultEffects = { ...effects };
+    
+    Object.keys(bonusEffects).forEach(key => {
+        if (resultEffects[key] !== undefined) {
+            resultEffects[key] = Math.round(resultEffects[key] * multiplier);
+        } else {
+            resultEffects[key] = Math.round(bonusEffects[key] * multiplier);
+        }
+    });
+    
+    return resultEffects;
+}
+
 function calculateWeeklyProgress() {
     let baseProgress = 5;
     
@@ -1511,6 +1862,9 @@ function calculateWeeklyProgress() {
     
     const okrBonus = gameState.okrBonus || 0;
     baseProgress += okrBonus * 0.5;
+    
+    const passiveBonuses = calculatePassiveBonuses();
+    baseProgress += passiveBonuses.progressBonus;
     
     const currentPhase = getCurrentPhase();
     const { weightedSum, totalWeight } = calculateWeightedEfficiency(currentPhase);
@@ -1680,33 +2034,375 @@ function closePRDModal() {
     document.getElementById('prd-modal').classList.remove('active');
 }
 
+// ============ PMF关键事件相关函数 ============
+
+function checkPMFAndTriggerEvent() {
+    // 只在ToC模式下检查PMF
+    if (gameState.direction !== 'toc') return;
+    // 如果已经做出选择，不再触发
+    if (gameState.pmfChoiceMade) return;
+    // 如果已经达到PMF但尚未做出选择，显示选择界面并暂停游戏
+    if (gameState.pmfReached && !gameState.pmfChoiceMade) {
+        showPMFChoiceModal();
+        // 暂停游戏，等待用户选择
+        return;
+    }
+    // 检查是否达到PMF（DAU≥50万 且 LTV≥20元）
+    if (gameState.dau >= 50 && gameState.ltv >= 20) {
+        gameState.pmfReached = true;
+        showPMFChoiceModal();
+        // 这里不暂停游戏，让用户可以继续操作，但会在下一轮检查时再次显示模态框
+    }
+}
+
+function showPMFChoiceModal() {
+    const modal = document.getElementById('pmf-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        // 添加模糊背景效果
+        document.querySelector('.main-wrapper').style.filter = 'blur(3px)';
+    }
+}
+
+function closePMFModal() {
+    // 不允许关闭，必须做出选择
+    showToast('⚠️ 请先选择发展战略！');
+}
+
+function handlePMFChoice(strategy) {
+    gameState.pmfChoiceMade = true;
+    gameState.growthStrategy = strategy;
+    
+    // 根据策略设置增长倍数
+    switch(strategy) {
+        case 'aggressive':
+            gameState.dauMultiplier = 2.0;
+            gameState.ltvMultiplier = 0.8;
+            showToast('🚀 选择激进增长路线！DAU增长翻倍，LTV增长放缓');
+            break;
+        case 'monetization':
+            gameState.dauMultiplier = 0.8;
+            gameState.ltvMultiplier = 2.0;
+            showToast('💰 选择深度变现路线！LTV增长翻倍，DAU增长放缓');
+            break;
+        case 'balanced':
+            gameState.dauMultiplier = 1.2;
+            gameState.ltvMultiplier = 1.2;
+            showToast('⚖️ 选择平衡发展路线！DAU和LTV稳步增长');
+            break;
+    }
+    
+    // 关闭模态框
+    const modal = document.getElementById('pmf-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    
+    // 恢复游戏按钮
+    enableGameButtons();
+    
+    // 继续游戏逻辑
+    gameState.totalAssets = gameState.budget - gameState.debt;
+    checkWinConditions();
+    checkLoseConditions();
+    
+    if (checkQuarterEnd()) {
+        calculateQuarterlyRevenue();
+        checkFinancingEvent();
+        showReportModal();
+    }
+    
+    saveGame();
+}
+
+// ============ 甩锅大会系统 ============
+
+function checkBlameMeeting() {
+    // 游戏结束时不再触发
+    if (gameState.gameOver) return;
+    
+    // 检查冷却时间（4周）
+    if (gameState.week - gameState.lastBlameWeek < 4) return;
+    
+    // 根据模式检查触发条件
+    let shouldTrigger = false;
+    let triggerReason = '';
+    
+    if (gameState.direction === 'tob') {
+        // ToB：满意度 ≤ 30
+        if (gameState.satisfaction <= 30) {
+            shouldTrigger = true;
+            triggerReason = '甲方满意度过低（≤30）';
+        }
+    } else if (gameState.direction === 'toc') {
+        // ToC：LTV ≤ 5
+        if (gameState.ltv <= 5) {
+            shouldTrigger = true;
+            triggerReason = '用户生命周期价值过低（LTV≤5）';
+        }
+    } else if (gameState.direction === 'b2c') {
+        // B2C：纠纷率 ≥ 20%
+        if (gameState.disputeRate >= 20) {
+            shouldTrigger = true;
+            triggerReason = '纠纷率过高（≥20%）';
+        }
+    }
+    
+    if (shouldTrigger) {
+        gameState.blameMeetingActive = true;
+        triggerBlameMeeting(triggerReason);
+    }
+}
+
+function triggerBlameMeeting(reason) {
+    // 加载甩锅经验库
+    fetch('data/blame_experience.json')
+        .then(response => response.json())
+        .then(data => {
+            gameState.blameExperiencePool = data.experiences;
+            showBlameMeetingModal(reason);
+        })
+        .catch(err => {
+            console.error('加载甩锅经验库失败:', err);
+            showBlameMeetingModal(reason);
+        });
+}
+
+function showBlameMeetingModal(reason) {
+    const modal = document.getElementById('blame-meeting-modal');
+    if (modal) {
+        // 设置触发原因
+        const reasonEl = document.getElementById('blame-reason');
+        if (reasonEl) {
+            reasonEl.textContent = reason;
+        }
+        
+        // 计算并显示各选项成功率
+        updateBlameOptionDisplay();
+        
+        modal.style.display = 'flex';
+        if (document.querySelector('.main-wrapper')) {
+            document.querySelector('.main-wrapper').style.filter = 'blur(3px)';
+        }
+    }
+}
+
+function updateBlameOptionDisplay() {
+    // 计算并显示各选项成功率
+    const teamRate = calculateBlameSuccessRate('team');
+    const externalRate = calculateBlameSuccessRate('external');
+    const selfRate = calculateBlameSuccessRate('self');
+    
+    const teamEl = document.getElementById('blame-team-rate');
+    const externalEl = document.getElementById('blame-external-rate');
+    const selfEl = document.getElementById('blame-self-rate');
+    
+    if (teamEl) teamEl.textContent = `成功率：${teamRate}%`;
+    if (externalEl) externalEl.textContent = `成功率：${externalRate}%`;
+    if (selfEl) selfEl.textContent = `成功率：${selfRate}%`;
+}
+
+function calculateBlameSuccessRate(choice) {
+    let baseRate = 50;
+    
+    if (choice === 'team') {
+        // 甩给团队：团队好感度越低，成功率越高
+        baseRate = 60 + (100 - gameState.teamFavor) * 0.3;
+    } else if (choice === 'external') {
+        // 甩给外部：随机性大
+        baseRate = 40 + Math.random() * 30;
+    } else if (choice === 'self') {
+        // 自己扛：比较稳妥
+        baseRate = 70;
+    }
+    
+    // 成长点奖励：每5点成长点，成功率+2%
+    baseRate += Math.floor(gameState.blameGrowthPoints / 5) * 2;
+    
+    // 限制在5%-95%
+    return Math.min(95, Math.max(5, Math.round(baseRate)));
+}
+
+function resolveBlameMeeting(choice) {
+    const successRate = calculateBlameSuccessRate(choice);
+    const isSuccess = Math.random() * 100 < successRate;
+    
+    // 记录甩锅大会
+    gameState.blameMeetings++;
+    gameState.lastBlameWeek = gameState.week;
+    gameState.blameMeetingActive = false;
+    
+    // 永久降低团队好感度上限
+    const capReduction = Math.floor(Math.random() * 6) + 5;  // 5-10
+    gameState.teamFavorCap -= capReduction;
+    gameState.teamFavorCap = Math.max(0, gameState.teamFavorCap);
+    
+    // 调整当前好感度（如果超过新上限）
+    if (gameState.teamFavor > gameState.teamFavorCap) {
+        gameState.teamFavor = gameState.teamFavorCap;
+    }
+    
+    // 记录到历史
+    gameState.blameHistory.push({
+        week: gameState.week,
+        choice: choice,
+        success: isSuccess,
+        capReduction: capReduction
+    });
+    
+    // 随机团队成员离职（30%概率）
+    if (Math.random() < 0.3) {
+        triggerRandomEmployeeLeave();
+    }
+    
+    // 永久效率降低（10%概率）
+    if (Math.random() < 0.1) {
+        gameState.permanentEfficiencyPenalty += 5;
+        showToast('⚠️ 团队效率永久降低 5%');
+    }
+    
+    // 永久耐久度上限降低（10%概率）
+    if (Math.random() < 0.1) {
+        gameState.permanentDurabilityPenalty += 10;
+        showToast('⚠️ 卡牌耐久度上限永久降低 10%');
+    }
+    
+    // 检查团队崩溃结局
+    if (gameState.teamFavorCap <= 50) {
+        triggerGameOver('team_collapse');
+        return;
+    }
+    
+    // 检查职场PUA结局
+    if (gameState.blameMeetings >= 5) {
+        triggerGameOver('workplace_bully');
+        return;
+    }
+    
+    // 给予成长点并抽取经验之谈
+    let growthPoints = 0;
+    if (choice === 'self') {
+        // 自己扛：固定1点
+        growthPoints = 1;
+        showToast('💪 自己扛下来！成长点+1');
+    } else if (isSuccess) {
+        // 甩锅成功：2点
+        growthPoints = 2;
+        showToast('✅ 甩锅成功！成长点+2');
+    } else {
+        // 甩锅失败：1点
+        growthPoints = 1;
+        showToast('❌ 甩锅失败！成长点+1');
+    }
+    
+    gameState.blameGrowthPoints += growthPoints;
+    
+    // 抽取经验之谈
+    drawBlameExperience();
+    
+    // 关闭模态框并恢复按钮
+    closeBlameModal();
+    
+    saveGame();
+}
+
+function drawBlameExperience() {
+    if (!gameState.blameExperiencePool || gameState.blameExperiencePool.length === 0) {
+        return;
+    }
+    
+    // 过滤出适合当前模式的经验之谈
+    const available = gameState.blameExperiencePool.filter(exp => 
+        exp.mode === 'all' || exp.mode === gameState.direction
+    );
+    
+    if (available.length === 0) return;
+    
+    // 随机抽取一条
+    const drawn = available[Math.floor(Math.random() * available.length)];
+    
+    // 检查是否已经获得
+    if (gameState.blameExperiences.includes(drawn.id)) {
+        // 已获得，转化为成长点
+        gameState.blameGrowthPoints += 1;
+        showToast(`📖 已获得【${drawn.title}】，转化为成长点+1`);
+    } else {
+        // 新经验之谈
+        gameState.blameExperiences.push(drawn.id);
+        showToast(`📖 悟道了！获得经验之谈：【${drawn.title}】`);
+    }
+}
+
+function triggerRandomEmployeeLeave() {
+    // 触发随机团队成员离职
+    // 这里需要调用背包系统的函数，暂时先显示提示
+    showToast('⚠️ 甩锅大会上，有人当场摔门而去...');
+    
+    // 记录到周报
+    gameState.weeklyLogs.push({
+        week: gameState.week,
+        event: '甩锅大会导致团队成员离职'
+    });
+}
+
+function closeBlameModal() {
+    const modal = document.getElementById('blame-meeting-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    
+    // 恢复游戏按钮
+    enableGameButtons();
+    
+    // 清除模糊效果
+    const mainWrapper = document.querySelector('.main-wrapper');
+    if (mainWrapper) {
+        mainWrapper.style.filter = 'none';
+    }
+}
+
+// ============ 原有函数 ============
+
 function checkWinConditions() {
     if (gameState.gameOver) return;
+
+    const targetBudget = 10000;
+    
+    if (gameState.budget >= targetBudget) {
+        showIPOOption();
+        return;
+    }
 
     const totalAssets = gameState.budget - gameState.debt;
     
     let marketPositionMet = false;
-    let targetDesc = '';
     
     if (gameState.direction === 'tob') {
-        marketPositionMet = gameState.benchmarkClients >= 5;
-        targetDesc = '5个标杆客户';
+        marketPositionMet = gameState.fame >= 60;  // ToB模式：行业口碑≥60
     } else if (gameState.direction === 'toc') {
-        marketPositionMet = gameState.dau > 500;
-        targetDesc = 'DAU > 500万';
+        // ToC模式：根据增长策略调整胜利条件
+        if (gameState.pmfChoiceMade) {
+            // 已做出PMF选择，根据策略判断
+            switch(gameState.growthStrategy) {
+                case 'aggressive':
+                    // 激进增长：追求规模，DAU>500万
+                    marketPositionMet = gameState.dau > 500;
+                    break;
+                case 'monetization':
+                    // 深度变现：追求盈利，LTV>200元
+                    marketPositionMet = gameState.ltv > 200;
+                    break;
+                case 'balanced':
+                    // 平衡发展：规模和盈利并重，DAU>100万 且 LTV>50元
+                    marketPositionMet = gameState.dau > 100 && gameState.ltv > 50;
+                    break;
+            }
+        } else {
+            // 未做出选择，使用默认条件
+            marketPositionMet = gameState.dau > 100 && gameState.ltv > 50;
+        }
     } else if (gameState.direction === 'b2c') {
         marketPositionMet = gameState.gmv > 10;
-        targetDesc = 'GMV > 10亿';
-    }
-
-    if (totalAssets >= 2000 && marketPositionMet) {
-        showIPOOption();
-        return;
-    }
-
-    if (totalAssets >= 1000 && gameState.consecutiveProfitableQuarters >= 8 && !gameState.declinedIPO) {
-        showIPOOption();
-        return;
     }
 
     if (totalAssets >= 500 && marketPositionMet && Math.random() < 0.1) {
@@ -1723,9 +2419,17 @@ function checkLoseConditions() {
         return;
     }
 
-    if (gameState.direction === 'toc' && gameState.dau <= 0) {
-        triggerGameOver('dau_zero');
-        return;
+    if (gameState.direction === 'toc') {
+        if (gameState.dau <= 0) {
+            gameState.consecutiveZeroDauWeeks = (gameState.consecutiveZeroDauWeeks || 0) + 1;
+            // ToC模式：连续4周DAU=0才失败（给用户缓冲时间）
+            if (gameState.consecutiveZeroDauWeeks >= 4) {
+                triggerGameOver('dau_zero');
+                return;
+            }
+        } else {
+            gameState.consecutiveZeroDauWeeks = 0;
+        }
     }
 
     if (gameState.direction === 'b2c' && gameState.disputeRate > 30) {
@@ -1733,10 +2437,36 @@ function checkLoseConditions() {
         return;
     }
 
+    // ToB模式：单个客户满意度低于25时，该客户终止合作
     if (gameState.direction === 'tob' && gameState.satisfaction < 25) {
-        triggerGameOver('client_rage');
-        return;
+        handleClientRage();
+        // 不直接结束游戏，而是处理客户终止合作
+        // 如果所有标杆客户都丢失，才结束游戏
+        if (gameState.benchmarkClients <= 0) {
+            triggerGameOver('client_rage');
+            return;
+        }
     }
+}
+
+function handleClientRage() {
+    // 客户终止合作的逻辑
+    const penalty = Math.round(gameState.progress * 2);  // 违约金 = 进度 * 2
+    gameState.budget -= penalty;
+    gameState.progress = 0;  // 项目进度清零
+    gameState.satisfaction = 80;  // 重置满意度（新客户从80开始）
+    
+    if (gameState.benchmarkClients > 0) {
+        gameState.benchmarkClients--;  // 标杆客户 -1
+    }
+    
+    showToast(`⚠️ 客户终止合作！赔偿违约金 ${penalty}万，项目进度清零`);
+    
+    // 记录到周报
+    gameState.weeklyLogs.push({
+        week: gameState.week,
+        event: `客户终止合作，赔偿违约金${penalty}万`
+    });
 }
 
 function showIPOOption() {
@@ -1744,7 +2474,10 @@ function showIPOOption() {
     if (!modal) return;
     
     document.getElementById('ipo-title').textContent = '📈 IPO机会来临！';
-    document.getElementById('ipo-description').textContent = `恭喜！您的公司已达到上市标准（资产≥2000万，${getDirectionText('fameName')}达标）。是否申请上市？`;
+    const conditionText = gameState.direction === 'tob' ? '行业口碑≥60' : 
+                          gameState.direction === 'toc' ? 'DAU>100万 且 LTV>50元' : 
+                          'GMV>10亿';
+    document.getElementById('ipo-description').textContent = `恭喜！您的公司已达到上市标准（资产≥1亿，${conditionText}）。是否申请上市？`;
     
     const acceptBtn = document.getElementById('ipo-accept');
     const rejectBtn = document.getElementById('ipo-reject');
@@ -1860,6 +2593,19 @@ function showEndingModalForVictory(endingType) {
     modal.classList.add('active');
     
     unlockEnding(`ending_${endingType}`);
+    
+    // 解锁对应的结局图鉴
+    const victoryEndingMap = {
+        'ipo': 'victory_ipo',
+        'acquisition': 'victory_acquisition',
+        'success': 'victory_success',
+        'silent': 'victory_silent'
+    };
+    const galleryId = victoryEndingMap[endingType] || 'victory_success';
+    if (typeof unlockEndingGallery === 'function') {
+        unlockEndingGallery(galleryId, `达成${endingType}结局`);
+    }
+    
     addPrestige(5);
 }
 
@@ -1898,6 +2644,21 @@ function showGameOverModal() {
     `;
 
     modal.classList.add('active');
+    
+    // 解锁对应的失败结局图鉴
+    const failureEndingMap = {
+        'bankruptcy': 'failure_bankruptcy',
+        'dau_zero': 'failure_dau_zero',
+        'high_dispute': 'failure_high_dispute',
+        'client_rage': 'failure_client_rage',
+        'team_collapse': 'failure_team_collapse',
+        'workplace_bully': 'failure_workplace_bully',
+        'default': 'failure_storm'
+    };
+    const galleryId = failureEndingMap[gameState.failureReason] || 'failure_storm';
+    if (typeof unlockEndingGallery === 'function') {
+        unlockEndingGallery(galleryId, `达成${gameState.failureReason || 'default'}结局`);
+    }
 }
 
 function unlockEnding(endingId) {

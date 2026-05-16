@@ -3,6 +3,7 @@ const HC_KEY = "fair_office_hc";
 const WEEKLY_DRAWS_KEY = "fair_office_weekly_draws";
 const UNLOCKED_CARDS_KEY = "fair_office_unlocked_cards";
 const FIRST_DRAW_KEY = "fair_office_first_draw";
+const DRAW_HISTORY_KEY = "fair_office_draw_history";
 
 let cardsData = null;
 let currentPool = null;
@@ -12,6 +13,7 @@ let weeklyDraws = 0;
 let unlockedCards = [];
 let storiesData = null;
 let hasShownFirstDrawStory = false;
+let drawHistory = [];
 
 async function loadCardsData() {
     try {
@@ -26,6 +28,7 @@ async function loadCardsData() {
         loadWeeklyDraws();
         loadUnlockedCards();
         checkFirstDraw();
+        loadDrawHistory();
     } catch (error) {
         console.error('Failed to load cards data:', error);
     }
@@ -98,12 +101,41 @@ function saveUnlockedCards() {
     localStorage.setItem(UNLOCKED_CARDS_KEY, JSON.stringify(unlockedCards));
 }
 
+function loadDrawHistory() {
+    const saved = localStorage.getItem(DRAW_HISTORY_KEY);
+    if (saved) {
+        try {
+            drawHistory = JSON.parse(saved);
+        } catch (e) {
+            drawHistory = [];
+        }
+    }
+}
+
+function saveDrawHistory() {
+    localStorage.setItem(DRAW_HISTORY_KEY, JSON.stringify(drawHistory));
+}
+
+function addToDrawHistory(card) {
+    drawHistory.unshift({
+        name: card.name,
+        rarity: card.rarity,
+        pool: card.poolId,
+        timestamp: Date.now()
+    });
+    if (drawHistory.length > 100) {
+        drawHistory = drawHistory.slice(0, 100);
+    }
+    saveDrawHistory();
+}
+
 function getCurrentHCCount() {
     return backpack.filter(c => !c.is_variant).length;
 }
 
 function getCurrentDrawCost() {
-    const baseCost = cardsData.costs.single_draw;
+    if (!cardsData || !cardsData.costs) return 10;
+    const baseCost = cardsData.costs.single_draw || 10;
     const multiplier = typeof getDrawCostMultiplier === 'function' ? getDrawCostMultiplier() : 1;
     return Math.round(baseCost * multiplier);
 }
@@ -121,11 +153,12 @@ function drawCard(poolId) {
     if (!pool) return null;
     
     const cards = pool.cards;
+    // 提高高级卡爆率：SSR 5%, SR 15%, R 80%
     const weights = cards.map(c => {
         switch(c.rarity) {
-            case 'SSR': return 1;
-            case 'SR': return 3;
-            default: return 6;
+            case 'SSR': return 5;
+            case 'SR': return 15;
+            default: return 80;
         }
     });
     
@@ -145,13 +178,16 @@ function drawCard(poolId) {
     return {...cards[0]};
 }
 
-function handleVariantCard(card) {
+function handleVariantCard(card, callback) {
     if (!card.is_variant || !card.variant_pool) return card;
     
     const resultId = card.variant_pool[Math.floor(Math.random() * card.variant_pool.length)];
     const result = cardsData.variant_results[resultId];
     
-    if (!result) return card;
+    if (!result) {
+        console.error('Variant result not found:', resultId);
+        return card;
+    }
     
     showVariantResult(card, result);
     
@@ -159,65 +195,164 @@ function handleVariantCard(card) {
         if (result.bonus?.type === 'budget' && gameState) {
             gameState.budget += result.bonus.value;
         }
+        showToast(`管培生${result.name}！${result.bonus?.type === 'budget' ? `+${result.bonus.value}资金` : ''}`);
         return null;
     }
     
-    return {
+    const drawnQuarter = getCurrentQuarter();
+    const drawnAbsoluteWeek = gameState.week;
+    const drawnReportCount = gameState.totalReports || 0;
+    
+    const pendingVariant = {
         ...card,
-        name: `${card.name}-${result.name}`,
-        rarity: result.rarity,
-        durability: result.durability,
-        is_variant: false
+        variantResultId: resultId,
+        variantResult: result,
+        drawnQuarter: drawnQuarter,
+        drawnAbsoluteWeek: drawnAbsoluteWeek,
+        drawnReportCount: drawnReportCount,
+        isTraining: true,
+        trainingProgress: 0
     };
+    
+    gameState.pendingVariants = gameState.pendingVariants || [];
+    gameState.pendingVariants.push(pendingVariant);
+    
+    backpack.push(pendingVariant);
+    saveBackpack();
+    
+    // 记录抽卡历史（包括管培生）
+    addToDrawHistory(card);
+    
+    showToast(`管培生已加入培养，需要经历报表考核后才会变异`);
+    
+    if (callback) {
+        callback();
+    }
+    
+    return pendingVariant;
+}
+
+function processPendingVariants() {
+    if (!gameState.pendingVariants || gameState.pendingVariants.length === 0) {
+        return;
+    }
+    
+    const currentAbsoluteWeek = gameState.week;
+    const currentReportCount = gameState.totalReports || 0;
+    const variantsToProcess = [];
+    
+    gameState.pendingVariants.forEach((variant, index) => {
+        const weeksElapsed = currentAbsoluteWeek - variant.drawnAbsoluteWeek;
+        const monthsElapsed = Math.floor(weeksElapsed / 4);
+        
+        const reportsPassed = currentReportCount - (variant.drawnReportCount || 0);
+        
+        const canMutate = monthsElapsed >= 3 && reportsPassed >= 1;
+        
+        if (canMutate) {
+            variantsToProcess.push({ variant, index });
+        }
+    });
+    
+    if (variantsToProcess.length > 0) {
+        showToast(`有 ${variantsToProcess.length} 位管培生完成培养！`);
+    }
+    
+    variantsToProcess.forEach(({ variant, index }) => {
+        const mutatedCard = {
+            ...variant,
+            name: `${variant.name}-${variant.variantResult.name}`,
+            rarity: variant.variantResult.rarity,
+            durability: variant.variantResult.durability,
+            is_variant: false,
+            isTraining: false,
+            trainingProgress: null,
+            variantResultId: null,
+            variantResult: null,
+            drawnQuarter: null,
+            drawnAbsoluteWeek: null,
+            drawnReportCount: null,
+            description: variant.variantResult.text || variant.description
+        };
+        
+        const backpackIndex = backpack.findIndex(c => c.instanceId === variant.instanceId);
+        if (backpackIndex !== -1) {
+            backpack[backpackIndex] = mutatedCard;
+        } else {
+            backpack.push(mutatedCard);
+        }
+        saveBackpack();
+        
+        showToast(`${variant.name} 变异为 ${variant.variantResult.name} (${variant.variantResult.rarity})！`);
+    });
+    
+    for (let i = variantsToProcess.length - 1; i >= 0; i--) {
+        gameState.pendingVariants.splice(variantsToProcess[i].index, 1);
+    }
+    
+    updateRecruitUI();
 }
 
 function drawFromPool(poolId) {
-    if (!canDraw()) return null;
+    if (!canDraw()) {
+        return null;
+    }
     if (!currentPool) {
         showToast('请先选择岗位！');
         return null;
     }
     
+    const performDrawInternal = () => {
+        if (!gameState) {
+            showToast('游戏状态未初始化');
+            return null;
+        }
+        
+        let card = drawCard(currentPool);
+        
+        if (!card) {
+            showToast('抽卡失败');
+            return null;
+        }
+        
+        const cost = getCurrentDrawCost();
+        gameState.budget -= cost;
+        
+        if (card.is_variant) {
+            handleVariantCard(card, () => {
+                saveWeeklyDraws();
+                saveGame();
+                updateRecruitUI();
+            });
+        } else {
+            showCardAnimation(card, () => {
+                confirmRecruit(card);
+            });
+            
+            if (card.rarity === 'SSR') {
+                showSSRStory();
+            }
+        }
+        
+        return card;
+    };
+    
     if (!hasShownFirstDrawStory && storiesData) {
         showFirstDrawStory(() => {
-            performDraw(poolId);
+            performDrawInternal();
         });
     } else {
-        performDraw(poolId);
+        performDrawInternal();
     }
     
     return true;
 }
 
-function performDraw(poolId) {
-    let card = drawCard(currentPool);
-    if (!card) return null;
-    
-    gameState.budget -= getCurrentDrawCost();
-    
-    if (card.is_variant) {
-        card = handleVariantCard(card);
-    }
-    
-    if (card) {
-        showCardAnimation(card, () => {
-            confirmRecruit(card);
-        });
-        
-        if (card.rarity === 'SSR') {
-            showSSRStory();
-        }
-    } else {
-        saveWeeklyDraws();
-        saveGame();
-        updateRecruitUI();
-    }
-    
-    return card;
-}
+
 
 function showFirstDrawStory(callback) {
     const story = storiesData.card_stories.first_draw;
+    
     if (!story) {
         if (callback) callback();
         return;
@@ -227,7 +362,7 @@ function showFirstDrawStory(callback) {
     modal.id = 'first-draw-story-modal';
     modal.className = 'story-modal';
     modal.innerHTML = `
-        <div class="story-content">
+        <div class="story-content recruit-story">
             <div class="story-close" onclick="closeFirstDrawStory()">×</div>
             <h2 class="story-title">${story.title}</h2>
             <div class="story-text">${story.intro}</div>
@@ -259,7 +394,7 @@ function showSSRStory() {
     modal.id = 'ssr-story-modal';
     modal.className = 'story-modal';
     modal.innerHTML = `
-        <div class="story-content">
+        <div class="story-content recruit-story">
             <div class="story-close" onclick="closeSSRStory()">×</div>
             <h2 class="story-title">${story.title}</h2>
             <div class="story-text">${story.intro}</div>
@@ -277,6 +412,11 @@ function closeSSRStory() {
 }
 
 function confirmRecruit(card) {
+    if (!card) {
+        console.error('Invalid card in confirmRecruit');
+        return;
+    }
+    
     const confirmModal = document.getElementById('recruit-confirm-modal');
     const confirmCardName = document.getElementById('confirm-card-name');
     const confirmCardRarity = document.getElementById('confirm-card-rarity');
@@ -289,10 +429,10 @@ function confirmRecruit(card) {
         return;
     }
     
-    confirmCardName.textContent = card.name;
-    confirmCardRarity.textContent = card.rarity;
-    confirmCardRarity.style.color = cardsData.rarity_colors[card.rarity];
-    confirmCardDesc.textContent = card.description;
+    confirmCardName.textContent = card.name || '未知';
+    confirmCardRarity.textContent = card.rarity || 'R';
+    confirmCardRarity.style.color = cardsData?.rarity_colors?.[card.rarity] || '#9ca3af';
+    confirmCardDesc.textContent = card.description || '暂无描述';
     
     confirmBtn.onclick = () => {
         confirmModal.style.display = 'none';
@@ -301,6 +441,10 @@ function confirmRecruit(card) {
     
     cancelBtn.onclick = () => {
         confirmModal.style.display = 'none';
+        const cost = getCurrentDrawCost();
+        if (gameState) {
+            gameState.budget += cost;
+        }
         saveWeeklyDraws();
         saveGame();
         updateRecruitUI();
@@ -310,23 +454,41 @@ function confirmRecruit(card) {
     confirmModal.style.display = 'flex';
 }
 
-function addCardToBackpack(card) {
+
+
+function addCardToBackpack(card, silent = false) {
+    if (!card) {
+        console.error('Invalid card in addCardToBackpack');
+        return;
+    }
+    
     if (!card.is_variant && getCurrentHCCount() >= hc) {
         showToast('HC不足！');
         return;
     }
     
+    addToDrawHistory(card);
     backpack.push(card);
     saveBackpack();
+    
+    // 如果报表模态框已打开，同步更新报表
+    const reportModal = document.getElementById('report-modal');
+    if (reportModal && reportModal.style.display === 'flex') {
+        if (typeof renderReportModal === 'function') {
+            renderReportModal();
+        }
+    }
     
     if (card.rarity === 'SSR') {
         unlockCard(card);
     }
     
-    saveWeeklyDraws();
-    saveGame();
-    updateRecruitUI();
-    showToast(`已录用 ${card.name}`);
+    if (!silent) {
+        saveWeeklyDraws();
+        saveGame();
+        updateRecruitUI();
+        showToast(`已录用 ${card.name || '未知'}`);
+    }
 }
 
 function unlockCard(card) {
@@ -391,12 +553,116 @@ function closeRecruitModal() {
     }
 }
 
+function showDrawHistory() {
+    const modal = document.getElementById('draw-history-modal') || createDrawHistoryModal();
+    modal.style.display = 'flex';
+}
+
+function createDrawHistoryModal() {
+    const modal = document.createElement('div');
+    modal.id = 'draw-history-modal';
+    modal.className = 'draw-history-modal';
+    modal.innerHTML = `
+        <div class="draw-history-content">
+            <button class="history-close" onclick="closeDrawHistory()">×</button>
+            <h2 class="history-title">📜 抽卡记录</h2>
+            <div class="history-list" id="history-list"></div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    return modal;
+}
+
+function closeDrawHistory() {
+    const modal = document.getElementById('draw-history-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function updateDrawHistoryUI() {
+    const list = document.getElementById('history-list');
+    if (!list) return;
+    
+    if (drawHistory.length === 0) {
+        list.innerHTML = '<div class="history-empty">暂无抽卡记录</div>';
+        return;
+    }
+    
+    list.innerHTML = drawHistory.slice(0, 50).map(record => {
+        const color = cardsData?.rarity_colors?.[record.rarity] || '#9ca3af';
+        const date = new Date(record.timestamp);
+        const timeStr = `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+        return `
+            <div class="history-item" style="border-left-color: ${color}">
+                <span class="history-rarity" style="color: ${color}">${record.rarity}</span>
+                <span class="history-name">${record.name}</span>
+                <span class="history-time">${timeStr}</span>
+            </div>
+        `;
+    }).join('');
+}
+
+function getUpgradeCost(card) {
+    if (!card) return 0;
+    const rarityMultiplier = {
+        'R': 1,
+        'SR': 2
+    };
+    return 20 * (rarityMultiplier[card.rarity] || 1);
+}
+
+function canAffordUpgrade(card) {
+    if (!gameState || !card) return false;
+    if (card.is_variant || card.rarity === 'SSR') return false;
+    return gameState.budget >= getUpgradeCost(card);
+}
+
+function upgradeCard(instanceId) {
+    const cardIndex = backpack.findIndex(c => c.instanceId === instanceId);
+    if (cardIndex === -1) return;
+    
+    const card = backpack[cardIndex];
+    if (!canAffordUpgrade(card)) {
+        showToast('资金不足！');
+        return;
+    }
+    
+    const cost = getUpgradeCost(card);
+    gameState.budget -= cost;
+    
+    const rarityUpgrade = {
+        'R': 'SR',
+        'SR': 'SSR'
+    };
+    
+    const newRarity = rarityUpgrade[card.rarity];
+    if (newRarity) {
+        card.rarity = newRarity;
+        card.durability = card.rarity === 'SSR' ? 3 : 4;
+        
+        if (card.rarity === 'SSR') {
+            unlockCard(card);
+        }
+        
+        saveBackpack();
+        saveGame();
+        updateRecruitUI();
+        showToast(`${card.name} 升级为 ${newRarity}！`);
+    }
+}
+
 function updateRecruitUI() {
+    if (!cardsData || !cardsData.costs) {
+        return;
+    }
+    
     const drawBtn = document.getElementById('recruit-draw');
     const hcDisplay = document.getElementById('recruit-hc');
     const budgetDisplay = document.getElementById('recruit-budget');
     const drawsLeft = document.getElementById('recruit-draws-left');
     const backpackEl = document.getElementById('recruit-backpack');
+    const historyBtn = document.getElementById('recruit-history');
     
     if (hcDisplay) {
         const variantCount = backpack.filter(c => c.is_variant).length;
@@ -404,33 +670,39 @@ function updateRecruitUI() {
     }
     
     if (budgetDisplay && gameState) {
-        budgetDisplay.textContent = `现金流: ${gameState.budget}`;
+        budgetDisplay.textContent = `资金: ${gameState.budget.toLocaleString()}万`;
     }
     
     if (drawsLeft) {
-        drawsLeft.textContent = `抽卡消耗: ${cardsData.costs.single_draw}`;
+        drawsLeft.textContent = `单抽费用: ${getCurrentDrawCost()}万`;
+    }
+    
+    if (historyBtn) {
+        historyBtn.onclick = () => {
+            updateDrawHistoryUI();
+            showDrawHistory();
+        };
     }
     
     if (drawBtn) {
-        drawBtn.disabled = !canDraw();
-        drawBtn.onclick = canDraw() ? () => {
-            const card = drawFromPool(currentPool || 'rd');
-            if (card) {
-                showCardAnimation(card);
-            }
+        const canDrawResult = canDraw();
+        drawBtn.disabled = !canDrawResult;
+        drawBtn.onclick = canDrawResult ? () => {
+            drawFromPool(currentPool || 'rd');
         } : () => {};
     }
     
     if (backpackEl) {
-        backpackEl.innerHTML = backpack.map(card => `
-            <div class="card-item" style="border-color: ${cardsData.rarity_colors[card.rarity]}">
-                <div class="card-rarity">${card.rarity}</div>
-                <div class="card-name">${card.name}</div>
-                <div class="card-durability">耐久: ${card.durability}</div>
-                ${card.is_variant ? '<div class="card-variant">管培生</div>' : ''}
-                <button class="card-use-btn" onclick="useCard(${card.instanceId})">使用</button>
-            </div>
-        `).join('');
+        backpackEl.innerHTML = backpack.map(card => {
+            const rarityColor = cardsData?.rarity_colors?.[card.rarity] || '#9ca3af';
+            return `
+                <div class="card-item" style="border-color: ${rarityColor}">
+                    <div class="card-rarity" style="color: ${rarityColor}">${card.rarity || 'R'}</div>
+                    <div class="card-name">${card.name || '未知'}</div>
+                    ${card.is_variant ? '<div class="card-variant">管培生</div>' : ''}
+                </div>
+            `;
+        }).join('');
     }
 }
 
@@ -441,11 +713,20 @@ function showCardAnimation(card, callback) {
         return;
     }
     
+    if (!card || !card.rarity || !card.name) {
+        console.error('Invalid card data:', card);
+        if (callback) callback();
+        return;
+    }
+    
+    const rarityColor = cardsData?.rarity_colors?.[card.rarity] || '#9ca3af';
+    const description = card.description || '暂无描述';
+    
     animationEl.innerHTML = `
-        <div class="card-reveal" style="border-color: ${cardsData.rarity_colors[card.rarity]}">
-            <div class="card-reveal-rarity">${card.rarity}</div>
+        <div class="card-reveal" style="border-color: ${rarityColor}">
+            <div class="card-reveal-rarity" style="color: ${rarityColor}">${card.rarity}</div>
             <div class="card-reveal-name">${card.name}</div>
-            <div class="card-reveal-desc">${card.description}</div>
+            <div class="card-reveal-desc">${description}</div>
         </div>
     `;
     
@@ -456,6 +737,7 @@ function showCardAnimation(card, callback) {
         if (callback) callback();
     }, 2000);
 }
+
 function showVariantResult(card, result) {
     const toast = document.getElementById('variant-toast');
     if (!toast) {

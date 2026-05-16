@@ -45,10 +45,16 @@ function showReportModal() {
     const modal = document.getElementById('report-modal');
     if (!modal) return;
     
-    quarterlyQuests = gameState.quarterlyQuests || generateQuarterlyQuests();
-    if (!gameState.quarterlyQuests) {
+    if (!gameState.quarterlyQuests || gameState.quarterlyQuests.length === 0) {
+        quarterlyQuests = generateQuarterlyQuests();
         gameState.quarterlyQuests = quarterlyQuests;
+    } else {
+        quarterlyQuests = gameState.quarterlyQuests;
     }
+    
+    // 标记报表待处理状态，防止刷新后丢失
+    gameState.reportPending = true;
+    saveGame();
     
     renderReportModal();
     modal.style.display = 'flex';
@@ -321,12 +327,28 @@ function confirmQuarterlyReport() {
     
     gameState.budget = Math.max(0, gameState.budget + budgetChange);
     
+    gameState.totalReports = (gameState.totalReports || 0) + 1;
+    
+    if (gameState.pendingVariants && gameState.pendingVariants.length > 0) {
+        gameState.pendingVariants.forEach(v => {
+            v.reportPassed = true;
+        });
+    }
+    
+    // 清除报表待处理状态
+    gameState.reportPending = false;
     gameState.quarterlyQuests = [];
     gameState.quarterlyScore = 0;
     
     saveGame();
     
     closeReportModal();
+    
+    setTimeout(() => {
+        if (typeof processPendingVariants === 'function') {
+            processPendingVariants();
+        }
+    }, 100);
     
     const direction = gameState.direction || 'tob';
     const satisfactionName = direction === 'tob' ? '甲方满意度' : (direction === 'toc' ? '用户满意度' : '双边满意度');

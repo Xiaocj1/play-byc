@@ -11,6 +11,31 @@
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/home.css">
     <link rel="stylesheet" href="css/modals.css">
+    <style>
+        .bgm-toggle-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #ffd700;
+            padding: 12px;
+            cursor: pointer;
+            font-size: 20px;
+            color: #ffd700;
+            transition: all 0.3s;
+            z-index: 1000;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .bgm-toggle-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+    </style>
 </head>
 <body>
     <div class="crt-effect"></div>
@@ -60,6 +85,8 @@
                 当前工具链：<span id="current-tools-names">未选择</span>
             </div>
         </main>
+
+        <button class="bgm-toggle-btn" id="btn-bgm-toggle">🔊</button>
 
         <div class="rank-badge" id="rank-badge">
             <div class="rank-label">当前职级</div>
@@ -158,5 +185,36 @@
 
     <script src="js/museum.js"></script>
     <script src="js/home.js"></script>
+    
+    <audio id="bgm-player" loop>
+        <source src="assets/background/index.mp3" type="audio/mpeg">
+    
+    
+    <script>
+        const bgmPlayer = document.getElementById('bgm-player');
+        const bgmButton = document.getElementById('btn-bgm-toggle');
+        let bgmEnabled = false;
+        
+        function toggleBGM() {
+            bgmEnabled = !bgmEnabled;
+            if (bgmEnabled) {
+                bgmPlayer.volume = 0.3;
+                bgmPlayer.play().catch(() => {});
+                bgmButton.textContent = '🔊';
+            } else {
+                bgmPlayer.pause();
+                bgmButton.textContent = '🔇';
+            }
+        }
+        
+        bgmButton.addEventListener('click', toggleBGM);
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                toggleBGM();
+            }
+        });
+    </script>
 </body>
 </html>

@@ -273,6 +273,7 @@
         "runaway": {
             "name": "跑路",
             "rarity": "R",
+            "durability": 0,
             "camp": "neutral",
             "text": "💨 管培生跑路了！人去楼空...",
             "bonus": {"type": "budget", "value": 3}
@@ -280,6 +281,7 @@
         "exam": {
             "name": "考公",
             "rarity": "R",
+            "durability": 0,
             "camp": "neutral",
             "text": "📚 管培生考上公务员了！从此告别996！",
             "bonus": {"type": "budget", "value": 0}
@@ -303,8 +305,8 @@
     },
     "rarity_colors": {
         "R": "#9ca3af",
-        "SR": "#22c55e",
-        "SSR": "#eab308"
+        "SR": "#eab308",
+        "SSR": "#ff0066"
     },
     "position_colors": {
         "RD": "#3b82f6",

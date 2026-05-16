@@ -1,6 +1,9 @@
 /* 通用样式 - 仅作为基础，皮肤CSS会覆盖 */
 .status-bar {
-    /* 基础占位样式，由皮肤CSS完全控制 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
 }
 
 .status-columns {
@@ -36,8 +39,10 @@
     margin: 5px auto;
     padding: 0 15px;
     display: grid;
-    grid-template-columns: 1fr 300px;
+    grid-template-columns: 180px 1fr 240px;
     gap: 12px;
+    height: calc(100vh - 70px);
+    overflow: hidden;
 }
 
 @media (max-width: 900px) {
@@ -50,6 +55,22 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.sidebar-left,
+.sidebar-right {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: hidden;
+}
+
+.sidebar-left > *,
+.sidebar-right > * {
+    flex: 1;
+    min-height: 0;
 }
 
 .weekly-report {
@@ -144,6 +165,42 @@
 .option-btn:hover::before {
     opacity: 1;
     left: 5px;
+}
+
+.option-wrapper {
+    margin-bottom: 15px;
+}
+
+.option-effects {
+    font-family: 'Press Start 2P', monospace;
+    color: #888;
+    font-size: 8px;
+    margin-bottom: 5px;
+    padding-left: 5px;
+}
+
+.option-bonus {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    padding: 5px 8px;
+    margin-bottom: 5px;
+    border-radius: 3px;
+}
+
+.option-bonus.available {
+    background: rgba(0, 255, 65, 0.15);
+    border-left: 3px solid #00ff41;
+    color: #00ff41;
+}
+
+.option-bonus.unavailable {
+    background: rgba(255, 149, 0, 0.15);
+    border-left: 3px solid #ff9500;
+    color: #ff9500;
+}
+
+.option-bonus .bonus-icon {
+    margin-right: 5px;
 }
 
 .sidebar {

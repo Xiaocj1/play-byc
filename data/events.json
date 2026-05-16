@@ -8,6 +8,7 @@
         {
           "text": "接下需求，安排RD加班",
           "effects": {"aisaike": -5, "progress": 10, "satisfaction": 5},
+          "bonusCondition": {"position": "RD", "bonusEffects": {"progress": 5}},
           "budget": -8,
           "prd_effect": "新增需求#408：批量导出功能",
           "weekly_effect": "本周加班严重，团队略显疲惫"
@@ -15,12 +16,14 @@
         {
           "text": "拒绝需求，跟甲方谈判",
           "effects": {"xiaokui": 5, "morale": 5, "satisfaction": -15},
+          "bonusCondition": {"position": "运营", "bonusEffects": {"satisfaction": 10}},
           "prd_effect": "需求变更记录：拒绝非核心需求",
           "weekly_effect": "团队士气有所提升，但甲方关系紧张"
         },
         {
           "text": "让QA帮忙评估需求",
           "effects": {"moganna": 3, "progress": 5, "satisfaction": 0},
+          "bonusCondition": {"position": "QA", "bonusEffects": {"progress": 3}},
           "prd_effect": "需求评估记录：QA参与需求分析",
           "weekly_effect": "莫甘娜参与度提高，团队协作加强"
         }
@@ -32,10 +35,11 @@
       "description": "艾萨克提交的代码被发现有严重性能问题。",
       "options": [
         {
-          "text": "严厉批评艾萨克",
-          "effects": {"aisaike": -10, "satisfaction": -5},
-          "prd_effect": "代码规范更新：增加性能审查环节",
-          "weekly_effect": "艾萨克情绪低落，但代码质量意识提升"
+          "text": "让RD加班修复",
+          "effects": {"aisaike": -5, "progress": 8},
+          "bonusCondition": {"position": "RD", "bonusEffects": {"progress": 5}},
+          "prd_effect": "紧急修复：性能问题已解决",
+          "weekly_effect": "代码质量得到保障"
         },
         {
           "text": "一起分析问题，帮助改进",
@@ -46,6 +50,7 @@
         {
           "text": "让小葵组织团建缓解压力",
           "effects": {"xiaokui": 5, "aisaike": 3, "satisfaction": -3},
+          "bonusCondition": {"position": "运营", "bonusEffects": {"satisfaction": 5}},
           "budget": -12,
           "prd_effect": "团队建设记录：缓解开发压力",
           "weekly_effect": "团建效果不错，大家又充满干劲"
@@ -60,6 +65,7 @@
         {
           "text": "支持莫甘娜，增加测试用例",
           "effects": {"moganna": 5, "progress": -5, "satisfaction": 3},
+          "bonusCondition": {"position": "QA", "bonusEffects": {"progress": 5}},
           "prd_effect": "测试计划更新：增加回归测试用例",
           "weekly_effect": "莫甘娜很满意，测试覆盖率提升"
         },
@@ -70,8 +76,9 @@
           "weekly_effect": "项目进度加快，但莫甘娜有些不满"
         },
         {
-          "text": "让小葵协调双方意见",
-          "effects": {"xiaokui": 3, "moganna": 2, "aisaike": 2, "satisfaction": 0},
+          "text": "召开会议协调",
+          "effects": {"xiaokui": 3, "progress": 3},
+          "bonusCondition": {"position": "产品", "bonusEffects": {"progress": 3}},
           "prd_effect": "沟通记录：协调开发与测试",
           "weekly_effect": "小葵的协调能力得到认可"
         }
@@ -85,12 +92,14 @@
         {
           "text": "让RD紧急排查问题",
           "effects": {"aisaike": -5, "xiaokui": 5, "satisfaction": -10},
+          "bonusCondition": {"position": "RD", "bonusEffects": {"satisfaction": 5}},
           "prd_effect": "紧急修复：用户留存数据问题",
           "weekly_effect": "问题快速解决，小葵很感激"
         },
         {
           "text": "让QA先定位问题原因",
           "effects": {"moganna": 5, "xiaokui": 3, "satisfaction": -5},
+          "bonusCondition": {"position": "QA", "bonusEffects": {"satisfaction": 5}},
           "prd_effect": "问题分析记录：数据异常排查",
           "weekly_effect": "QA和运营协作更加顺畅"
         },
@@ -98,7 +107,7 @@
           "text": "召开紧急会议一起讨论",
           "effects": {"aisaike": 2, "moganna": 2, "xiaokui": 2, "satisfaction": -3},
           "prd_effect": "会议记录：数据异常应对方案",
-          "weekly_effect": "团队凝聚力提升，问题妥善解决"
+          "weekly_effect": "大家一起分析问题，团队凝聚力增强"
         }
       ]
     },
@@ -110,6 +119,7 @@
         {
           "text": "要求团队加班赶工",
           "effects": {"aisaike": -8, "moganna": -5, "satisfaction": 10},
+          "bonusCondition": {"position": "RD", "bonusEffects": {"progress": 5}},
           "budget": -15,
           "prd_effect": "发布计划更新：版本延期至下周",
           "weekly_effect": "团队压力很大，抱怨声不断"
@@ -117,12 +127,14 @@
         {
           "text": "向甲方说明情况，请求延期",
           "effects": {"xiaokui": 5, "satisfaction": -15},
+          "bonusCondition": {"position": "运营", "bonusEffects": {"satisfaction": 8}},
           "prd_effect": "沟通记录：版本延期说明",
           "weekly_effect": "甲方表示理解，团队松了一口气"
         },
         {
           "text": "组织复盘会总结经验",
           "effects": {"aisaike": 3, "moganna": 3, "xiaokui": 3, "satisfaction": -8},
+          "bonusCondition": {"position": "产品", "bonusEffects": {"satisfaction": 5}},
           "prd_effect": "复盘记录：发布延期原因分析",
           "weekly_effect": "团队从失败中学习，氛围积极"
         }
@@ -136,12 +148,14 @@
         {
           "text": "全部接受，保证客户满意",
           "effects": {"aisaike": -10, "moganna": -8, "satisfaction": 15},
+          "bonusCondition": {"position": "RD", "bonusEffects": {"progress": 5}},
           "prd_effect": "需求变更记录：接受甲方新增需求",
           "weekly_effect": "团队负担加重，加班已成常态"
         },
         {
           "text": "评估后只接受核心需求",
           "effects": {"moganna": 3, "satisfaction": -10},
+          "bonusCondition": {"position": "产品", "bonusEffects": {"progress": 5}},
           "prd_effect": "需求评估记录：筛选优先级",
           "weekly_effect": "需求得到控制，团队压力可控"
         },

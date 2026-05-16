@@ -1,0 +1,165 @@
+{
+    "missions": [
+        {
+            "id": "mission_001",
+            "title": "紧急Bug修复",
+            "description": "线上出现严重Bug，需要立即修复！",
+            "requiredPosition": "RD",
+            "difficulty": "high",
+            "durabilityCost": 2,
+            "successEffects": {
+                "progress": 15,
+                "satisfaction": 10
+            },
+            "failureEffects": {
+                "satisfaction": -15,
+                "fame": -5
+            },
+            "successRate": 0.7
+        },
+        {
+            "id": "mission_002",
+            "title": "性能优化",
+            "description": "用户反馈系统卡顿，需要进行性能优化。",
+            "requiredPosition": "RD",
+            "difficulty": "medium",
+            "durabilityCost": 1,
+            "successEffects": {
+                "progress": 10,
+                "satisfaction": 5
+            },
+            "failureEffects": {
+                "progress": -5
+            },
+            "successRate": 0.85
+        },
+        {
+            "id": "mission_003",
+            "title": "压力测试",
+            "description": "新版本上线前需要进行全面压力测试。",
+            "requiredPosition": "QA",
+            "difficulty": "high",
+            "durabilityCost": 2,
+            "successEffects": {
+                "progress": 12,
+                "satisfaction": 8
+            },
+            "failureEffects": {
+                "satisfaction": -10
+            },
+            "successRate": 0.75
+        },
+        {
+            "id": "mission_004",
+            "title": "回归测试",
+            "description": "需要对所有功能进行回归测试，确保没有引入新问题。",
+            "requiredPosition": "QA",
+            "difficulty": "medium",
+            "durabilityCost": 1,
+            "successEffects": {
+                "progress": 8,
+                "satisfaction": 5
+            },
+            "failureEffects": {},
+            "successRate": 0.9
+        },
+        {
+            "id": "mission_005",
+            "title": "用户调研",
+            "description": "需要深入了解用户需求，进行用户调研。",
+            "requiredPosition": "运营",
+            "difficulty": "low",
+            "durabilityCost": 1,
+            "successEffects": {
+                "satisfaction": 15,
+                "fame": 5
+            },
+            "failureEffects": {
+                "satisfaction": -5
+            },
+            "successRate": 0.95
+        },
+        {
+            "id": "mission_006",
+            "title": "活动策划",
+            "description": "策划一场大型运营活动，提升用户活跃度。",
+            "requiredPosition": "运营",
+            "difficulty": "high",
+            "durabilityCost": 2,
+            "successEffects": {
+                "fame": 15,
+                "satisfaction": 10,
+                "budget": 50
+            },
+            "failureEffects": {
+                "budget": -20,
+                "satisfaction": -10
+            },
+            "successRate": 0.7
+        },
+        {
+            "id": "mission_007",
+            "title": "UI改版",
+            "description": "用户反馈界面不够美观，需要进行UI改版。",
+            "requiredPosition": "设计",
+            "difficulty": "medium",
+            "durabilityCost": 1,
+            "successEffects": {
+                "progress": 8,
+                "satisfaction": 12
+            },
+            "failureEffects": {
+                "satisfaction": -8
+            },
+            "successRate": 0.85
+        },
+        {
+            "id": "mission_008",
+            "title": "品牌设计",
+            "description": "需要设计一套完整的品牌视觉系统。",
+            "requiredPosition": "设计",
+            "difficulty": "high",
+            "durabilityCost": 2,
+            "successEffects": {
+                "fame": 20,
+                "satisfaction": 15
+            },
+            "failureEffects": {
+                "satisfaction": -12
+            },
+            "successRate": 0.75
+        },
+        {
+            "id": "mission_009",
+            "title": "需求评审",
+            "description": "组织产品需求评审会议，确保需求清晰。",
+            "requiredPosition": "产品",
+            "difficulty": "low",
+            "durabilityCost": 1,
+            "successEffects": {
+                "progress": 5,
+                "satisfaction": 5
+            },
+            "failureEffects": {
+                "progress": -3
+            },
+            "successRate": 0.95
+        },
+        {
+            "id": "mission_010",
+            "title": "PRD撰写",
+            "description": "撰写详细的产品需求文档。",
+            "requiredPosition": "产品",
+            "difficulty": "medium",
+            "durabilityCost": 1,
+            "successEffects": {
+                "progress": 10,
+                "satisfaction": 8
+            },
+            "failureEffects": {
+                "progress": -5
+            },
+            "successRate": 0.85
+        }
+    ]
+}

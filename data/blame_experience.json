@@ -1,0 +1,124 @@
+{
+  "experiences": [
+    {
+      "id": "exp_001",
+      "title": "这个问题我们需要复盘",
+      "content": "甩锅的优雅说法：把锅变成'系统性问题'",
+      "mode": "all",
+      "type": "blame_skill",
+      "effect": "甩锅成功率+5%",
+      "growth_points": 2,
+      "flavor": "复盘是甩锅的最高境界，既显得专业，又把责任推给了'系统'。"
+    },
+    {
+      "id": "exp_002",
+      "title": "这不是我负责的模块",
+      "content": "精准甩锅到具体责任人",
+      "mode": "tob",
+      "type": "blame_skill",
+      "effect": "甩给团队成功率+10%",
+      "growth_points": 2,
+      "flavor": "模块化分工的好处：锅也可以模块化。"
+    },
+    {
+      "id": "exp_003",
+      "title": "市场环境变化太快",
+      "content": "甩给外部的经典话术",
+      "mode": "all",
+      "type": "blame_skill",
+      "effect": "甩给外部成功率+8%",
+      "growth_points": 2,
+      "flavor": "市场永远是最好的背锅侠，因为它不会反驳。"
+    },
+    {
+      "id": "exp_004",
+      "title": "我们也在跟进这个问题",
+      "content": "拖延时间的艺术",
+      "mode": "toc",
+      "type": "blame_skill",
+      "effect": "满意度下降减缓",
+      "growth_points": 1,
+      "flavor": "跟进是个魔法词汇，既能显得积极，又不用真的做什么。"
+    },
+    {
+      "id": "exp_005",
+      "title": "这是行业共性问题",
+      "content": "把锅上升到行业高度",
+      "mode": "b2c",
+      "type": "blame_skill",
+      "effect": "纠纷率影响降低",
+      "growth_points": 2,
+      "flavor": "当所有人都犯错时，错误就不再是错误了。"
+    },
+    {
+      "id": "exp_006",
+      "title": "我来做retrospective",
+      "content": "用英文词显得专业",
+      "mode": "all",
+      "type": "blame_skill",
+      "effect": "甲方/市场好感+5",
+      "growth_points": 1,
+      "flavor": "Retrospective比'复盘'听起来贵50块钱。"
+    },
+    {
+      "id": "exp_007",
+      "title": "我们需要对齐一下认知",
+      "content": "把锅变成'沟通问题'",
+      "mode": "all",
+      "type": "blame_skill",
+      "effect": "甩锅失败惩罚减轻",
+      "growth_points": 2,
+      "flavor": "认知不对齐，项目做不好，这锅就没人背了。"
+    },
+    {
+      "id": "exp_008",
+      "title": "这个需求本身有问题",
+      "content": "反甩锅：质疑需求合理性",
+      "mode": "all",
+      "type": "counter_blame",
+      "effect": "反击成功率+15%",
+      "growth_points": 3,
+      "flavor": "最好的防守就是质疑进攻的合理性。"
+    },
+    {
+      "id": "exp_009",
+      "title": "我建议拉个会讨论一下",
+      "content": "把锅分散到会议上",
+      "mode": "all",
+      "type": "blame_skill",
+      "effect": "团队好感下降减缓",
+      "growth_points": 1,
+      "flavor": "会议是最好的甩锅场所，因为锅会被分摊成很多小锅。"
+    },
+    {
+      "id": "exp_010",
+      "title": "我们要prioritize",
+      "content": "用优先级甩掉不重要的锅",
+      "mode": "all",
+      "type": "blame_skill",
+      "effect": "下次任务成功率+10%",
+      "growth_points": 2,
+      "flavor": "Prioritize是职场黑话之王，既能甩锅又能显得有策略。"
+    },
+    {
+      "id": "exp_011",
+      "title": "这个坑是历史遗留的",
+      "content": "甩给前任或历史版本",
+      "mode": "all",
+      "type": "blame_skill",
+      "effect": "甩锅成功率+12%",
+      "growth_points": 3,
+      "flavor": "历史遗留问题是终极背锅侠，因为它已经不在场了。"
+    },
+    {
+      "id": "exp_012",
+      "title": "我们需要更多数据支持",
+      "content": "用数据拖延决策",
+      "mode": "all",
+      "type": "delay_tactic",
+      "effect": "冷却时间-1周",
+      "growth_points": 1,
+      "flavor": "数据不够，既不能背锅也不能甩锅，完美。"
+    }
+  ]
+}

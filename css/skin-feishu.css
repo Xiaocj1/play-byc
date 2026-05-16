@@ -2,38 +2,40 @@
 body.skin-feishu {
     background-color: #f0efe9;
     color: #2c3e50;
+    height: 100vh;
+    overflow: hidden;
 }
 
 .skin-feishu .status-bar {
     background: rgba(255, 255, 255, 0.95);
     border-bottom: 1px solid rgba(224, 221, 213, 0.8);
-    padding: 10px 16px;
+    padding: 6px 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 10px;
     position: relative;
     z-index: 100;
 }
 
 .skin-feishu .status-columns {
     display: flex;
-    gap: 30px;
+    gap: 20px;
     flex: 1;
 }
 
 .skin-feishu .status-column {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 3px;
 }
 
 .skin-feishu .status-item {
-    font-size: 13px;
+    font-size: 11px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     color: #1f1f1f;
 }
 
@@ -75,9 +77,9 @@ body.skin-feishu {
     display: grid;
     grid-template-columns: 260px 1fr 280px;
     gap: 16px;
-    padding: 10px 16px;
+    padding: 4px 16px 10px;
     background: #e8e6df;
-    height: calc(100vh - 45px);
+    height: calc(100vh - 38px);
     position: relative;
 }
 
@@ -85,23 +87,23 @@ body.skin-feishu {
     order: 1;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 8px;
 }
 
 .skin-feishu .character-panel {
     background: #ffffff;
     border: 1px solid #e0ddd5;
     border-radius: 8px;
-    padding: 16px;
-    flex: 1;
+    padding: 10px;
+    flex-shrink: 0;
 }
 
 .skin-feishu .character-panel .panel-title {
-    font-size: 15px;
+    font-size: 11px;
     font-weight: 600;
     color: #1f1f1f;
-    margin-bottom: 14px;
-    padding-bottom: 10px;
+    margin-bottom: 8px;
+    padding-bottom: 5px;
     border-bottom: 1px solid #e8e6df;
 }
 
@@ -114,10 +116,10 @@ body.skin-feishu {
 .skin-feishu .portrait-item {
     background: #f5f4f0;
     border: 1px solid #e0ddd5;
-    border-radius: 8px;
-    padding: 12px 14px;
+    border-radius: 6px;
+    padding: 8px 10px;
     text-align: center;
-    min-width: 70px;
+    min-width: 50px;
     transition: all 0.2s ease;
 }
 
@@ -127,24 +129,24 @@ body.skin-feishu {
 }
 
 .skin-feishu .portrait-item .portrait-name {
-    font-size: 13px;
+    font-size: 10px;
     font-weight: 500;
     color: #1f1f1f;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .skin-feishu .portrait-item .portrait-stats {
-    font-size: 11px;
+    font-size: 9px;
     color: #666;
 }
 
 .skin-feishu .character-card {
     background: #f5f4f0;
     border: 1px solid #e0ddd5;
-    padding: 10px;
+    padding: 6px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 6px;
     transition: all 0.2s;
 }
 
@@ -162,7 +164,7 @@ body.skin-feishu {
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    border: 2px solid #3370ff;
+    border: 1px solid #3370ff;
 }
 
 .skin-feishu .character-portrait img {
@@ -172,24 +174,24 @@ body.skin-feishu {
 }
 
 .skin-feishu .character-portrait .placeholder {
-    font-size: 16px;
+    font-size: 10px;
     color: #3370ff;
 }
 
 .skin-feishu .character-card-name {
-    font-size: 13px;
+    font-size: 10px;
     color: #1f1f1f;
     font-weight: 500;
 }
 
 .skin-feishu .character-card-role {
-    font-size: 11px;
+    font-size: 9px;
     color: #666;
 }
 
 .skin-feishu .character-card-favor-bar {
-    width: 50px;
-    height: 4px;
+    width: 40px;
+    height: 3px;
     background: #e8e6df;
     border-radius: 2px;
     overflow: hidden;
@@ -202,7 +204,7 @@ body.skin-feishu {
 }
 
 .skin-feishu .character-card-favor-value {
-    font-size: 11px;
+    font-size: 9px;
     color: #3370ff;
 }
 
@@ -337,43 +339,43 @@ body.skin-feishu {
 .skin-feishu .satisfaction-panel {
     background: #ffffff;
     border: 1px solid #e0ddd5;
-    border-radius: 8px;
-    padding: 14px;
+    border-radius: 6px;
+    padding: 8px;
 }
 
 .skin-feishu .progress-panel .panel-title,
 .skin-feishu .satisfaction-panel .panel-title {
-    font-size: 13px;
+    font-size: 10px;
     font-weight: 600;
     color: #1f1f1f;
-    margin-bottom: 10px;
-    padding-bottom: 8px;
+    margin-bottom: 5px;
+    padding-bottom: 4px;
     border-bottom: 1px solid #e8e6df;
 }
 
 .skin-feishu .progress-bar,
 .skin-feishu .satisfaction-bar {
-    height: 10px;
-    border-radius: 5px;
+    height: 6px;
+    border-radius: 3px;
     background: #e8e6df;
     overflow: hidden;
-    margin-bottom: 6px;
+    margin-bottom: 3px;
 }
 
 .skin-feishu .progress-fill {
     background: linear-gradient(90deg, #3370ff, #5370ff);
     height: 100%;
-    border-radius: 5px;
+    border-radius: 3px;
 }
 
 .skin-feishu .satisfaction-fill {
     background: linear-gradient(90deg, #00c48c, #00a86b);
     height: 100%;
-    border-radius: 5px;
+    border-radius: 3px;
 }
 
 .skin-feishu .progress-text,
 .skin-feishu .satisfaction-text {
-    font-size: 12px;
+    font-size: 9px;
     color: #666;
 }

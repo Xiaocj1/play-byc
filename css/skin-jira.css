@@ -2,7 +2,8 @@
 body.skin-jira {
     background: linear-gradient(135deg, #0d1f2d 0%, #1a3a4a 50%, #0d1f2d 100%);
     color: #e8e8e8;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
     font-size: 11px;
 }
 
@@ -67,6 +68,8 @@ body.skin-jira {
     gap: 10px;
     width: 300px;
     flex-shrink: 0;
+    height: 100%;
+    overflow-y: auto;
 }
 
 .skin-jira .main-area {
@@ -77,7 +80,7 @@ body.skin-jira {
 
 .skin-jira .jira-kanban {
     display: grid;
-    grid-template-columns: 165px 165px 165px minmax(225px, 1fr);
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 12px;
     height: calc(100vh - 90px);
 }
@@ -257,39 +260,113 @@ body.skin-jira {
     box-shadow: 0 5px 12px rgba(21, 101, 192, 0.5);
 }
 
-.skin-jira .sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
 .skin-jira .character-panel,
 .skin-jira .progress-panel,
 .skin-jira .satisfaction-panel {
     background: rgba(30, 60, 80, 0.75);
     border-radius: 8px;
-    padding: 12px;
+    padding: 8px;
+    flex-shrink: 0;
 }
 
 .skin-jira .character-panel {
-    flex: 1;
+    flex-shrink: 0;
 }
 
-.skin-jira .character-panel .panel-title,
+.skin-jira .progress-panel,
+.skin-jira .satisfaction-panel {
+    flex-shrink: 0;
+}
+
 .skin-jira .progress-panel .panel-title,
 .skin-jira .satisfaction-panel .panel-title {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
     color: #ffc107;
-    margin-bottom: 10px;
-    padding-bottom: 6px;
+    margin-bottom: 3px;
+    padding-bottom: 2px;
     border-bottom: 1px solid rgba(255, 193, 7, 0.4);
+}
+
+.skin-jira .progress-bar {
+    height: 5px;
+    margin-bottom: 2px;
 }
 
 .skin-jira .portraits-container {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 60px;
+}
+
+.skin-jira .character-card {
+    display: flex;
+    align-items: center;
     gap: 8px;
+    padding: 6px;
+    background: rgba(0, 255, 0, 0.3);
+    border-radius: 6px;
+    margin-bottom: 6px;
+    border: 1px solid green;
+    min-height: 36px;
+}
+
+.skin-jira .character-portrait {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 10px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.skin-jira .character-card-name {
+    font-weight: 600;
+    color: #fff;
+    font-size: 10px;
+}
+
+.skin-jira .character-card-role {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 2px;
+}
+
+.skin-jira .character-card-favor-bar {
+    height: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    overflow: hidden;
+    width: 50px;
+}
+
+.skin-jira .character-card-favor-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #34d399);
+    border-radius: 2px;
+}
+
+.skin-jira .character-card-favor-value {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+}
+
+.skin-jira .character-card-buffs {
+    display: flex;
+    gap: 3px;
+    margin-top: 2px;
+}
+
+.skin-jira .buff-item {
+    font-size: 9px;
 }
 
 .skin-jira .portrait-item {
@@ -320,11 +397,11 @@ body.skin-jira {
 
 .skin-jira .progress-bar,
 .skin-jira .satisfaction-bar {
-    height: 8px;
-    border-radius: 4px;
+    height: 6px;
+    border-radius: 3px;
     background: rgba(0, 0, 0, 0.35);
     overflow: hidden;
-    margin-bottom: 5px;
+    margin-bottom: 2px;
 }
 
 .skin-jira .progress-fill,
