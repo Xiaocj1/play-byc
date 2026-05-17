@@ -1,10 +1,10 @@
 {
   "ranks": [
-    {"id": "p5", "name": "P5", "tian": "P5", "jue": "2-1", "di": "1-1", "cost": 0, "budget": 80, "unlock": "基础开局"},
-    {"id": "p6", "name": "P6", "tian": "P6", "jue": "2-2", "di": "1-2", "cost": 2, "budget": 100, "unlock": "「前大厂实习生」背景"},
-    {"id": "p7", "name": "P7", "tian": "P7", "jue": "3-1", "di": "2-1", "cost": 5, "budget": 120, "unlock": "「前天堂RD」背景"},
-    {"id": "p8", "name": "P8", "tian": "P8", "jue": "3-2", "di": "2-2", "cost": 9, "budget": 150, "unlock": "「免死金牌」"},
-    {"id": "p9", "name": "P9", "tian": "P9", "jue": "4-1", "di": "3-1", "cost": 14, "budget": 180, "unlock": "「前G端审计员」"},
-    {"id": "p10", "name": "P10", "tian": "P10", "jue": "4-2", "di": "3-2", "cost": 20, "budget": 220, "unlock": "「黑化线」"}
+    {"id": "p5", "name": "初级PM", "network": "1-1", "tech": "1-1", "resource": "1-1", "cost": 0, "budget": 80, "unlock": "基础开局"},
+    {"id": "p6", "name": "中级PM", "network": "2-1", "tech": "1-2", "resource": "1-2", "cost": 2, "budget": 100, "unlock": "「大厂实习经历」"},
+    {"id": "p7", "name": "高级PM", "network": "2-2", "tech": "2-1", "resource": "2-1", "cost": 5, "budget": 120, "unlock": "「技术背景加成」"},
+    {"id": "p8", "name": "资深PM", "network": "3-1", "tech": "2-2", "resource": "2-2", "cost": 9, "budget": 150, "unlock": "「项目救星」"},
+    {"id": "p9", "name": "专家PM", "network": "3-2", "tech": "3-1", "resource": "3-1", "cost": 14, "budget": 180, "unlock": "「行业认证专家」"},
+    {"id": "p10", "name": "架构师", "network": "4-1", "tech": "3-2", "resource": "3-2", "cost": 20, "budget": 220, "unlock": "「技术决策者」"}
   ]
 }

@@ -90,14 +90,13 @@ function renderQuestList() {
         questEl.className = `report-quest-item ${quest.completed ? 'completed' : ''}`;
         questEl.dataset.questId = quest.instanceId;
         
-        const campColor = questsData.camp_colors[quest.camp] || '#888';
-        const campName = questsData.camp_names[quest.camp] || '中立';
+        const posColor = cardsData.position_colors[quest.position] || '#888';
         const diffColor = questsData.difficulty_colors[quest.difficulty] || '#888';
         
         questEl.innerHTML = `
             <div class="quest-header">
                 <span class="quest-name">${quest.name}</span>
-                <span class="quest-camp" style="color: ${campColor}">${campName}</span>
+                <span class="quest-position" style="color: ${posColor}">${quest.position}</span>
             </div>
             <div class="quest-info">
                 <span class="quest-difficulty" style="color: ${diffColor}">${quest.difficulty}</span>
@@ -157,33 +156,20 @@ function useCardOnQuest(card, quest) {
     const cardIndex = backpack.findIndex(c => c.instanceId === card.instanceId);
     if (cardIndex === -1) return null;
     
-    let noDurabilityLoss = false;
-    let bonusMultiplier = 1;
+    const result = playRockPaperScissors(card, quest);
     
-    if (card.camp === quest.camp) {
-        if ((card.camp === 'heaven' && quest.camp === 'heaven') ||
-            (card.camp === 'hell' && quest.camp === 'hell')) {
-            noDurabilityLoss = true;
-            bonusMultiplier = 1.5;
-        } else if (card.camp === 'justice') {
-            noDurabilityLoss = true;
-            bonusMultiplier = 1.3;
-        }
-    }
-    
-    const score = Math.round(quest.base_score * bonusMultiplier);
-    
-    if (!noDurabilityLoss) {
+    if (!result.win) {
         card.durability--;
     }
     
-    const result = {
+    const finalResult = {
         questName: quest.name,
         cardName: card.name,
-        score: score,
-        durabilityLost: !noDurabilityLoss,
-        bonus: bonusMultiplier > 1,
-        cardDestroyed: card.durability <= 0
+        score: result.score,
+        durabilityLost: !result.win,
+        bonus: result.win,
+        cardDestroyed: card.durability <= 0,
+        message: result.message
     };
     
     if (card.durability <= 0) {
@@ -196,21 +182,52 @@ function useCardOnQuest(card, quest) {
     
     quest.completed = true;
     quest.usedCardId = card.instanceId;
-    quest.score = score;
+    quest.score = result.score;
     
-    gameState.quarterlyScore = (gameState.quarterlyScore || 0) + score;
+    gameState.quarterlyScore = (gameState.quarterlyScore || 0) + result.score;
     
-    return result;
+    return finalResult;
+}
+
+function playRockPaperScissors(card, quest) {
+    const counterChain = cardsData.counter_chain;
+    const cardPosition = card.position;
+    const questPosition = quest.position;
+    
+    let win = false;
+    let score = 0;
+    let message = '';
+    
+    if (counterChain[cardPosition] === questPosition) {
+        win = true;
+        score = Math.round(quest.base_score * 1.5);
+        message = `${cardPosition} 克制 ${questPosition}！完美解决！`;
+    } else if (counterChain[questPosition] === cardPosition) {
+        win = false;
+        score = Math.round(quest.base_score * 0.5);
+        message = `${questPosition} 克制 ${cardPosition}！效果打折...`;
+    } else {
+        const randomResult = Math.random();
+        if (randomResult > 0.3) {
+            win = true;
+            score = quest.base_score;
+            message = `势均力敌，随机判定成功！`;
+        } else {
+            win = false;
+            score = Math.round(quest.base_score * 0.3);
+            message = `势均力敌，随机判定失败...`;
+        }
+    }
+    
+    return { win, score, message };
 }
 
 function showQuestResult(result) {
     if (!result) return;
     
-    let message = `用【${result.cardName}】解决【${result.questName}】，得分 +${result.score}`;
+    let message = `${result.message}\n用【${result.cardName}】解决【${result.questName}】，得分 +${result.score}`;
     
-    if (result.bonus) {
-        message += '\n阵营匹配！得分 +' + Math.round(result.score * 0.5) + ' (无磨损)';
-    } else if (result.durabilityLost) {
+    if (result.durabilityLost) {
         message += '\n磨损 -1' + (result.cardDestroyed ? ' (卡牌销毁)' : '');
     }
     
@@ -236,7 +253,7 @@ function renderCardList() {
                     <span class="report-card-position" style="color: ${cardsData.position_colors[card.position] || '#888'}">${card.position}</span>
                 </div>
                 <div class="report-card-info">
-                    <span class="report-card-camp" style="color: ${questsData.camp_colors[card.camp] || '#888'}">${questsData.camp_names[card.camp] || '中立'}</span>
+                    <span class="report-card-rarity" style="color: ${cardsData.rarity_colors[card.rarity] || '#888'}">${card.rarity}</span>
                     <span class="report-card-dur">耐久: ${card.durability}</span>
                 </div>
             </div>

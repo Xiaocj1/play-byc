@@ -1,12 +1,12 @@
 const STORAGE_KEY = "fair_office_game_state";
 const ENDINGS_KEY = "fair_office_unlocked_endings";
-const PRESTIGE_KEY = "fair_office_prestige";
+const PROJECT_EXPERIENCE_KEY = "fair_office_project_experience";
 const RANK_KEY = "fair_office_current_rank";
 const TOOLCHAIN_KEY = "fair_office_toolchain";
 const UNLOCKED_TOOLS_KEY = "fair_office_unlocked_tools";
 const QUARTER_DURATION = 12;
 
-let prestige = 0;
+let projectExperience = 0;
 let currentRank = "p5";
 let ranks = [];
 let toolsData = { categories: [] };
@@ -145,8 +145,20 @@ function triggerVictory(endingType = 'success') {
     gameState.gameOver = true;
     gameState.ending = endingType;
     saveGame();
-    checkAndUnlockProducts();
-    showEndingModalForVictory(endingType);
+    
+    // 检查解锁哪些产品
+    const unlockedProducts = checkAndUnlockProducts();
+    const unlockedRealFailed = checkAndUnlockRealFailedProducts();
+    const allUnlocked = [...unlockedProducts, ...unlockedRealFailed];
+    
+    // 显示解锁动画，完成后显示结局模态框
+    if (allUnlocked.length > 0) {
+        showUnlockAnimation(allUnlocked, () => {
+            showEndingModalForVictory(endingType);
+        });
+    } else {
+        showEndingModalForVictory(endingType);
+    }
 }
 
 function triggerGameOver(reason) {
@@ -159,7 +171,22 @@ function triggerGameOver(reason) {
         clearBackpack();
     }
     
-    showGameOverModal();
+    // 存储游戏结果到localStorage，由首页处理项目经历
+    localStorage.setItem('fair_office_last_game_result', 'failure');
+    
+    // 检查解锁哪些产品
+    const unlockedProducts = checkAndUnlockProducts();
+    const unlockedRealFailed = checkAndUnlockRealFailedProducts();
+    const allUnlocked = [...unlockedProducts, ...unlockedRealFailed];
+    
+    // 显示解锁动画，完成后显示游戏结束模态框
+    if (allUnlocked.length > 0) {
+        showUnlockAnimation(allUnlocked, () => {
+            showGameOverModal();
+        });
+    } else {
+        showGameOverModal();
+    }
 }
 
 let gameState = {
@@ -192,7 +219,7 @@ let gameState = {
     totalAssets: 0,
     dau: 10,  // ToC模式初始日活用户（万）
     consecutiveZeroDauWeeks: 0,  // ToC模式：连续DAU=0的周数
-    ltv: 2,
+    ltv: 0.01,  // ToC模式LTV（万元），初始100元
     gmv: 0,
     commissionRate: 5,
     disputeRate: 5,
@@ -325,7 +352,7 @@ async function loadAllData() {
         
         ranks = ranksData.ranks || [];
         
-        loadPrestigeAndRank();
+        loadProjectExperienceAndRank();
         loadGameState();
         loadUnlockedTools();
         
@@ -343,13 +370,13 @@ async function loadAllData() {
     }
 }
 
-function loadPrestigeAndRank() {
-    prestige = parseInt(localStorage.getItem(PRESTIGE_KEY) || '0');
+function loadProjectExperienceAndRank() {
+    projectExperience = parseInt(localStorage.getItem(PROJECT_EXPERIENCE_KEY) || '0');
     currentRank = localStorage.getItem(RANK_KEY) || 'p5';
 }
 
-function savePrestigeAndRank() {
-    localStorage.setItem(PRESTIGE_KEY, prestige.toString());
+function saveProjectExperienceAndRank() {
+    localStorage.setItem(PROJECT_EXPERIENCE_KEY, projectExperience.toString());
     localStorage.setItem(RANK_KEY, currentRank);
 }
 
@@ -987,7 +1014,7 @@ function updateBusinessMetrics() {
                 <span class="metric-value">${gameState.dau}</span>
             </div>
             <div class="metric-item">
-                <span class="metric-label">LTV(元):</span>
+                <span class="metric-label">LTV(万):</span>
                 <span class="metric-value">${gameState.ltv}</span>
             </div>
             <div class="metric-item">
@@ -1518,10 +1545,10 @@ function updateBusinessKPI() {
         const dauMultiplier = gameState.pmfChoiceMade ? gameState.dauMultiplier : 1.0;
         gameState.dau = Math.max(0, Math.round(gameState.dau + dauGrowth * dauMultiplier));
         
-        // 应用LTV增长倍数
-        const ltvBase = 2 + (gameState.satisfaction * 0.05);
+        // 应用LTV增长倍数（单位：万元）
+        const ltvBase = 0.01;  // 固定初始值0.01万元（100元）
         const ltvMultiplier = gameState.pmfChoiceMade ? gameState.ltvMultiplier : 1.0;
-        gameState.ltv = Math.max(1, Math.round(ltvBase * ltvMultiplier));
+        gameState.ltv = Math.max(0.01, Math.min(0.1, ltvBase * ltvMultiplier));
     } else if (direction === 'b2c') {
         gameState.gmv = Math.max(0, Math.round(
             gameState.gmv + 
@@ -1567,7 +1594,7 @@ function calculateQuarterlyRevenue() {
         revenue = Math.round(phaseRevenue * satisfactionMultiplier);
     } else if (direction === 'toc') {
         const quarterDays = 90;
-        revenue = Math.round(gameState.dau * 10000 * gameState.ltv * (quarterDays / 365));
+        revenue = Math.round(gameState.dau * gameState.ltv * quarterDays);
     } else if (direction === 'b2c') {
         revenue = Math.round(gameState.gmv * 100000000 * (gameState.commissionRate / 100));
     }
@@ -1585,7 +1612,7 @@ function calculateQuarterlyRevenue() {
 
 function calculateToCRevenue() {
     const quarterDays = 90;
-    return Math.round(gameState.dau * 10000 * gameState.ltv * (quarterDays / 365));
+    return Math.round(gameState.dau * gameState.ltv * quarterDays);
 }
 
 function checkFinancingEvent() {
@@ -2047,8 +2074,8 @@ function checkPMFAndTriggerEvent() {
         // 暂停游戏，等待用户选择
         return;
     }
-    // 检查是否达到PMF（DAU≥50万 且 LTV≥20元）
-    if (gameState.dau >= 50 && gameState.ltv >= 20) {
+    // 检查是否达到PMF（DAU≥50万 且 LTV≥0.05万）
+    if (gameState.dau >= 50 && gameState.ltv >= 0.05) {
         gameState.pmfReached = true;
         showPMFChoiceModal();
         // 这里不暂停游戏，让用户可以继续操作，但会在下一轮检查时再次显示模态框
@@ -2135,10 +2162,10 @@ function checkBlameMeeting() {
             triggerReason = '甲方满意度过低（≤30）';
         }
     } else if (gameState.direction === 'toc') {
-        // ToC：LTV ≤ 5
-        if (gameState.ltv <= 5) {
+        // ToC：LTV ≤ 0.05万元（500元）
+        if (gameState.ltv <= 0.05) {
             shouldTrigger = true;
-            triggerReason = '用户生命周期价值过低（LTV≤5）';
+            triggerReason = '用户生命周期价值过低（LTV≤0.05万）';
         }
     } else if (gameState.direction === 'b2c') {
         // B2C：纠纷率 ≥ 20%
@@ -2188,15 +2215,25 @@ function showBlameMeetingModal(reason) {
 }
 
 function updateBlameOptionDisplay() {
-    // 计算并显示各选项成功率
+    const config = getDirectionConfig();
+    const satisfactionName = config.satisfactionName || '满意度';
+    const fameName = config.fameName || '名声';
+    const marketName = config.name === 'To B' ? '甲方' : (config.name === 'To C' ? '用户' : '双边');
+
+    document.getElementById('blame-team-satisfaction').textContent = satisfactionName;
+    document.getElementById('blame-external-satisfaction').textContent = satisfactionName;
+    document.getElementById('blame-external-fame').textContent = fameName;
+    document.getElementById('blame-self-market').textContent = marketName + '好感';
+    document.getElementById('blame-self-satisfaction').textContent = satisfactionName;
+
     const teamRate = calculateBlameSuccessRate('team');
     const externalRate = calculateBlameSuccessRate('external');
     const selfRate = calculateBlameSuccessRate('self');
-    
+
     const teamEl = document.getElementById('blame-team-rate');
     const externalEl = document.getElementById('blame-external-rate');
     const selfEl = document.getElementById('blame-self-rate');
-    
+
     if (teamEl) teamEl.textContent = `成功率：${teamRate}%`;
     if (externalEl) externalEl.textContent = `成功率：${externalRate}%`;
     if (selfEl) selfEl.textContent = `成功率：${selfRate}%`;
@@ -2389,17 +2426,17 @@ function checkWinConditions() {
                     marketPositionMet = gameState.dau > 500;
                     break;
                 case 'monetization':
-                    // 深度变现：追求盈利，LTV>200元
-                    marketPositionMet = gameState.ltv > 200;
+                    // 深度变现：追求盈利，LTV>0.1万元
+                    marketPositionMet = gameState.ltv > 0.1;
                     break;
                 case 'balanced':
-                    // 平衡发展：规模和盈利并重，DAU>100万 且 LTV>50元
-                    marketPositionMet = gameState.dau > 100 && gameState.ltv > 50;
+                    // 平衡发展：规模和盈利并重，DAU>100万 且 LTV>0.05万元
+                    marketPositionMet = gameState.dau > 100 && gameState.ltv > 0.05;
                     break;
             }
         } else {
             // 未做出选择，使用默认条件
-            marketPositionMet = gameState.dau > 100 && gameState.ltv > 50;
+            marketPositionMet = gameState.dau > 100 && gameState.ltv > 0.05;
         }
     } else if (gameState.direction === 'b2c') {
         marketPositionMet = gameState.gmv > 10;
@@ -2475,7 +2512,7 @@ function showIPOOption() {
     
     document.getElementById('ipo-title').textContent = '📈 IPO机会来临！';
     const conditionText = gameState.direction === 'tob' ? '行业口碑≥60' : 
-                          gameState.direction === 'toc' ? 'DAU>100万 且 LTV>50元' : 
+                          gameState.direction === 'toc' ? 'DAU>100万 且 LTV>0.05万元' : 
                           'GMV>10亿';
     document.getElementById('ipo-description').textContent = `恭喜！您的公司已达到上市标准（资产≥1亿，${conditionText}）。是否申请上市？`;
     
@@ -2606,7 +2643,8 @@ function showEndingModalForVictory(endingType) {
         unlockEndingGallery(galleryId, `达成${endingType}结局`);
     }
     
-    addPrestige(5);
+    // 存储游戏结果到localStorage，由首页处理项目经历
+    localStorage.setItem('fair_office_last_game_result', 'victory');
 }
 
 function showGameOverModal() {
@@ -2668,11 +2706,6 @@ function unlockEnding(endingId) {
         unlockedEndings.push(endingId);
         localStorage.setItem(ENDINGS_KEY, JSON.stringify(unlockedEndings));
     }
-}
-
-function addPrestige(amount) {
-    prestige += amount;
-    savePrestigeAndRank();
 }
 
 function restartGame() {

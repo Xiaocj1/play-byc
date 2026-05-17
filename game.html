@@ -14,235 +14,6 @@
     <link rel="stylesheet" href="css/skin-zentao.css">
     <link rel="stylesheet" href="css/skin-feishu.css">
     <link rel="stylesheet" href="css/skin-dingtalk.css">
-    <style>
-        /* 陈列馆样式 */
-        .museum-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            z-index: 10015;
-            justify-content: center;
-            align-items: center;
-        }
-        .museum-content {
-            display: flex;
-            flex-direction: column;
-            background: #1a1a2e;
-            border: 4px solid #ffd700;
-            box-shadow: 8px 8px 0 #0a0a0f;
-            padding: 30px;
-            max-width: 900px;
-            width: 95%;
-            max-height: 85vh;
-            overflow-y: auto;
-            position: relative;
-        }
-        .museum-close {
-            position: absolute;
-            top: 15px; right: 15px;
-            background: transparent;
-            border: 2px solid #ff4444;
-            color: #ff4444;
-            width: 35px; height: 35px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .museum-title {
-            color: #ffd700;
-            text-align: center;
-            margin-bottom: 25px;
-            font-size: 20px;
-        }
-        .museum-tabs {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-        .museum-tab-group {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-        .museum-tab {
-            font-family: 'Press Start 2P', monospace;
-            background: transparent;
-            color: #888;
-            border: 2px solid #888;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 10px;
-            transition: all 0.2s;
-        }
-        .museum-tab.active {
-            color: #ffd700;
-            border-color: #ffd700;
-            background: rgba(255,215,0,0.1);
-        }
-        .museum-tab.small {
-            font-size: 9px;
-            padding: 8px 15px;
-        }
-        .museum-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px;
-        }
-        .museum-card {
-            background: rgba(0,0,0,0.5);
-            border: 3px solid #333;
-            padding: 25px 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .museum-card:hover {
-            border-color: #00ff41;
-            box-shadow: 0 0 20px rgba(0,255,65,0.3);
-            transform: translateY(-3px);
-        }
-        .museum-card.locked {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .museum-card.locked:hover {
-            border-color: #666;
-            box-shadow: none;
-            transform: none;
-        }
-        .museum-card-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-        }
-        .museum-card-name {
-            color: #00ff41;
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-        .museum-card-subname {
-            color: #888;
-            font-size: 8px;
-        }
-        .museum-card-condition {
-            color: #666;
-            font-size: 8px;
-            font-style: italic;
-        }
-        .museum-card-type {
-            display: inline-block;
-            font-size: 8px;
-            padding: 2px 8px;
-            margin-top: 5px;
-            border: 1px solid;
-        }
-        .museum-card-type.victory { color: #00ff41; border-color: #00ff41; }
-        .museum-card-type.failure { color: #ff4444; border-color: #ff4444; }
-        .museum-detail-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 10020;
-            justify-content: center;
-            align-items: center;
-        }
-        .museum-detail-content {
-            display: flex;
-            flex-direction: column;
-            background: #1a1a2e;
-            border: 4px solid #ffd700;
-            box-shadow: 8px 8px 0 #0a0a0f;
-            padding: 40px;
-            max-width: 600px;
-            width: 95%;
-            max-height: 85vh;
-            overflow-y: auto;
-            position: relative;
-        }
-        .museum-detail-close {
-            position: absolute;
-            top: 15px; right: 15px;
-            background: transparent;
-            border: 2px solid #ff4444;
-            color: #ff4444;
-            width: 35px; height: 35px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .museum-detail-header {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #333;
-        }
-        .museum-detail-icon { font-size: 64px; }
-        .museum-detail-title h2 {
-            color: #ffd700;
-            font-size: 20px;
-            margin: 0 0 10px 0;
-        }
-        .museum-detail-subname {
-            color: #888;
-            font-size: 10px;
-            font-style: italic;
-        }
-        .museum-detail-tags {
-            display: flex;
-            gap: 10px;
-            margin-top: 5px;
-        }
-        .tag {
-            display: inline-block;
-            font-size: 9px;
-            padding: 3px 10px;
-            border: 1px solid #666;
-            color: #888;
-        }
-        .tag.victory { color: #00ff41; border-color: #00ff41; }
-        .tag.failure { color: #ff4444; border-color: #ff4444; }
-        .museum-detail-section {
-            margin-bottom: 25px;
-        }
-        .museum-detail-section h3 {
-            color: #00bfff;
-            font-size: 12px;
-            margin-bottom: 10px;
-        }
-        .museum-detail-section blockquote {
-            color: #fff;
-            font-size: 11px;
-            margin: 0 0 8px 0;
-            padding-left: 15px;
-            border-left: 3px solid #00ff41;
-        }
-        .museum-detail-section cite {
-            color: #666;
-            font-size: 9px;
-            font-style: italic;
-        }
-        .museum-detail-unlock {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px dashed #333;
-        }
-        .museum-detail-unlock h3 {
-            color: #ffd700;
-            font-size: 12px;
-            margin-bottom: 10px;
-        }
-        .museum-detail-unlock p {
-            color: #aaa;
-            font-size: 10px;
-            line-height: 1.6;
-            font-style: italic;
-        }
-    </style>
 </head>
 <body>
     <div class="crt-effect"></div>
@@ -367,7 +138,7 @@
     <div class="game-over-modal" id="game-over-modal">
         <div class="game-over-content">
             <h2 class="game-over-title">GAME OVER</h2>
-            <p class="game-over-message" id="game-over-message">甲方已与天堂/地狱签约，你的事务所被列入黑名单</p>
+            <p class="game-over-message" id="game-over-message">甲方已与大厂签约，你的事务所被列入黑名单</p>
             <div class="game-over-stats" id="game-over-stats"></div>
             <button class="btn-restart" onclick="restartGame()">重新开始</button>
         </div>
@@ -586,7 +357,7 @@
                     <h3>🎯 甩给团队</h3>
                     <p class="blame-option-desc">"这个锅是RD/QA/设计的，他们没按要求做！"</p>
                     <div class="blame-option-effect">
-                        <p>成功：满意度 +15~25</p>
+                        <p>成功：<span id="blame-team-satisfaction">满意度</span> +15~25</p>
                         <p>失败：团队好感度 -20，可能有人离职</p>
                         <p id="blame-team-rate">成功率：--%</p>
                     </div>
@@ -595,8 +366,8 @@
                     <h3>🌀 甩给外部</h3>
                     <p class="blame-option-desc">"市场变化太快 / 竞品恶意打压 / 用户太难伺候！"</p>
                     <div class="blame-option-effect">
-                        <p>成功：满意度 +10~20</p>
-                        <p>失败：名声 -10（显得不专业）</p>
+                        <p>成功：<span id="blame-external-satisfaction">满意度</span> +10~20</p>
+                        <p>失败：<span id="blame-external-fame">名声</span> -10（显得不专业）</p>
                         <p id="blame-external-rate">成功率：--%</p>
                     </div>
                 </div>
@@ -604,8 +375,8 @@
                     <h3>💪 自己扛下来</h3>
                     <p class="blame-option-desc">"是我决策失误，我来承担，接下来我会..."</p>
                     <div class="blame-option-effect">
-                        <p>成功：团队好感 +15，甲方/市场好感 +5</p>
-                        <p>失败：满意度 -10（对方觉得你能力不行）</p>
+                        <p>成功：团队好感 +15，<span id="blame-self-market">甲方/市场好感</span> +5</p>
+                        <p>失败：<span id="blame-self-satisfaction">满意度</span> -10（对方觉得你能力不行）</p>
                         <p id="blame-self-rate">成功率：--%</p>
                     </div>
                 </div>
@@ -613,27 +384,12 @@
         </div>
     </div>
 
-    <script src="js/museum.js"></script>
     <script src="js/game.js"></script>
     <script src="js/recruit.js"></script>
     <script src="js/report.js"></script>
     <script src="js/gallery.js"></script>
     <script src="js/missions.js"></script>
     <script src="js/backpack.js"></script>
-
-    <div class="museum-modal" id="museum-modal">
-        <div class="museum-content">
-            <button class="museum-close" onclick="closeMuseumModal()">X</button>
-            <h2 class="museum-title">🏛️ 图鉴陈列馆</h2>
-            <div class="museum-tabs" id="museum-tabs"></div>
-            <div class="museum-grid" id="museum-grid"></div>
-        </div>
-    </div>
-
-    <div class="museum-detail-modal" id="museum-detail-modal">
-        <div class="museum-detail-content" id="museum-detail-content">
-        </div>
-    </div>
 
     <div class="toast-modal" id="toast-modal">
         <div class="toast-content">

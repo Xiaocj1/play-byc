@@ -89,8 +89,48 @@ function unlockProduct(productId, reason) {
     return true;
 }
 
-function getProductsByDirection(direction) {
-    return productsData.products.filter(p => p.direction === direction);
+function filterProducts(products, direction, status, productType) {
+    let filtered = products;
+    
+    if (direction !== 'all') {
+        filtered = filtered.filter(p => p.direction === direction);
+    }
+    
+    if (status === 'unlocked') {
+        filtered = filtered.filter(p => isProductUnlocked(p.id));
+    } else if (status === 'locked') {
+        filtered = filtered.filter(p => !isProductUnlocked(p.id));
+    }
+    
+    return filtered;
+}
+
+function filterRealFailedProducts(products, direction, status) {
+    let filtered = products;
+    
+    if (status === 'unlocked') {
+        filtered = filtered.filter(p => isRealFailedProductUnlocked(p.id));
+    } else if (status === 'locked') {
+        filtered = filtered.filter(p => !isRealFailedProductUnlocked(p.id));
+    }
+    
+    return filtered;
+}
+
+function filterEndings(endings, direction, status) {
+    let filtered = endings;
+    
+    if (direction !== 'all') {
+        filtered = filtered.filter(e => e.direction === direction || e.direction === 'all');
+    }
+    
+    if (status === 'unlocked') {
+        filtered = filtered.filter(e => isEndingGalleryUnlocked(e.id));
+    } else if (status === 'locked') {
+        filtered = filtered.filter(e => !isEndingGalleryUnlocked(e.id));
+    }
+    
+    return filtered;
 }
 
 function showMuseumModal() {
@@ -102,6 +142,7 @@ function showMuseumModal() {
     const loadRealFailed = !realFailedProductsData ? loadRealFailedProductsData() : Promise.resolve();
     
     Promise.all([loadProducts, loadEndings, loadRealFailed]).then(() => {
+        currentFilter = { type: 'products', direction: 'all', status: 'all', productType: 'all' };
         renderMuseumTabs('products');
         modal.style.display = 'flex';
     });
@@ -114,46 +155,87 @@ function closeMuseumModal() {
     }
 }
 
-function renderMuseumTabs(activeTab, activeDirection) {
+let currentFilter = {
+    type: 'products',
+    direction: 'all',
+    status: 'all',
+    productType: 'all'
+};
+
+function renderMuseumTabs(filterType) {
     const tabs = document.getElementById('museum-tabs');
     if (!tabs) return;
     
-    // 如果没指定activeTab，默认为'products'
-    if (!activeTab) activeTab = 'products';
-    if (!activeDirection) activeDirection = 'all';
+    if (filterType) {
+        if (filterType === 'products' || filterType === 'endings') {
+            currentFilter.type = filterType;
+        } else if (['all', 'toc', 'tob', 'b2c'].includes(filterType)) {
+            currentFilter.direction = filterType;
+        } else if (['all', 'unlocked', 'locked'].includes(filterType)) {
+            currentFilter.status = filterType;
+        } else if (['all', 'success', 'failed'].includes(filterType)) {
+            currentFilter.productType = filterType;
+        }
+    }
     
-    // 渲染顶层标签（产品/结局/真实失败产品）
-    const tabTypeHTML = `
-        <div class="museum-tab-group">
-            <button class="museum-tab ${activeTab === 'products' ? 'active' : ''}" onclick="renderMuseumTabs('products', '${activeDirection}')">📦 产品图鉴</button>
-            <button class="museum-tab ${activeTab === 'endings' ? 'active' : ''}" onclick="renderMuseumTabs('endings', 'all')">🎭 结局图鉴</button>
-            <button class="museum-tab ${activeTab === 'real_failed' ? 'active' : ''}" onclick="renderMuseumTabs('real_failed', 'all')">🏚️ 真实失败产品</button>
+    const { type, direction, status, productType } = currentFilter;
+    
+    const typeHTML = `
+        <div class="museum-tab-row">
+            <span class="filter-label">类型：</span>
+            <div class="museum-tab-group">
+                <button class="museum-tab ${type === 'products' ? 'active' : ''}" onclick="renderMuseumTabs('products')">📦 产品图鉴</button>
+                <button class="museum-tab ${type === 'endings' ? 'active' : ''}" onclick="renderMuseumTabs('endings')">🎭 结局图鉴</button>
+            </div>
         </div>
     `;
     
-    // 如果选中"产品"，显示方向标签
-    let directionHTML = '';
-    if (activeTab === 'products') {
-        directionHTML = `
-            <div class="museum-tab-group">
-                <button class="museum-tab small ${activeDirection === 'all' ? 'active' : ''}" onclick="renderMuseumTabs('products', 'all')">全部</button>
-                <button class="museum-tab small ${activeDirection === 'toc' ? 'active' : ''}" onclick="renderMuseumTabs('products', 'toc')">To C</button>
-                <button class="museum-tab small ${activeDirection === 'tob' ? 'active' : ''}" onclick="renderMuseumTabs('products', 'tob')">To B</button>
-                <button class="museum-tab small ${activeDirection === 'b2c' ? 'active' : ''}" onclick="renderMuseumTabs('products', 'b2c')">B2C</button>
+    let productTypeHTML = '';
+    if (type === 'products') {
+        productTypeHTML = `
+            <div class="museum-tab-row">
+                <span class="filter-label">产品：</span>
+                <div class="museum-tab-group">
+                    <button class="museum-tab small ${productType === 'all' ? 'active' : ''}" onclick="renderMuseumTabs('all')">全部</button>
+                    <button class="museum-tab small ${productType === 'success' ? 'active' : ''}" onclick="renderMuseumTabs('success')">🚀 成功产品</button>
+                    <button class="museum-tab small ${productType === 'failed' ? 'active' : ''}" onclick="renderMuseumTabs('failed')">💔 真实失败产品</button>
+                </div>
             </div>
         `;
     }
     
-    tabs.innerHTML = tabTypeHTML + directionHTML;
-    
-    // 根据选中的标签渲染网格
-    if (activeTab === 'products') {
-        renderMuseumGrid(activeDirection);
-    } else if (activeTab === 'endings') {
-        renderEndingsGalleryGrid();
-    } else if (activeTab === 'real_failed') {
-        renderRealFailedProductsGrid();
+    let directionHTML = '';
+    if (type === 'products' || type === 'endings') {
+        directionHTML = `
+            <div class="museum-tab-row">
+                <span class="filter-label">方向：</span>
+                <div class="museum-tab-group">
+                    <button class="museum-tab small ${direction === 'all' ? 'active' : ''}" onclick="renderMuseumTabs('all')">全部</button>
+                    <button class="museum-tab small ${direction === 'toc' ? 'active' : ''}" onclick="renderMuseumTabs('toc')">To C</button>
+                    <button class="museum-tab small ${direction === 'tob' ? 'active' : ''}" onclick="renderMuseumTabs('tob')">To B</button>
+                    <button class="museum-tab small ${direction === 'b2c' ? 'active' : ''}" onclick="renderMuseumTabs('b2c')">B2C</button>
+                </div>
+            </div>
+        `;
     }
+    
+    let statusHTML = '';
+    if (type === 'products') {
+        statusHTML = `
+            <div class="museum-tab-row">
+                <span class="filter-label">状态：</span>
+                <div class="museum-tab-group">
+                    <button class="museum-tab small ${status === 'all' ? 'active' : ''}" onclick="renderMuseumTabs('all')">全部</button>
+                    <button class="museum-tab small ${status === 'unlocked' ? 'active' : ''}" onclick="renderMuseumTabs('unlocked')">已解锁</button>
+                    <button class="museum-tab small ${status === 'locked' ? 'active' : ''}" onclick="renderMuseumTabs('locked')">未解锁</button>
+                </div>
+            </div>
+        `;
+    }
+    
+    tabs.innerHTML = typeHTML + productTypeHTML + directionHTML + statusHTML;
+    
+    renderMuseumGrid();
 }
 
 function getThresholdDisplayName(key) {
@@ -168,7 +250,12 @@ function getThresholdDisplayName(key) {
         'gmv': 'GMV(亿)',
         'commission_rate': '抽成率(%)',
         'growth_rate': '双边增长率(%)',
-        'dispute_rate': '纠纷率(%)'
+        'dispute_rate': '纠纷率(%)',
+        'budget': '资金(万)',
+        'fame': '名声',
+        'satisfaction': '满意度(%)',
+        'progress': '进度(%)',
+        'avg_favor': '团队好感度(%)'
     };
     return names[key] || key;
 }
@@ -191,13 +278,16 @@ function getThresholdComparison(key, threshold, actual) {
     }
 }
 
-function showLockedProductHint(productId) {
-    const product = productsData.products.find(p => p.id === productId);
+function showLockedProductHint(productId, productType) {
+    const product = productType === 'success' 
+        ? productsData.products.find(p => p.id === productId)
+        : (realFailedProductsData?.real_failed_products || []).find(p => p.id === productId);
+        
     if (!product || !currentGameStats) {
         const toast = document.getElementById('toast-modal');
         const message = document.getElementById('toast-message');
         if (toast && message) {
-            message.textContent = `解锁条件：${product?.unlock_condition || '达成指定指标'}`;
+            message.textContent = `解锁条件：${product?.unlock_condition || product?.fail_reason || '达成指定指标'}`;
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
@@ -231,60 +321,87 @@ function showLockedProductHint(productId) {
     }
 }
 
-function renderMuseumGrid(direction) {
+function renderMuseumGrid() {
     const grid = document.getElementById('museum-grid');
     if (!grid) return;
     
-    const products = getProductsByDirection(direction);
+    const { type, direction, status, productType } = currentFilter;
     
-    grid.innerHTML = products.map(product => {
-        const unlocked = isProductUnlocked(product.id);
+    if (type === 'products') {
+        let successProducts = [];
+        let failedProducts = [];
         
-        return `
-            <div class="museum-card ${unlocked ? '' : 'locked'}" 
-                 onclick="${unlocked ? `showProductDetail('${product.id}')` : `showLockedProductHint('${product.id}')`}"
-                 onmouseenter="${!unlocked ? `showLockedProductHint('${product.id}')` : ''}">
-                ${unlocked ? `
-                    <div class="museum-card-icon">${product.icon}</div>
-                    <div class="museum-card-name">${product.name}</div>
-                    <div class="museum-card-subname">${product.subname}</div>
-                ` : `
-                    <div class="museum-card-icon">❓</div>
-                    <div class="museum-card-name">？？？</div>
-                    <div class="museum-card-condition">悬浮查看解锁条件</div>
-                `}
-            </div>
-        `;
-    }).join('');
+        if (productType === 'all' || productType === 'success') {
+            successProducts = filterProducts(productsData.products, direction, status, productType);
+        }
+        
+        if (productType === 'all' || productType === 'failed') {
+            failedProducts = filterRealFailedProducts((realFailedProductsData && realFailedProductsData.real_failed_products) || [], direction, status);
+        }
+        
+        const allProducts = [
+            ...successProducts.map(p => ({ ...p, _type: 'success' })),
+            ...failedProducts.map(p => ({ ...p, _type: 'failed' }))
+        ];
+        
+        grid.innerHTML = allProducts.map(product => {
+            const isSuccess = product._type === 'success';
+            const unlocked = isSuccess ? isProductUnlocked(product.id) : isRealFailedProductUnlocked(product.id);
+            
+            return `
+                <div class="museum-card ${unlocked ? '' : 'locked'}" 
+                     onclick="${unlocked ? `showProductDetail('${product.id}', '${product._type}')` : `showLockedProductHint('${product.id}', '${product._type}')`}"
+                     onmouseenter="${!unlocked ? `showLockedProductHint('${product.id}', '${product._type}')` : ''}">
+                    ${unlocked ? `
+                        <div class="museum-card-icon">${product.icon}</div>
+                        <div class="museum-card-name">${product.name}</div>
+                        <div class="museum-card-subname">${product.subname}</div>
+                        <div class="museum-card-type ${product._type}">${isSuccess ? '🚀 成功' : '💔 失败'}</div>
+                        ${isSuccess ? `<div class="museum-card-direction">${product.direction.toUpperCase()}</div>` : ''}
+                    ` : `
+                        <div class="museum-card-icon">❓</div>
+                        <div class="museum-card-name">？？？</div>
+                        <div class="museum-card-condition">悬浮查看解锁条件</div>
+                    `}
+                </div>
+            `;
+        }).join('');
+        
+        if (allProducts.length === 0) {
+            grid.innerHTML = '<div class="no-results">暂无符合条件的产品</div>';
+        }
+    } else if (type === 'endings') {
+        const endings = filterEndings(endingsGalleryData.endings || [], direction, status);
+        
+        grid.innerHTML = endings.map(ending => {
+            const unlocked = isEndingGalleryUnlocked(ending.id);
+            
+            return `
+                <div class="museum-card ${unlocked ? '' : 'locked'}" 
+                     onclick="${unlocked ? `showEndingDetail('${ending.id}')` : `showLockedEndingHint('${ending.id}')`}"
+                     onmouseenter="${!unlocked ? `showLockedEndingHint('${ending.id}')` : ''}">
+                    ${unlocked ? `
+                        <div class="museum-card-icon">${ending.icon}</div>
+                        <div class="museum-card-name">${ending.name}</div>
+                        <div class="museum-card-subname">${ending.subname}</div>
+                        <div class="museum-card-type ${ending.type}">${ending.type === 'victory' ? '胜利' : '失败'}</div>
+                        <div class="museum-card-direction">${ending.direction === 'all' ? '通用' : ending.direction.toUpperCase()}</div>
+                    ` : `
+                        <div class="museum-card-icon">❓</div>
+                        <div class="museum-card-name">？？？</div>
+                        <div class="museum-card-condition">达成结局后解锁</div>
+                    `}
+                </div>
+            `;
+        }).join('');
+        
+        if (endings.length === 0) {
+            grid.innerHTML = '<div class="no-results">暂无符合条件的结局</div>';
+        }
+    }
 }
 
-function renderEndingsGalleryGrid() {
-    const grid = document.getElementById('museum-grid');
-    if (!grid) return;
-    
-    const endings = endingsGalleryData.endings || [];
-    
-    grid.innerHTML = endings.map(ending => {
-        const unlocked = isEndingGalleryUnlocked(ending.id);
-        
-        return `
-            <div class="museum-card ${unlocked ? '' : 'locked'}" 
-                 onclick="${unlocked ? `showEndingDetail('${ending.id}')` : `showLockedEndingHint('${ending.id}')`}"
-                 onmouseenter="${!unlocked ? `showLockedEndingHint('${ending.id}')` : ''}">
-                ${unlocked ? `
-                    <div class="museum-card-icon">${ending.icon}</div>
-                    <div class="museum-card-name">${ending.name}</div>
-                    <div class="museum-card-subname">${ending.subname}</div>
-                    ${ending.type === 'victory' ? '<div class="museum-card-type victory">胜利</div>' : '<div class="museum-card-type failure">失败</div>'}
-                ` : `
-                    <div class="museum-card-icon">❓</div>
-                    <div class="museum-card-name">？？？</div>
-                    <div class="museum-card-condition">达成结局后解锁</div>
-                `}
-            </div>
-        `;
-    }).join('');
-}
+
 
 function showLockedEndingHint(endingId) {
     const ending = endingsGalleryData.endings.find(e => e.id === endingId);
@@ -299,8 +416,16 @@ function showLockedEndingHint(endingId) {
     }
 }
 
-function showProductDetail(productId) {
-    const product = productsData.products.find(p => p.id === productId);
+function showProductDetail(productId, productType) {
+    let product;
+    let isSuccess = productType === 'success';
+    
+    if (isSuccess) {
+        product = productsData.products.find(p => p.id === productId);
+    } else {
+        product = (realFailedProductsData?.real_failed_products || []).find(p => p.id === productId);
+    }
+    
     if (!product) return;
     
     const modal = document.getElementById('museum-detail-modal');
@@ -308,13 +433,20 @@ function showProductDetail(productId) {
     
     if (!modal || !content) return;
     
-    content.innerHTML = `
+    const typeLabel = isSuccess ? '🚀 成功产品' : '💔 真实失败产品';
+    const typeClass = isSuccess ? 'success' : 'failure';
+    
+    let detailHTML = `
         <button class="museum-detail-close" onclick="closeMuseumDetailModal()">X</button>
         <div class="museum-detail-header">
             <div class="museum-detail-icon">${product.icon}</div>
             <div class="museum-detail-title">
                 <h2>${product.name}</h2>
                 <p class="museum-detail-subname">${product.subname}</p>
+                <div class="museum-detail-tags">
+                    <span class="tag ${typeClass}">${typeLabel}</span>
+                    ${isSuccess ? `<span class="tag">📌 ${product.direction.toUpperCase()}</span>` : ''}
+                </div>
             </div>
         </div>
         <div class="museum-detail-section">
@@ -328,15 +460,29 @@ function showProductDetail(productId) {
             <cite>—— ${product.domestic_source}</cite>
         </div>
         <div class="museum-detail-section">
-            <h3>🌏 国外用户说</h3>
+            <h3>🌏 ${isSuccess ? '国外用户' : '国外用户/媒体'}说</h3>
             <blockquote>"${product.international_quote}"</blockquote>
             <cite>—— ${product.international_source}</cite>
         </div>
+    `;
+    
+    if (!isSuccess && product.fail_reason) {
+        detailHTML += `
+            <div class="museum-detail-section">
+                <h3>⚰️ 失败原因</h3>
+                <p>${product.fail_reason}</p>
+            </div>
+        `;
+    }
+    
+    detailHTML += `
         <div class="museum-detail-unlock">
-            <h3>📜 图鉴解锁文案</h3>
+            <h3>📜 图鉴${isSuccess ? '解锁' : '解说'}</h3>
             <p>${product.unlock_desc}</p>
         </div>
     `;
+    
+    content.innerHTML = detailHTML;
     
     modal.style.display = 'flex';
 }
@@ -443,7 +589,7 @@ function calculateGameStats() {
 
 function checkAndUnlockProducts() {
     const gameStats = calculateGameStats();
-    if (!gameStats) return;
+    if (!gameStats) return [];
     
     currentGameStats = gameStats;
     
@@ -451,6 +597,7 @@ function checkAndUnlockProducts() {
     const products = productsData.products.filter(p => p.direction === direction);
     
     let unlockedCount = 0;
+    const unlockedList = [];
     
     products.forEach(product => {
         if (isProductUnlocked(product.id)) return;
@@ -479,6 +626,13 @@ function checkAndUnlockProducts() {
             const reason = `游戏结束时达成所有指标`;
             if (unlockProduct(product.id, reason)) {
                 unlockedCount++;
+                unlockedList.push({
+                    id: product.id,
+                    name: product.name,
+                    icon: product.icon,
+                    subname: product.subname,
+                    type: 'product'
+                });
                 console.log(`🎉 产品图鉴解锁: ${product.name}`);
             }
         }
@@ -487,6 +641,8 @@ function checkAndUnlockProducts() {
     if (unlockedCount > 0) {
         console.log(`本局共解锁 ${unlockedCount} 个产品图鉴`);
     }
+    
+    return unlockedList;
 }
 
 function evaluateProductUnlock(productId) {
@@ -576,8 +732,8 @@ function loadUnlockedRealFailedProducts() {
     if (saved) {
         unlockedRealFailedProducts = JSON.parse(saved);
     } else {
-        // 首次加载，默认解锁所有真实失败产品
-        unlockAllRealFailedProducts();
+        // 首次加载，初始为空数组，需要条件触发后才解锁
+        unlockedRealFailedProducts = [];
     }
 }
 
@@ -589,23 +745,166 @@ function isRealFailedProductUnlocked(productId) {
     return unlockedRealFailedProducts.some(p => p.id === productId);
 }
 
-function renderRealFailedProductsGrid() {
-    const grid = document.getElementById('museum-grid');
-    if (!grid) return;
+function unlockRealFailedProduct(productId, reason) {
+    if (isRealFailedProductUnlocked(productId)) return false;
+    
+    const product = realFailedProductsData.real_failed_products.find(p => p.id === productId);
+    if (!product) return false;
+    
+    unlockedRealFailedProducts.push({
+        id: product.id,
+        unlockTime: Date.now(),
+        reason: reason || '达成解锁条件'
+    });
+    saveUnlockedRealFailedProducts();
+    return true;
+}
+
+function showLockedRealFailedProductHint(productId) {
+    const product = realFailedProductsData.real_failed_products.find(p => p.id === productId);
+    if (!product || !currentGameStats) {
+        const toast = document.getElementById('toast-modal');
+        const message = document.getElementById('toast-message');
+        if (toast && message) {
+            message.textContent = `解锁条件：${product?.fail_reason || '达成指定指标'}`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        return;
+    }
+    
+    const thresholds = product.unlock_thresholds || {};
+    const results = [];
+    let allPassed = true;
+    
+    for (const [key, threshold] of Object.entries(thresholds)) {
+        const actual = currentGameStats[key] || 0;
+        const result = getThresholdComparison(key, threshold, actual);
+        results.push(result);
+        if (!result.passed) allPassed = false;
+    }
+    
+    const toast = document.getElementById('toast-modal');
+    const message = document.getElementById('toast-message');
+    if (toast && message) {
+        if (allPassed) {
+            message.innerHTML = `✅ 已达成解锁条件<br><br>` + results.map(r => r.text).join('<br>');
+        } else {
+            message.innerHTML = `❌ 未达成解锁条件<br><br>` + results.map(r => {
+                const color = r.passed ? '#00ff41' : '#ff4444';
+                return `<span style="color: ${color}">${r.text}</span>`;
+            }).join('<br>');
+        }
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+}
+
+function checkAndUnlockRealFailedProducts() {
+    const gameStats = calculateGameStats();
+    if (!gameStats) return [];
+    
+    currentGameStats = gameStats;
     
     const products = (realFailedProductsData && realFailedProductsData.real_failed_products) || [];
+    let unlockedCount = 0;
+    const unlockedList = [];
     
-    grid.innerHTML = products.map(product => {
-        return `
-            <div class="museum-card" 
-                 onclick="showRealFailedProductDetail('${product.id}')">
-                <div class="museum-card-icon">${product.icon}</div>
-                <div class="museum-card-name">${product.name}</div>
-                <div class="museum-card-subname">${product.subname}</div>
-                <div class="museum-card-type failure">真实失败</div>
-            </div>
-        `;
-    }).join('');
+    products.forEach(product => {
+        if (isRealFailedProductUnlocked(product.id)) return;
+        
+        const thresholds = product.unlock_thresholds || {};
+        let allPassed = true;
+        
+        for (const [key, threshold] of Object.entries(thresholds)) {
+            const actual = gameStats[key] || 0;
+            const lowerIsBetter = ['dispute_rate'];
+            
+            if (lowerIsBetter.includes(key)) {
+                if (actual > threshold) {
+                    allPassed = false;
+                    break;
+                }
+            } else {
+                if (actual < threshold) {
+                    allPassed = false;
+                    break;
+                }
+            }
+        }
+        
+        if (allPassed) {
+            const reason = `达成失败指标`;
+            if (unlockRealFailedProduct(product.id, reason)) {
+                unlockedCount++;
+                unlockedList.push({
+                    id: product.id,
+                    name: product.name,
+                    icon: product.icon,
+                    subname: product.subname,
+                    type: 'real_failed'
+                });
+                console.log(`💔 真实失败产品解锁: ${product.name}`);
+            }
+        }
+    });
+    
+    if (unlockedCount > 0) {
+        console.log(`本局共解锁 ${unlockedCount} 个真实失败产品`);
+    }
+    
+    return unlockedList;
+}
+
+function evaluateRealFailedProductUnlock(productId) {
+    const gameStats = calculateGameStats();
+    if (!gameStats) return { unlocked: false, reason: '无游戏数据' };
+    
+    const product = realFailedProductsData.real_failed_products.find(p => p.id === productId);
+    if (!product) return { unlocked: false, reason: '产品不存在' };
+    
+    if (isRealFailedProductUnlocked(productId)) {
+        return { unlocked: true, reason: '已解锁' };
+    }
+    
+    const thresholds = product.unlock_thresholds || {};
+    const failedConditions = [];
+    
+    for (const [key, threshold] of Object.entries(thresholds)) {
+        const actual = gameStats[key] || 0;
+        const lowerIsBetter = ['dispute_rate'];
+        
+        let passed;
+        if (lowerIsBetter.includes(key)) {
+            passed = actual <= threshold;
+        } else {
+            passed = actual >= threshold;
+        }
+        
+        if (!passed) {
+            failedConditions.push({
+                name: getThresholdDisplayName(key),
+                required: threshold,
+                actual: actual,
+                passed: false
+            });
+        }
+    }
+    
+    if (failedConditions.length === 0) {
+        return { 
+            unlocked: true, 
+            reason: '已达成所有条件',
+            stats: gameStats 
+        };
+    } else {
+        return { 
+            unlocked: false, 
+            reason: '未达成条件',
+            failedConditions: failedConditions,
+            stats: gameStats 
+        };
+    }
 }
 
 function showRealFailedProductDetail(productId) {
@@ -660,3 +959,92 @@ function showRealFailedProductDetail(productId) {
 }
 
 window.addEventListener('DOMContentLoaded', loadProductsData);
+
+// ============ 解锁动画函数 ============
+
+function showUnlockAnimation(unlockedList, callback) {
+    if (!unlockedList || unlockedList.length === 0) {
+        if (callback) callback();
+        return;
+    }
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'unlock-animation-overlay';
+    overlay.innerHTML = `
+        <div class="unlock-animation-container">
+            <h2 class="unlock-animation-title">🎉 图鉴解锁</h2>
+            <div class="unlock-cards-container" id="unlock-cards-container"></div>
+            <div class="unlock-animation-footer">
+                <button class="unlock-continue-btn" onclick="closeUnlockAnimation()">继续</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
+    
+    // 显示遮罩
+    setTimeout(() => {
+        overlay.classList.add('active');
+    }, 10);
+    
+    // 存储回调函数
+    window._unlockAnimationCallback = callback;
+    
+    // 逐个展示解锁的卡片
+    const container = overlay.querySelector('#unlock-cards-container');
+    let index = 0;
+    
+    function showNextCard() {
+        if (index >= unlockedList.length) {
+            // 所有卡片展示完成
+            const footer = overlay.querySelector('.unlock-animation-footer');
+            footer.classList.add('show');
+            return;
+        }
+        
+        const item = unlockedList[index];
+        const card = document.createElement('div');
+        card.className = 'unlock-card';
+        
+        const typeLabel = item.type === 'product' ? '📦 产品图鉴' : '🏚️ 真实失败产品';
+        const typeClass = item.type === 'product' ? 'product' : 'real-failed';
+        
+        card.innerHTML = `
+            <div class="unlock-card-icon">${item.icon}</div>
+            <div class="unlock-card-name">${item.name}</div>
+            <div class="unlock-card-subname">${item.subname}</div>
+            <div class="unlock-card-type ${typeClass}">${typeLabel}</div>
+        `;
+        
+        container.appendChild(card);
+        
+        // 触发动画
+        setTimeout(() => {
+            card.classList.add('show');
+        }, 50);
+        
+        index++;
+        
+        // 延迟展示下一个卡片
+        setTimeout(showNextCard, 800);
+    }
+    
+    // 开始展示第一个卡片
+    setTimeout(showNextCard, 500);
+}
+
+function closeUnlockAnimation() {
+    const overlay = document.querySelector('.unlock-animation-overlay');
+    if (overlay) {
+        overlay.classList.remove('active');
+        setTimeout(() => {
+            overlay.remove();
+            
+            // 执行回调
+            if (window._unlockAnimationCallback) {
+                window._unlockAnimationCallback();
+                window._unlockAnimationCallback = null;
+            }
+        }, 500);
+    }
+}

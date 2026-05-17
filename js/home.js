@@ -1,11 +1,10 @@
 const STORAGE_KEY = "fair_office_game_state";
-const ENDINGS_KEY = "fair_office_unlocked_endings";
-const PRESTIGE_KEY = "fair_office_prestige";
+const PROJECT_EXPERIENCE_KEY = "fair_office_project_experience";
 const RANK_KEY = "fair_office_current_rank";
 const TOOLCHAIN_KEY = "fair_office_toolchain";
 const UNLOCKED_TOOLS_KEY = "fair_office_unlocked_tools";
 
-let prestige = 0;
+let projectExperience = 0;
 let currentRank = "p5";
 let ranks = [];
 let toolsData = { categories: [] };
@@ -33,19 +32,44 @@ async function loadAllData() {
         
         ranks = ranksData.ranks || [];
         
-        loadPrestigeAndRank();
+        loadProjectExperienceAndRank();
         loadUnlockedTools();
         loadSelectedTools();
         initDefaultTools();
         updateRankDisplay();
         checkForSave();
+        
+        // 处理上一次游戏结果，更新项目经历
+        processLastGameResult();
     } catch (error) {
         console.error('Failed to load data:', error);
     }
 }
 
-function loadPrestigeAndRank() {
-    prestige = parseInt(localStorage.getItem(PRESTIGE_KEY) || '0');
+// 处理上一次游戏结果，更新项目经历
+function processLastGameResult() {
+    const lastGameResult = localStorage.getItem('fair_office_last_game_result');
+    if (!lastGameResult) return;
+    
+    // 清除标记，避免重复处理
+    localStorage.removeItem('fair_office_last_game_result');
+    
+    if (lastGameResult === 'victory') {
+        // 胜利获得2个项目经历
+        projectExperience += 2;
+        showToast('🎉 项目胜利！获得2个项目经历');
+    } else if (lastGameResult === 'failure') {
+        // 失败获得0.5个项目经历
+        projectExperience += 0.5;
+        showToast('😢 项目失败...获得0.5个项目经历');
+    }
+    
+    saveProjectExperienceAndRank();
+    updateRankDisplay();
+}
+
+function loadProjectExperienceAndRank() {
+    projectExperience = parseFloat(localStorage.getItem(PROJECT_EXPERIENCE_KEY) || '0');
     currentRank = localStorage.getItem(RANK_KEY) || 'p5';
 }
 
@@ -63,8 +87,8 @@ function loadSelectedTools() {
     }
 }
 
-function savePrestigeAndRank() {
-    localStorage.setItem(PRESTIGE_KEY, prestige.toString());
+function saveProjectExperienceAndRank() {
+    localStorage.setItem(PROJECT_EXPERIENCE_KEY, projectExperience.toString());
     localStorage.setItem(RANK_KEY, currentRank);
 }
 
@@ -87,20 +111,24 @@ function initDefaultTools() {
 }
 
 function initRanks() {
-    ranks = [
-        {"id": "p5", "name": "P5", "tian": "P5", "jue": "2-1", "di": "1-1", "cost": 0, "budget": 80, "unlock": "基础开局"},
-        {"id": "p6", "name": "P6", "tian": "P6", "jue": "2-2", "di": "1-2", "cost": 2, "budget": 100, "unlock": "「前大厂实习生」背景"},
-        {"id": "p7", "name": "P7", "tian": "P7", "jue": "3-1", "di": "2-1", "cost": 5, "budget": 120, "unlock": "「前天堂RD」背景"},
-        {"id": "p8", "name": "P8", "tian": "P8", "jue": "3-2", "di": "2-2", "cost": 9, "budget": 150, "unlock": "「免死金牌」"},
-        {"id": "p9", "name": "P9", "tian": "P9", "jue": "4-1", "di": "3-1", "cost": 14, "budget": 180, "unlock": "「前G端审计员」"},
-        {"id": "p10", "name": "P10", "tian": "P10", "jue": "4-2", "di": "3-2", "cost": 20, "budget": 220, "unlock": "「黑化线」"}
-    ];
-    data.ranks = { ranks: ranks };
+    // 直接从 JSON 文件加载，这里留空，由 loadAllData 中的 fetch 加载
+    // 如果加载失败，使用默认数据
+    if (!ranks || ranks.length === 0) {
+        ranks = [
+            {"id": "p5", "name": "初级PM", "network": "1-1", "tech": "1-1", "resource": "1-1", "cost": 0, "budget": 80, "unlock": "基础开局"},
+            {"id": "p6", "name": "中级PM", "network": "2-1", "tech": "1-2", "resource": "1-2", "cost": 2, "budget": 100, "unlock": "「大厂实习经历」"},
+            {"id": "p7", "name": "高级PM", "network": "2-2", "tech": "2-1", "resource": "2-1", "cost": 5, "budget": 120, "unlock": "「技术背景加成」"},
+            {"id": "p8", "name": "资深PM", "network": "3-1", "tech": "2-2", "resource": "2-2", "cost": 9, "budget": 150, "unlock": "「项目救星」"},
+            {"id": "p9", "name": "专家PM", "network": "3-2", "tech": "3-1", "resource": "3-1", "cost": 14, "budget": 180, "unlock": "「行业认证专家」"},
+            {"id": "p10", "name": "架构师", "network": "4-1", "tech": "3-2", "resource": "3-2", "cost": 20, "budget": 220, "unlock": "「技术决策者」"}
+        ];
+        data.ranks = { ranks: ranks };
+    }
 }
 
 function updateRankDisplay() {
-    const rank = ranks.find(r => r.id === currentRank) || ranks[0] || { name: 'P5', tian: 'P5', jue: '2-1', di: '1-1', cost: 0 };
-    const nextRank = ranks.find(r => r.cost > prestige);
+    const rank = ranks.find(r => r.id === currentRank) || ranks[0] || { name: '初级PM', network: '1-1', tech: '1-1', resource: '1-1', cost: 0 };
+    const nextRank = ranks.find(r => r.cost > projectExperience);
     
     const rankValue = document.querySelector('.rank-value');
     const rankBars = document.querySelectorAll('.rank-bar');
@@ -111,16 +139,16 @@ function updateRankDisplay() {
     if (rankValue) rankValue.textContent = rank.name;
     
     if (rankBars.length >= 3) {
-        rankBars[0].querySelector('.bar-value').textContent = rank.tian;
-        rankBars[1].querySelector('.bar-value').textContent = rank.jue;
-        rankBars[2].querySelector('.bar-value').textContent = rank.di;
+        rankBars[0].querySelector('.bar-value').textContent = rank.network;
+        rankBars[1].querySelector('.bar-value').textContent = rank.tech;
+        rankBars[2].querySelector('.bar-value').textContent = rank.resource;
     }
     
-    if (prestigeValue) prestigeValue.textContent = prestige;
+    if (prestigeValue) prestigeValue.textContent = projectExperience.toFixed(1);
     
     if (nextRank) {
         if (prestigeNext) prestigeNext.textContent = nextRank.cost;
-        const remaining = nextRank.cost - prestige;
+        const remaining = (nextRank.cost - projectExperience).toFixed(1);
         if (prestigeHint) prestigeHint.textContent = `（${nextRank.name}还需 ${remaining}）`;
     } else {
         if (prestigeNext) prestigeNext.textContent = '-';
@@ -191,13 +219,19 @@ function continueGame() {
 }
 
 function showLevelupModal() {
+    // 更新当前项目经历显示
+    const expValue = document.getElementById('levelup-exp-value');
+    if (expValue) {
+        expValue.textContent = projectExperience.toFixed(1);
+    }
+    
     const list = document.getElementById('levelup-list');
     if (!list) return;
     list.innerHTML = '';
     
     ranks.forEach(rank => {
         const isCurrent = rank.id === currentRank;
-        const isUnlocked = rank.cost <= prestige;
+        const isUnlocked = rank.cost <= projectExperience;
         
         const item = document.createElement('div');
         item.className = `levelup-item ${isCurrent ? 'current' : ''} ${!isUnlocked && !isCurrent ? 'locked' : ''}`;
@@ -211,7 +245,7 @@ function showLevelupModal() {
         
         const compare = document.createElement('div');
         compare.className = 'levelup-compare';
-        compare.innerHTML = `<span style="color: #ff9500">天堂 ${rank.tian}</span> / <span style="color: #00ff41">裁决 ${rank.jue}</span> / <span style="color: #ff4444">地狱 ${rank.di}</span>`;
+        compare.innerHTML = `<span style="color: #ff9500">人脉 ${rank.network}</span> / <span style="color: #00ff41">技术 ${rank.tech}</span> / <span style="color: #ff4444">资源 ${rank.resource}</span>`;
         
         const unlock = document.createElement('div');
         unlock.className = 'levelup-unlock';
@@ -228,7 +262,7 @@ function showLevelupModal() {
         
         const button = document.createElement('button');
         button.className = 'btn-promote';
-        button.textContent = isCurrent ? '当前职级' : (isUnlocked ? '🔥 晋升' : `需要 ${rank.cost} 声望`);
+        button.textContent = isCurrent ? '当前职级' : (isUnlocked ? '🔥 晋升' : `需要 ${rank.cost} 项目经历`);
         button.disabled = !isUnlocked || isCurrent;
         
         if (isUnlocked && !isCurrent) {
@@ -251,10 +285,13 @@ function closeLevelupModal() {
 
 function promoteToRank(rankId) {
     const rank = ranks.find(r => r.id === rankId);
-    if (!rank || rank.cost > prestige) return;
+    if (!rank || rank.cost > projectExperience) return;
+    
+    // 扣除项目经历
+    projectExperience -= rank.cost;
     
     currentRank = rankId;
-    savePrestigeAndRank();
+    saveProjectExperienceAndRank();
     updateRankDisplay();
     closeLevelupModal();
     
@@ -298,32 +335,23 @@ function showToast(message, duration = 3000) {
 }
 
 function showGallery() {
+    const modal = document.getElementById('gallery-modal');
+    if (!modal) return;
+    
     const grid = document.getElementById('gallery-grid');
     if (!grid) return;
-    grid.innerHTML = '';
     
-    const unlockedEndings = JSON.parse(localStorage.getItem(ENDINGS_KEY) || '[]');
-    
-    if (data.endings && data.endings.endings) {
-        data.endings.endings.forEach(ending => {
-            const isUnlocked = unlockedEndings.includes(ending.id);
-            
-            const item = document.createElement('div');
-            item.className = `gallery-item ${isUnlocked ? 'unlocked' : 'locked'}`;
-            
-            if (isUnlocked) {
-                const name = document.createElement('div');
-                name.className = 'gallery-name';
-                name.textContent = ending.name;
-                item.appendChild(name);
-            }
-            
-            grid.appendChild(item);
-        });
+    function renderGallery() {
+        if (typeof renderCardsGallery === 'function' && galleryCardsData) {
+            renderCardsGallery(grid);
+        } else {
+            grid.innerHTML = '<p style="text-align:center;padding:40px;color:#888;">卡牌数据加载中...</p>';
+            setTimeout(renderGallery, 100);
+        }
     }
     
-    const modal = document.getElementById('gallery-modal');
-    if (modal) modal.style.display = 'flex';
+    modal.style.display = 'flex';
+    renderGallery();
 }
 
 function closeGalleryModal() {
@@ -545,6 +573,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initRanks();
     loadAllData();
     bindButtonEvents();
+    loadGalleryCards();
 });
 
 document.addEventListener('keydown', (e) => {

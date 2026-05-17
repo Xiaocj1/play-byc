@@ -1,6 +1,6 @@
 const STORAGE_KEY = "fair_office_game_state";
 const ENDINGS_KEY = "fair_office_unlocked_endings";
-const PRESTIGE_KEY = "fair_office_prestige";
+const PROJECT_EXPERIENCE_KEY = "fair_office_project_experience";
 const RANK_KEY = "fair_office_current_rank";
 
 let gameState = {
@@ -22,7 +22,7 @@ let gameState = {
     budget: 100
 };
 
-let prestige = 0;
+let projectExperience = 0;
 let currentRank = "p5";
 let ranks = [];
 
@@ -54,7 +54,7 @@ async function loadData() {
         data.ranks = ranksData;
         ranks = ranksData.ranks;
         
-        loadPrestigeAndRank();
+        loadProjectExperienceAndRank();
         updateRankDisplay();
         checkForSave();
     } catch (error) {
@@ -509,18 +509,8 @@ function triggerEnding(ending) {
     gameState.gameOver = true;
     unlockEnding(ending.id);
     
-    let prestigeGained = 2;
-    
-    if (ending.id === 'ending_perfect') {
-        prestigeGained += 3;
-    }
-    
-    const unlockedEndings = JSON.parse(localStorage.getItem(ENDINGS_KEY) || '[]');
-    if (unlockedEndings.length === 1) {
-        prestigeGained += 1;
-    }
-    
-    addPrestige(prestigeGained);
+    // 存储游戏结果到localStorage，由首页处理项目经历
+    localStorage.setItem('fair_office_last_game_result', 'victory');
     
     showEndingModal(ending);
 }
@@ -594,9 +584,13 @@ function showEndingModal(ending) {
 
 let gameOverMessage = '';
 
-function triggerGameOver(message = '甲方已与天堂/地狱签约，你的事务所被列入黑名单') {
+function triggerGameOver(message = '甲方已与大厂签约，你的事务所被列入黑名单') {
     gameState.gameOver = true;
     gameOverMessage = message;
+    
+    // 存储游戏结果到localStorage，由首页处理项目经历
+    localStorage.setItem('fair_office_last_game_result', 'failure');
+    
     showGameOverModal();
 }
 
@@ -722,40 +716,34 @@ function closePRDModal() {
     document.getElementById('prd-modal').classList.remove('active');
 }
 
-function loadPrestigeAndRank() {
-    prestige = parseInt(localStorage.getItem(PRESTIGE_KEY) || '0');
+function loadProjectExperienceAndRank() {
+    projectExperience = parseInt(localStorage.getItem(PROJECT_EXPERIENCE_KEY) || '0');
     currentRank = localStorage.getItem(RANK_KEY) || 'p5';
 }
 
-function savePrestigeAndRank() {
-    localStorage.setItem(PRESTIGE_KEY, prestige.toString());
+function saveProjectExperienceAndRank() {
+    localStorage.setItem(PROJECT_EXPERIENCE_KEY, projectExperience.toString());
     localStorage.setItem(RANK_KEY, currentRank);
 }
 
 function updateRankDisplay() {
     const rank = ranks.find(r => r.id === currentRank) || ranks[0];
-    const nextRank = ranks.find(r => r.cost > prestige);
+    const nextRank = ranks.find(r => r.cost > projectExperience);
     
     document.querySelector('.rank-value').textContent = rank.name;
-    document.querySelector('.rank-comparison .tian').textContent = `天堂 ${rank.tian}`;
-    document.querySelector('.rank-comparison .jue').textContent = `裁决 ${rank.jue}`;
-    document.querySelector('.rank-comparison .di').textContent = `地狱 ${rank.di}`;
-    document.querySelector('.prestige-value').textContent = prestige;
+    document.querySelector('.rank-comparison .tian').textContent = `人脉 ${rank.network}`;
+    document.querySelector('.rank-comparison .jue').textContent = `技术 ${rank.tech}`;
+    document.querySelector('.rank-comparison .di').textContent = `资源 ${rank.resource}`;
+    document.querySelector('.prestige-value').textContent = projectExperience;
     
     if (nextRank) {
         document.querySelector('.next-prestige').textContent = nextRank.cost;
-        const remaining = nextRank.cost - prestige;
+        const remaining = nextRank.cost - projectExperience;
         document.querySelector('.prestige-remaining').textContent = `（下一级 ${nextRank.name} 还需 ${remaining}）`;
     } else {
         document.querySelector('.next-prestige').textContent = '-';
         document.querySelector('.prestige-remaining').textContent = '（已达到最高职级）';
     }
-}
-
-function addPrestige(amount) {
-    prestige += amount;
-    savePrestigeAndRank();
-    updateRankDisplay();
 }
 
 function showLevelupModal() {
@@ -764,7 +752,7 @@ function showLevelupModal() {
     
     ranks.forEach(rank => {
         const isCurrent = rank.id === currentRank;
-        const isUnlocked = rank.cost <= prestige;
+        const isUnlocked = rank.cost <= projectExperience;
         
         const item = document.createElement('div');
         item.className = `levelup-item ${isCurrent ? 'current' : ''} ${!isUnlocked && !isCurrent ? 'locked' : ''}`;
@@ -778,7 +766,7 @@ function showLevelupModal() {
         
         const compare = document.createElement('div');
         compare.className = 'levelup-compare';
-        compare.innerHTML = `<span style="color: #ff9500">天堂 ${rank.tian}</span> / <span style="color: #00ff41">裁决 ${rank.jue}</span> / <span style="color: #ff4444">地狱 ${rank.di}</span>`;
+        compare.innerHTML = `<span style="color: #ff9500">人脉 ${rank.network}</span> / <span style="color: #00ff41">技术 ${rank.tech}</span> / <span style="color: #ff4444">资源 ${rank.resource}</span>`;
         
         const unlock = document.createElement('div');
         unlock.className = 'levelup-unlock';
@@ -795,7 +783,7 @@ function showLevelupModal() {
         
         const button = document.createElement('button');
         button.className = 'btn-promote';
-        button.textContent = isCurrent ? '当前职级' : (isUnlocked ? '🔥 晋升' : `需要 ${rank.cost} 声望`);
+        button.textContent = isCurrent ? '当前职级' : (isUnlocked ? '🔥 晋升' : `需要 ${rank.cost} 项目经历`);
         button.disabled = !isUnlocked || isCurrent;
         
         if (isUnlocked && !isCurrent) {
@@ -816,10 +804,13 @@ function closeLevelupModal() {
 
 function promoteToRank(rankId) {
     const rank = ranks.find(r => r.id === rankId);
-    if (!rank || rank.cost > prestige) return;
+    if (!rank || rank.cost > projectExperience) return;
+    
+    // 扣除项目经历
+    projectExperience -= rank.cost;
     
     currentRank = rankId;
-    savePrestigeAndRank();
+    saveProjectExperienceAndRank();
     updateRankDisplay();
     closeLevelupModal();
     

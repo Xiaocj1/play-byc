@@ -7,60 +7,55 @@
             "position": "RD",
             "cards": [
                 {
-                    "id": "rd_001",
-                    "name": "CRUD工程师",
-                    "rarity": "R",
-                    "durability": 5,
-                    "is_variant": false,
-                    "camp": "hell",
-                    "position": "RD",
-                    "effect": {"type": "progress", "value": 3},
-                    "description": "熟练掌握增删改查"
-                },
-                {
-                    "id": "rd_002",
-                    "name": "架构师",
-                    "rarity": "SR",
-                    "durability": 4,
-                    "is_variant": false,
-                    "camp": "heaven",
-                    "position": "RD",
-                    "effect": {"type": "progress", "value": 8},
-                    "description": "画PPT高手"
-                },
-                {
-                    "id": "rd_003",
-                    "name": "算法专家",
-                    "rarity": "SSR",
-                    "durability": 3,
-                    "is_variant": false,
-                    "camp": "heaven",
-                    "position": "RD",
-                    "effect": {"type": "progress", "value": 15},
-                    "description": "调参大师"
-                },
-                {
-                    "id": "rd_004",
-                    "name": "管培生",
-                    "rarity": "R",
-                    "durability": 1,
-                    "is_variant": true,
-                    "camp": "neutral",
-                    "position": "RD",
-                    "variant_pool": ["promote_ssr", "promote_sr", "runaway", "exam", "borrow", "nothing"],
-                    "description": "未来之星？"
-                },
-                {
-                    "id": "rd_005",
-                    "name": "外包老哥",
-                    "rarity": "R",
-                    "durability": 3,
-                    "is_variant": false,
-                    "camp": "hell",
-                    "position": "RD",
-                    "effect": {"type": "progress", "value": 4},
-                    "description": "随叫随到"
-                }
+                "id": "rd_001",
+                "name": "CRUD工程师",
+                "rarity": "R",
+                "durability": 5,
+                "is_variant": false,
+                "position": "RD",
+                "effect": {"type": "progress", "value": 3},
+                "description": "熟练掌握增删改查"
+            },
+            {
+                "id": "rd_002",
+                "name": "架构师",
+                "rarity": "SR",
+                "durability": 4,
+                "is_variant": false,
+                "position": "RD",
+                "effect": {"type": "progress", "value": 8},
+                "description": "画PPT高手"
+            },
+            {
+                "id": "rd_003",
+                "name": "算法专家",
+                "rarity": "SSR",
+                "durability": 3,
+                "is_variant": false,
+                "position": "RD",
+                "effect": {"type": "progress", "value": 15},
+                "description": "调参大师"
+            },
+            {
+                "id": "rd_004",
+                "name": "管培生",
+                "rarity": "R",
+                "durability": 1,
+                "is_variant": true,
+                "position": "RD",
+                "variant_pool": ["promote_ssr", "promote_sr", "runaway", "exam", "borrow", "nothing"],
+                "description": "未来之星？"
+            },
+            {
+                "id": "rd_005",
+                "name": "外包老哥",
+                "rarity": "R",
+                "durability": 3,
+                "is_variant": false,
+                "position": "RD",
+                "effect": {"type": "progress", "value": 4},
+                "description": "随叫随到"
+            }
             ]
         },
         {
@@ -75,7 +70,6 @@
                     "rarity": "R",
                     "durability": 5,
                     "is_variant": false,
-                    "camp": "hell",
                     "position": "QA",
                     "effect": {"type": "satisfaction", "value": 5},
                     "description": "点点点"
@@ -86,7 +80,6 @@
                     "rarity": "SR",
                     "durability": 4,
                     "is_variant": false,
-                    "camp": "heaven",
                     "position": "QA",
                     "effect": {"type": "satisfaction", "value": 10},
                     "description": "写脚本高手"
@@ -97,7 +90,6 @@
                     "rarity": "SSR",
                     "durability": 3,
                     "is_variant": false,
-                    "camp": "justice",
                     "position": "QA",
                     "effect": {"type": "satisfaction", "value": 15},
                     "description": "压测王者"
@@ -108,7 +100,6 @@
                     "rarity": "R",
                     "durability": 1,
                     "is_variant": true,
-                    "camp": "neutral",
                     "position": "QA",
                     "variant_pool": ["promote_ssr", "promote_sr", "runaway", "exam", "borrow", "nothing"],
                     "description": "未来之星？"
@@ -119,7 +110,6 @@
                     "rarity": "SR",
                     "durability": 4,
                     "is_variant": false,
-                    "camp": "hell",
                     "position": "QA",
                     "effect": {"type": "satisfaction", "value": 8},
                     "description": "Bug挖掘机"
@@ -138,7 +128,6 @@
                     "rarity": "R",
                     "durability": 5,
                     "is_variant": false,
-                    "camp": "heaven",
                     "position": "Design",
                     "effect": {"type": "satisfaction", "value": 4},
                     "description": "像素级还原"
@@ -149,7 +138,6 @@
                     "rarity": "SR",
                     "durability": 4,
                     "is_variant": false,
-                    "camp": "heaven",
                     "position": "Design",
                     "effect": {"type": "satisfaction", "value": 9},
                     "description": "洞察用户"
@@ -160,7 +148,6 @@
                     "rarity": "SSR",
                     "durability": 3,
                     "is_variant": false,
-                    "camp": "heaven",
                     "position": "Design",
                     "effect": {"type": "satisfaction", "value": 14},
                     "description": "审美天花板"
@@ -171,7 +158,6 @@
                     "rarity": "R",
                     "durability": 1,
                     "is_variant": true,
-                    "camp": "neutral",
                     "position": "Design",
                     "variant_pool": ["promote_ssr", "promote_sr", "runaway", "exam", "borrow", "nothing"],
                     "description": "未来之星？"
@@ -182,7 +168,6 @@
                     "rarity": "SR",
                     "durability": 4,
                     "is_variant": false,
-                    "camp": "heaven",
                     "position": "Design",
                     "effect": {"type": "satisfaction", "value": 7},
                     "description": "丝滑流畅"
@@ -201,7 +186,6 @@
                     "rarity": "R",
                     "durability": 5,
                     "is_variant": false,
-                    "camp": "hell",
                     "position": "Operation",
                     "effect": {"type": "team_favor", "value": 5},
                     "description": "写稿机器"
@@ -212,7 +196,6 @@
                     "rarity": "SR",
                     "durability": 4,
                     "is_variant": false,
-                    "camp": "hell",
                     "position": "Operation",
                     "effect": {"type": "team_favor", "value": 10},
                     "description": "策划鬼才"
@@ -223,7 +206,6 @@
                     "rarity": "SSR",
                     "durability": 3,
                     "is_variant": false,
-                    "camp": "justice",
                     "position": "Operation",
                     "effect": {"type": "team_favor", "value": 15},
                     "description": "数据驱动"
@@ -234,7 +216,6 @@
                     "rarity": "R",
                     "durability": 1,
                     "is_variant": true,
-                    "camp": "neutral",
                     "position": "Operation",
                     "variant_pool": ["promote_ssr", "promote_sr", "runaway", "exam", "borrow", "nothing"],
                     "description": "未来之星？"
@@ -245,7 +226,6 @@
                     "rarity": "R",
                     "durability": 4,
                     "is_variant": false,
-                    "camp": "neutral",
                     "position": "Operation",
                     "effect": {"type": "team_favor", "value": 4},
                     "description": "需求搬运工"
@@ -258,7 +238,6 @@
             "name": "逆袭",
             "rarity": "SSR",
             "durability": 3,
-            "camp": "heaven",
             "text": "🎉 管培生逆袭成功！直接晋升为SSR！",
             "bonus": {"type": "budget", "value": 10}
         },
@@ -266,7 +245,6 @@
             "name": "转正",
             "rarity": "SR",
             "durability": 4,
-            "camp": "heaven",
             "text": "✨ 管培生转正成功！晋升为SR！",
             "bonus": {"type": "budget", "value": 5}
         },
@@ -274,7 +252,6 @@
             "name": "跑路",
             "rarity": "R",
             "durability": 0,
-            "camp": "neutral",
             "text": "💨 管培生跑路了！人去楼空...",
             "bonus": {"type": "budget", "value": 3}
         },
@@ -282,7 +259,6 @@
             "name": "考公",
             "rarity": "R",
             "durability": 0,
-            "camp": "neutral",
             "text": "📚 管培生考上公务员了！从此告别996！",
             "bonus": {"type": "budget", "value": 0}
         },
@@ -290,7 +266,6 @@
             "name": "借调",
             "rarity": "SR",
             "durability": 3,
-            "camp": "justice",
             "text": "🔄 管培生被借调到其他部门",
             "bonus": {"type": "budget", "value": 2}
         },
@@ -298,7 +273,6 @@
             "name": "躺平",
             "rarity": "R",
             "durability": 2,
-            "camp": "neutral",
             "text": "😴 管培生选择躺平，继续观察中...",
             "bonus": {"type": "budget", "value": 0}
         }
