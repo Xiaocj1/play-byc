@@ -1,0 +1,267 @@
+{
+    "tutorial_version": "1.0",
+    "description": "游戏新手引导配置",
+    "general_tutorial": {
+        "id": "general_intro",
+        "title": "欢迎来到创业模拟器",
+        "description": "在这款游戏中，你将体验创业的酸甜苦辣。",
+        "steps": [
+            {
+                "id": "step_1_welcome",
+                "title": "选择你的创业方向",
+                "content": "游戏有三种创业方向供你选择：\n\n🏢 ToB（企业服务）\n适合喜欢稳定项目的玩家，你需要服务好甲方客户。\n\n📱 ToC（消费产品）\n适合喜欢快速迭代的玩家，你需要吸引大量用户。\n\n🏪 B2C（平台电商）\n适合喜欢双边市场的玩家，你需要平衡好商家和消费者。",
+                "highlight_element": "#direction-selection",
+                "action": "wait_for_choice",
+                "choice_key": "direction"
+            },
+            {
+                "id": "step_2_direction",
+                "title": "选择团队成员",
+                "content": "每个创业方向都需要不同的核心成员：\n\n👨‍💻 艾萨克 - 技术大牛，负责产品开发\n👩‍🔬 莫甘娜 - 测试专家，负责质量把控\n👩‍💼 小葵 - 运营高手，负责用户增长\n🎨 辛竹 - 设计达人，负责用户体验\n\n每个角色都有自己的性格和特点，与他们保持良好关系很重要哦！",
+                "highlight_element": "#team-selection",
+                "action": "wait_for_choice",
+                "choice_key": "team"
+            }
+        ]
+    },
+    "tob_tutorial": {
+        "id": "tob_intro",
+        "title": "ToB企业服务指南",
+        "steps": [
+            {
+                "id": "tob_step_1_kpi",
+                "title": "核心KPI",
+                "content": "作为ToB企业，你的核心目标是：\n\n✅ 完成项目交付（进度条）\n✅ 获得甲方满意度\n✅ 维护行业名声\n✅ 积累标杆客户\n\n记住：甲方的满意度是你生存的根本！",
+                "highlight_element": "#kpi-panel",
+                "action": "continue"
+            },
+            {
+                "id": "tob_step_2_report",
+                "title": "项目周报",
+                "content": "每周你需要提交周报给甲方。\n\n📊 周报由多个任务组成\n🎯 每个任务需要使用员工卡牌\n✊ 石头剪刀布决定胜负\n\n合理使用你的员工卡牌，是取得甲方信任的关键！",
+                "highlight_element": "#report-section",
+                "action": "wait_for_event",
+                "event_key": "report_battle"
+            },
+            {
+                "id": "tob_step_3_recruit",
+                "title": "人才招聘",
+                "content": "随着业务发展，你需要招聘更多人才。\n\n🎴 招募系统可以抽取新员工\n💰 每次抽卡需要消耗资金\n📈 名声越高，抽卡成本越低\n⚠️ 员工卡牌有耐久度限制\n\n珍惜每一个员工，他们的离职会带走你的碎片！",
+                "highlight_element": "#recruit-section",
+                "action": "wait_for_event",
+                "event_key": "first_recruit"
+            },
+            {
+                "id": "tob_step_4_financing",
+                "title": "融资发展",
+                "content": "资金紧张时，可以考虑融资。\n\n💵 融资可以获得启动资金\n📊 但会增加负债和利息\n⚖️ 需要权衡利弊\n\n融资是把双刃剑，用好可以加速发展，用不好可能陷入债务危机！",
+                "highlight_element": "#financing-section",
+                "action": "continue"
+            },
+            {
+                "id": "tob_step_5_victory",
+                "title": "胜利条件",
+                "content": "恭喜你完成ToB新手教程！\n\n🏆 ToB胜利条件：\n• 进度达到100%\n• 标杆客户≥3个\n• 回款率≥80%\n• 甲方满意度≥80%\n• 名声≥70\n\n祝你的企业服务事业蒸蒸日上！",
+                "highlight_element": "#victory-condition",
+                "action": "complete"
+            }
+        ]
+    },
+    "toc_tutorial": {
+        "id": "toc_intro",
+        "title": "ToC消费产品指南",
+        "steps": [
+            {
+                "id": "toc_step_1_kpi",
+                "title": "核心KPI",
+                "content": "作为ToC产品，你的核心目标是：\n\n✅ 提升用户活跃度（DAU）\n✅ 保持用户满意度\n✅ 打造产品名声\n✅ 实现产品-market fit\n\n用户是你的上帝，好好伺候他们！",
+                "highlight_element": "#kpi-panel",
+                "action": "continue"
+            },
+            {
+                "id": "toc_step_2_report",
+                "title": "产品迭代",
+                "content": "每周你需要推进产品迭代。\n\n📱 产品由多个功能模块组成\n🎴 使用员工卡牌完成任务\n✊ 石头剪刀布决定成败\n\n好的产品是用一次次迭代打磨出来的！",
+                "highlight_element": "#report-section",
+                "action": "wait_for_event",
+                "event_key": "report_battle"
+            },
+            {
+                "id": "toc_step_3_recruit",
+                "title": "团队扩充",
+                "content": "用户量增长需要更强的团队。\n\n🎴 招募新员工增强实力\n💰 抽卡成本与名声挂钩\n⚠️ 卡牌耐久度不可恢复\n\n组建你的梦之队吧！",
+                "highlight_element": "#recruit-section",
+                "action": "wait_for_event",
+                "event_key": "first_recruit"
+            },
+            {
+                "id": "toc_step_4_merchant",
+                "title": "商家合作",
+                "content": "流量变现离不开商家合作。\n\n🏪 商家入驻带来收入\n🎴 使用谈判卡牌说服商家\n📈 成功的商家合作加速发展\n\n但要记住：商家和用户一样重要！",
+                "highlight_element": "#merchant-section",
+                "action": "wait_for_event",
+                "event_key": "merchant_game"
+            },
+            {
+                "id": "toc_step_5_victory",
+                "title": "胜利条件",
+                "content": "恭喜你完成ToC新手教程！\n\n🏆 ToC胜利条件：\n• 进度达到100%\n• DAU≥100万\n• 用户满意度≥80%\n• LTV≥0.1万\n• 名声≥70\n\n祝你的产品用户量节节高升！",
+                "highlight_element": "#victory-condition",
+                "action": "complete"
+            }
+        ]
+    },
+    "b2c_tutorial": {
+        "id": "b2c_intro",
+        "title": "B2C平台电商指南",
+        "steps": [
+            {
+                "id": "b2c_step_1_kpi",
+                "title": "核心KPI",
+                "content": "作为B2C平台，你的核心目标是：\n\n✅ 提升平台GMV\n✅ 吸引商家入驻\n✅ 保持双边满意度\n✅ 控制纠纷率\n\n平台运营的核心是平衡！",
+                "highlight_element": "#kpi-panel",
+                "action": "continue"
+            },
+            {
+                "id": "b2c_step_2_report",
+                "title": "平台运营",
+                "content": "每周你需要推进平台运营。\n\n🏪 平台由多个模块组成\n🎴 使用员工卡牌完成任务\n✊ 石头剪刀布决定成败\n\n运营好平台，让商家和用户都满意！",
+                "highlight_element": "#report-section",
+                "action": "wait_for_event",
+                "event_key": "report_battle"
+            },
+            {
+                "id": "b2c_step_3_merchant",
+                "title": "商家招商",
+                "content": "商家是平台的生命线！\n\n🏪 参加招商会\n🎴 使用谈判卡牌\n💰 满足商家需求提高成功率\n🔥 连续成功有连击加成\n\n努力成为商家最喜欢的平台！",
+                "highlight_element": "#merchant-game",
+                "action": "wait_for_event",
+                "event_key": "merchant_game"
+            },
+            {
+                "id": "b2c_step_4_spectrum",
+                "title": "光谱系统",
+                "content": "善用光谱协同可以事半功倍！\n\n🌉 职业协同：员工卡+对应谈判卡\n🌀 功能协同：同光谱卡牌组合\n🌈 跨光谱：四种光谱齐备\n⭐ 职业专精：同职业员工配合\n\n合理搭配卡牌可以大幅提升效果！",
+                "highlight_element": "#spectrum-info",
+                "action": "continue"
+            },
+            {
+                "id": "b2c_step_5_victory",
+                "title": "胜利条件",
+                "content": "恭喜你完成B2C新手教程！\n\n🏆 B2C胜利条件：\n• 进度达到100%\n• GMV≥100亿\n• 商家数≥500\n• 纠纷率≤10%\n• 名声≥70\n\n祝你的平台电商帝国繁荣昌盛！",
+                "highlight_element": "#victory-condition",
+                "action": "complete"
+            }
+        ]
+    },
+    "card_tutorial": {
+        "id": "card_intro",
+        "title": "卡牌系统说明",
+        "steps": [
+            {
+                "id": "card_step_1_rarity",
+                "title": "卡牌稀有度",
+                "content": "卡牌分为三个稀有度：\n\n⭐⭐⭐ SSR - 效果强大，耐久较低（5次）\n⭐⭐ SR - 效果中等，耐久适中（8次）\n⭐ R - 基础卡牌，耐久充足（10次）\n\n稀有度越高，效果越强，但使用次数越少！",
+                "highlight_element": "#card-gallery",
+                "action": "continue"
+            },
+            {
+                "id": "card_step_2_spectrum",
+                "title": "光谱系统",
+                "content": "每张卡牌都有自己的光谱属性：\n\n💻 技术光谱 - 对应RD员工\n🧪 服务光谱 - 对应QA员工\n🎨 设计光谱 - 对应设计师\n📊 运营光谱 - 对应运营人员\n\n合理搭配不同光谱的卡牌可以触发协同效果！",
+                "highlight_element": "#spectrum-filter",
+                "action": "continue"
+            },
+            {
+                "id": "card_step_3_wear",
+                "title": "卡牌磨损",
+                "content": "⚠️ 重要提醒：卡牌有耐久度限制！\n\n🔧 使用卡牌会消耗耐久\n💔 耐久耗尽卡牌报废\n♻️ 报废可获得碎片\n🛒 50碎片可兑换R卡\n\n卡牌是消耗品，请谨慎使用！",
+                "highlight_element": "#durability-display",
+                "action": "continue"
+            }
+        ]
+    },
+    "tip_system": {
+        "enabled": true,
+        "tip_interval_weeks": 2,
+        "tips": [
+            {
+                "id": "tip_001",
+                "category": "general",
+                "content": "💡 提示：保持团队士气（满意度）高于80%可以获得效率提升buff！",
+                "trigger_condition": {"satisfaction_below": 50, "week_after": 4}
+            },
+            {
+                "id": "tip_002",
+                "category": "recruit",
+                "content": "🎴 提示：名声越高，抽卡成本越低！优先提升名声是个好策略。",
+                "trigger_condition": {"satisfaction_below": 40, "week_after": 2}
+            },
+            {
+                "id": "tip_003",
+                "category": "card",
+                "content": "⚠️ 提示：SSR卡牌效果强大但耐久很低，留到关键时刻使用！",
+                "trigger_condition": {"has_ssr_card": true, "week_after": 1}
+            },
+            {
+                "id": "tip_004",
+                "category": "merchant",
+                "content": "🔥 提示：连续成功招商会触发连击加成，最高+15%成功率！",
+                "trigger_condition": {"direction": "b2c", "week_after": 3}
+            },
+            {
+                "id": "tip_005",
+                "category": "financial",
+                "content": "💰 提示：负债会产生利息，利率与名声相关，名声越高利率越低。",
+                "trigger_condition": {"has_debt": true, "week_after": 2}
+            },
+            {
+                "id": "tip_006",
+                "category": "spectrum",
+                "content": "🌉 提示：职业协同可以带来50%效果加成！尝试搭配员工卡和对应谈判卡。",
+                "trigger_condition": {"direction": "b2c", "week_after": 5}
+            },
+            {
+                "id": "tip_007",
+                "category": "holiday",
+                "content": "🎊 提示：节假日期间会有特殊buff，合理利用可以加速发展！",
+                "trigger_condition": {"week": 1}
+            }
+        ]
+    },
+    "quick_guide": {
+        "enabled": true,
+        "items": [
+            {
+                "id": "qg_001",
+                "title": "如何提升满意度？",
+                "answer": "满足团队成员的需求，参加团建活动，避免负面事件。",
+                "icon": "😊"
+            },
+            {
+                "id": "qg_002",
+                "title": "如何获得新卡牌？",
+                "answer": "使用招募系统抽卡，消耗资金。名声越高，成本越低。",
+                "icon": "🎴"
+            },
+            {
+                "id": "qg_003",
+                "title": "卡牌耐久耗尽怎么办？",
+                "answer": "卡牌报废后会获得碎片，集齐一定数量可以兑换新卡牌。",
+                "icon": "💔"
+            },
+            {
+                "id": "qg_004",
+                "title": "如何解锁更多HC？",
+                "answer": "达到资产里程碑（200万、500万等）可解锁额外HC。",
+                "icon": "👥"
+            },
+            {
+                "id": "qg_005",
+                "title": "光谱协同是什么？",
+                "answer": "合理搭配不同光谱的卡牌可以触发协同效果，大幅提升效率。",
+                "icon": "🌉"
+            }
+        ]
+    }
+}

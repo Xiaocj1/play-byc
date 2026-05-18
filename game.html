@@ -21,7 +21,11 @@
 
     <div class="status-bar-wrapper">
     <div class="status-bar">
-        <button class="btn-back-home" id="btn-back-home">🏠 返回主页</button>
+        <div class="header-buttons">
+            <button class="btn-back-home" id="btn-back-home">🏠 返回主页</button>
+            <button class="btn-settings" onclick="showSettingsPanel()">⚙️ 设置</button>
+            <button class="btn-help" onclick="showQuickGuide()">❓ 帮助</button>
+        </div>
         
         <div class="status-columns">
             <div class="status-column">
@@ -384,6 +388,11 @@
         </div>
     </div>
 
+    <script src="js/buffs.js"></script>
+    <script src="js/balance.js"></script>
+    <script src="js/spectrum.js"></script>
+    <script src="js/events.js"></script>
+    <script src="js/tutorial.js"></script>
     <script src="js/game.js"></script>
     <script src="js/recruit.js"></script>
     <script src="js/report.js"></script>

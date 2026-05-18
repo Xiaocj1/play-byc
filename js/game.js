@@ -318,6 +318,8 @@ let weightsData = { phases: [], efficiency_buff: { threshold: 80, min_bonus: 0.0
 let buffsData = { buffs: [], buff_rules: { max_buffs_per_character: 3, buff_duration_unit: "weeks", stacking: { same_type: "refresh", different_type: "stack" } } };
 
 async function loadAllData() {
+    loadSettings();
+    
     try {
         const [weeklyReports, prdTemplates, events, characters, ranksData, endings, tools, weights, buffs, financing, directionConfig, missions] = await Promise.all([
             fetch('data/weekly_reports.json').then(r => r.json()),
@@ -352,6 +354,11 @@ async function loadAllData() {
         
         ranks = ranksData.ranks || [];
         
+        await Promise.all([
+            loadBalanceData(),
+            loadTutorialData()
+        ]);
+        
         loadProjectExperienceAndRank();
         loadGameState();
         loadUnlockedTools();
@@ -363,6 +370,14 @@ async function loadAllData() {
         initToolchainSkin();
         initGame();
         startDirectionLabelUpdates();
+        
+        if (!isTutorialCompleted() && gameState.direction) {
+            setTimeout(() => {
+                if (typeof startTutorial === 'function' && tutorialData) {
+                    startTutorial(gameState.direction);
+                }
+            }, 1000);
+        }
         
     } catch (error) {
         console.error('Failed to load data:', error);
@@ -1455,18 +1470,73 @@ function handleChoice(option, event) {
     checkLoseConditions();
 }
 
+function applyCardWear(cardId, scenario, success) {
+    if (!backpack || backpack.length === 0) return false;
+    
+    const cardIndex = backpack.findIndex(c => c.instanceId === cardId);
+    if (cardIndex === -1) return false;
+    
+    const card = backpack[cardIndex];
+    if (!card.durability) {
+        card.durability = card.rarity === 'SSR' ? 5 : (card.rarity === 'SR' ? 8 : 10);
+    }
+    
+    if (card.currentDurability === undefined) {
+        card.currentDurability = card.durability;
+    }
+    
+    if (card.currentDurability <= 0) {
+        showToast(`卡牌"${card.name}"已报废！`);
+        return false;
+    }
+    
+    let wearAmount = 1;
+    if (scenario === 'negotiation') {
+        wearAmount = success ? 1 : 2;
+    } else if (scenario === 'report_battle_defeat') {
+        wearAmount = 1;
+    } else if (card.rarity === 'SSR') {
+        wearAmount = 3;
+    }
+    
+    card.currentDurability -= wearAmount;
+    
+    if (card.currentDurability <= 0) {
+        showToast(`卡牌"${card.name}"已报废（离职/考公）！`);
+        const fragments = card.rarity === 'SSR' ? 10 : (card.rarity === 'SR' ? 3 : 1);
+        if (gameState.cardFragments === undefined) gameState.cardFragments = 0;
+        gameState.cardFragments += fragments;
+        backpack.splice(cardIndex, 1);
+        if (typeof saveBackpack === 'function') saveBackpack();
+    }
+    
+    return true;
+}
+
 function handleWeekChange() {
     gameState.satisfactionHistory.push(gameState.satisfaction);
 
     gameState.consecutiveLowSatisfactionWeeks = 0;
 
-    gameState.budget -= 5;
+    if (!gameState.noBaseCostThisWeek) {
+        gameState.budget -= 5;
+    }
+    gameState.noBaseCostThisWeek = false;
 
     const interest = calculateInterest();
     
     updateFavorHistory();
     updateCharacterBuffs();
     checkEfficiencyBuffs();
+    
+    checkRandomEvents();
+    checkSeasonBuffs();
+    checkHolidayBuffs();
+    checkHCMilestones();
+    checkHolidayEvents();
+    checkTeambuildingEvents();
+    checkCharacterEvents();
+    checkChainEvents();
 
     calculateWeeklyProgress();
     updateBusinessKPI();
@@ -1732,39 +1802,6 @@ function checkEfficiencyBuffs() {
     });
 }
 
-function addBuffToCharacter(characterId, buffId) {
-    const buffData = buffsData.buffs.find(b => b.id === buffId);
-    if (!buffData) return;
-
-    if (!gameState.characterBuffs[characterId]) {
-        gameState.characterBuffs[characterId] = [];
-    }
-
-    const existingBuffIndex = gameState.characterBuffs[characterId].findIndex(b => b.buffId === buffId);
-    if (existingBuffIndex >= 0) {
-        if (buffsData.buff_rules.stacking.same_type === 'refresh') {
-            gameState.characterBuffs[characterId][existingBuffIndex].duration = buffData.effect.duration === 'permanent' ? 0 : buffData.effect.duration;
-        }
-    } else {
-        if (gameState.characterBuffs[characterId].length < buffsData.buff_rules.max_buffs_per_character) {
-            gameState.characterBuffs[characterId].push({
-                buffId: buffId,
-                duration: buffData.effect.duration === 'permanent' ? 0 : buffData.effect.duration
-            });
-        }
-    }
-}
-
-function removeBuffFromCharacter(characterId, buffId) {
-    if (!gameState.characterBuffs[characterId]) return;
-
-    gameState.characterBuffs[characterId] = gameState.characterBuffs[characterId].filter(b => b.buffId !== buffId);
-
-    if (gameState.characterBuffs[characterId].length === 0) {
-        delete gameState.characterBuffs[characterId];
-    }
-}
-
 function getRarityBonusValue(rarity) {
     const bonuses = {
         'R': 0.5,
@@ -1882,7 +1919,7 @@ function applyChoiceBonus(effects, bonusInfo) {
 }
 
 function calculateWeeklyProgress() {
-    let baseProgress = 5;
+    let baseProgress = 3;
     
     const toolchainEffects = getToolchainEffects();
     baseProgress += toolchainEffects.progress;
@@ -2410,39 +2447,40 @@ function checkWinConditions() {
         return;
     }
 
+    // 使用平衡配置中的胜利条件
     const totalAssets = gameState.budget - gameState.debt;
+    const config = typeof getBalanceConfig === 'function' ? getBalanceConfig() : null;
+    const victoryConditions = config && config.victory_conditions ? config.victory_conditions[gameState.direction] : null;
     
-    let marketPositionMet = false;
+    let victoryMet = false;
     
-    if (gameState.direction === 'tob') {
-        marketPositionMet = gameState.fame >= 60;  // ToB模式：行业口碑≥60
-    } else if (gameState.direction === 'toc') {
-        // ToC模式：根据增长策略调整胜利条件
-        if (gameState.pmfChoiceMade) {
-            // 已做出PMF选择，根据策略判断
-            switch(gameState.growthStrategy) {
-                case 'aggressive':
-                    // 激进增长：追求规模，DAU>500万
-                    marketPositionMet = gameState.dau > 500;
-                    break;
-                case 'monetization':
-                    // 深度变现：追求盈利，LTV>0.1万元
-                    marketPositionMet = gameState.ltv > 0.1;
-                    break;
-                case 'balanced':
-                    // 平衡发展：规模和盈利并重，DAU>100万 且 LTV>0.05万元
-                    marketPositionMet = gameState.dau > 100 && gameState.ltv > 0.05;
-                    break;
-            }
-        } else {
-            // 未做出选择，使用默认条件
-            marketPositionMet = gameState.dau > 100 && gameState.ltv > 0.05;
+    if (victoryConditions) {
+        // 使用加权评分系统判断胜利条件
+        const kpiScore = typeof calculateKPIScore === 'function' ? calculateKPIScore() : 0;
+        const scoreThreshold = 70; // 综合评分阈值
+        
+        // 检查各关键指标
+        let progressMet = gameState.progress >= (victoryConditions.progress || 100);
+        let satisfactionMet = gameState.satisfaction >= (victoryConditions.satisfaction || 80);
+        let fameMet = gameState.fame >= (victoryConditions.fame || 70);
+        let coreKPIMet = false;
+        
+        // 检查模式特定KPI
+        if (gameState.direction === 'tob') {
+            coreKPIMet = gameState.benchmarkClients >= (victoryConditions.benchmark_clients || 3) && 
+                        gameState.renewalRate >= (victoryConditions.renewal_rate || 80);
+        } else if (gameState.direction === 'toc') {
+            coreKPIMet = gameState.dau >= (victoryConditions.dau || 100);
+        } else if (gameState.direction === 'b2c') {
+            coreKPIMet = gameState.gmv >= (victoryConditions.gmv || 100) && 
+                        gameState.merchantCount >= (victoryConditions.merchant_count || 500);
         }
-    } else if (gameState.direction === 'b2c') {
-        marketPositionMet = gameState.gmv > 10;
+        
+        // 胜利条件：综合评分达标且关键指标满足
+        victoryMet = kpiScore >= scoreThreshold && progressMet && satisfactionMet && fameMet && coreKPIMet;
     }
-
-    if (totalAssets >= 500 && marketPositionMet && Math.random() < 0.1) {
+    
+    if (totalAssets >= 500 && victoryMet && Math.random() < 0.1) {
         gameState.triggerAcquisition = true;
         showAcquisitionOption();
     }
@@ -2706,6 +2744,114 @@ function unlockEnding(endingId) {
         unlockedEndings.push(endingId);
         localStorage.setItem(ENDINGS_KEY, JSON.stringify(unlockedEndings));
     }
+}
+
+function toggleEffectEffects(enabled) {
+    if (!gameState.settings) {
+        gameState.settings = {};
+    }
+    gameState.settings.effectsEnabled = enabled;
+    
+    if (enabled) {
+        document.body.classList.remove('effect-disabled');
+    } else {
+        document.body.classList.add('effect-disabled');
+    }
+    
+    localStorage.setItem('game_settings', JSON.stringify(gameState.settings));
+}
+
+function loadSettings() {
+    const savedSettings = localStorage.getItem('game_settings');
+    if (savedSettings) {
+        try {
+            const settings = JSON.parse(savedSettings);
+            gameState.settings = settings;
+            
+            if (settings.effectsEnabled === false) {
+                document.body.classList.add('effect-disabled');
+            }
+        } catch (e) {
+            console.warn('Failed to load settings:', e);
+        }
+    }
+}
+
+function showSettingsPanel() {
+    const existingPanel = document.getElementById('settings-panel');
+    if (existingPanel) {
+        existingPanel.remove();
+        return;
+    }
+    
+    const panel = document.createElement('div');
+    panel.id = 'settings-panel';
+    panel.className = 'settings-panel';
+    panel.innerHTML = `
+        <button class="settings-close" onclick="closeSettingsPanel()">×</button>
+        <h3 class="settings-title">⚙️ 游戏设置</h3>
+        
+        <div class="settings-item">
+            <div>
+                <div class="settings-label">🎆 特效动画</div>
+                <div class="settings-description">关闭可提升性能</div>
+            </div>
+            <div class="settings-toggle ${gameState.settings?.effectsEnabled !== false ? 'active' : ''}" 
+                 onclick="toggleEffectSettings(this)"></div>
+        </div>
+        
+        <div class="settings-item">
+            <div>
+                <div class="settings-label">🔊 游戏音效</div>
+                <div class="settings-description">开启背景音乐和音效</div>
+            </div>
+            <div class="settings-toggle ${gameState.settings?.soundEnabled ? 'active' : ''}" 
+                 onclick="toggleSoundSettings(this)"></div>
+        </div>
+        
+        <div class="settings-item">
+            <div>
+                <div class="settings-label">💡 提示信息</div>
+                <div class="settings-description">显示游戏技巧提示</div>
+            </div>
+            <div class="settings-toggle ${gameState.settings?.tipsEnabled !== false ? 'active' : ''}" 
+                 onclick="toggleTipsSettings(this)"></div>
+        </div>
+    `;
+    
+    document.body.appendChild(panel);
+}
+
+function closeSettingsPanel() {
+    const panel = document.getElementById('settings-panel');
+    if (panel) {
+        panel.remove();
+    }
+}
+
+function toggleEffectSettings(element) {
+    element.classList.toggle('active');
+    const enabled = element.classList.contains('active');
+    toggleEffectEffects(enabled);
+    showToast(enabled ? '🎆 特效已开启' : '🎆 特效已关闭');
+}
+
+function toggleSoundSettings(element) {
+    element.classList.toggle('active');
+    const enabled = element.classList.contains('active');
+    if (!gameState.settings) gameState.settings = {};
+    gameState.settings.soundEnabled = enabled;
+    localStorage.setItem('game_settings', JSON.stringify(gameState.settings));
+    showToast(enabled ? '🔊 音效已开启' : '🔇 音效已关闭');
+}
+
+function toggleTipsSettings(element) {
+    element.classList.toggle('active');
+    const enabled = element.classList.contains('active');
+    if (!gameState.settings) gameState.settings = {};
+    gameState.settings.tipsEnabled = enabled;
+    localStorage.setItem('game_settings', JSON.stringify(gameState.settings));
+    showToast(enabled ? '💡 提示已开启' : '💡 提示已关闭');
 }
 
 function restartGame() {

@@ -158,8 +158,8 @@ function useCardOnQuest(card, quest) {
     
     const result = playRockPaperScissors(card, quest);
     
-    if (!result.win) {
-        card.durability--;
+    if (typeof applyCardWear === 'function') {
+        applyCardWear(card.instanceId, 'report_battle_defeat', result.win);
     }
     
     const finalResult = {
@@ -168,15 +168,9 @@ function useCardOnQuest(card, quest) {
         score: result.score,
         durabilityLost: !result.win,
         bonus: result.win,
-        cardDestroyed: card.durability <= 0,
+        cardDestroyed: false,
         message: result.message
     };
-    
-    if (card.durability <= 0) {
-        backpack.splice(cardIndex, 1);
-    } else {
-        backpack[cardIndex] = card;
-    }
     
     saveBackpack();
     

@@ -136,7 +136,39 @@ function getCurrentHCCount() {
 function getCurrentDrawCost() {
     if (!cardsData || !cardsData.costs) return 10;
     const baseCost = cardsData.costs.single_draw || 10;
-    const multiplier = typeof getDrawCostMultiplier === 'function' ? getDrawCostMultiplier() : 1;
+    
+    const budget = gameState?.budget || 0;
+    const fame = gameState?.fame || 50;
+    
+    let fameCoefficient = 1.0;
+    if (typeof getDrawCostMultiplier === 'function') {
+        fameCoefficient = getDrawCostMultiplier();
+    } else {
+        if (fame >= 80) fameCoefficient = 0.7;
+        else if (fame >= 60) fameCoefficient = 0.9;
+        else if (fame >= 40) fameCoefficient = 1.0;
+        else if (fame >= 20) fameCoefficient = 1.2;
+        else fameCoefficient = 1.5;
+    }
+    
+    const quarter = getCurrentQuarter ? getCurrentQuarter() : 1;
+    let capitalThreshold;
+    if (quarter <= 4) {
+        capitalThreshold = 5;
+    } else if (quarter <= 8) {
+        capitalThreshold = 20;
+    } else {
+        capitalThreshold = 50;
+    }
+    
+    let capitalCoefficient = 1.0 + (budget / capitalThreshold) * 0.5;
+    const cap = cardsData.costs.capital_cap;
+    if (cap !== null && cap !== undefined) {
+        capitalCoefficient = Math.min(cap, capitalCoefficient);
+    }
+    
+    const multiplier = fameCoefficient * capitalCoefficient;
+    
     return Math.round(baseCost * multiplier);
 }
 
@@ -499,21 +531,58 @@ function unlockCard(card) {
     }
 }
 
-function useCard(instanceId) {
+function useCard(instanceId, scenario = 'general', success = true) {
+    if (typeof applyCardWear === 'function') {
+        const result = applyCardWear(instanceId, scenario, success);
+        if (result !== false) {
+            saveBackpack();
+            if (typeof updateRecruitUI === 'function') {
+                updateRecruitUI();
+            }
+        }
+        return result;
+    }
+    
     const index = backpack.findIndex(c => c.instanceId === instanceId);
     if (index === -1) return null;
     
     const card = backpack[index];
-    card.durability--;
     
-    if (card.durability <= 0) {
+    if (!card.durability) {
+        card.durability = card.rarity === 'SSR' ? 5 : (card.rarity === 'SR' ? 8 : 10);
+    }
+    
+    if (card.currentDurability === undefined) {
+        card.currentDurability = card.durability;
+    }
+    
+    let wearAmount = 1;
+    if (scenario === 'negotiation') {
+        wearAmount = success ? 1 : 2;
+    } else if (scenario === 'report_battle_defeat') {
+        wearAmount = 1;
+    } else if (card.rarity === 'SSR') {
+        wearAmount = 3;
+    }
+    
+    card.currentDurability -= wearAmount;
+    
+    const isDestroyed = card.currentDurability <= 0;
+    
+    if (isDestroyed) {
+        const fragments = card.rarity === 'SSR' ? 10 : (card.rarity === 'SR' ? 3 : 1);
+        if (gameState) {
+            if (gameState.cardFragments === undefined) gameState.cardFragments = 0;
+            gameState.cardFragments += fragments;
+        }
         backpack.splice(index, 1);
+        showToast(`卡牌"${card.name}"已报废！获得${fragments}碎片`);
     }
     
     saveBackpack();
     updateRecruitUI();
     
-    return card;
+    return { card, isDestroyed };
 }
 
 function showRecruitModal() {

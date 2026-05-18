@@ -144,6 +144,434 @@
             },
             "trigger": "random_event",
             "description": "及时修复了关键Bug，甲方满意"
+        },
+        {
+            "id": "spring_pollen",
+            "name": "花粉过敏",
+            "type": "negative",
+            "icon": "🤧",
+            "color": "#E91E63",
+            "character": "aisaike",
+            "season": "Q1",
+            "effect": {
+                "type": "progress",
+                "value": -3,
+                "duration": 2
+            },
+            "description": "春天到了，花粉过敏，代码效率下降"
+        },
+        {
+            "id": "summer_cold",
+            "name": "空调太冷",
+            "type": "negative",
+            "icon": "🥶",
+            "color": "#2196F3",
+            "character": "aisaike",
+            "season": "Q2",
+            "effect": {
+                "type": "progress",
+                "value": -2,
+                "duration": 1
+            },
+            "description": "办公室空调温度太低，手指僵硬"
+        },
+        {
+            "id": "autumn_breeze",
+            "name": "秋高气爽",
+            "type": "positive",
+            "icon": "🍂",
+            "color": "#FF9800",
+            "character": "aisaike",
+            "season": "Q3",
+            "effect": {
+                "type": "progress",
+                "value": 3,
+                "duration": 2
+            },
+            "description": "秋天天气舒适，效率提升"
+        },
+        {
+            "id": "winter_cold",
+            "name": "感冒高发",
+            "type": "negative",
+            "icon": "🤒",
+            "color": "#9C27B0",
+            "character": "aisaike",
+            "season": "Q4",
+            "effect": {
+                "type": "progress",
+                "value": -5,
+                "duration": 1
+            },
+            "description": "冬天容易感冒，带病工作"
+        },
+        {
+            "id": "moganna_allergy",
+            "name": "过敏季",
+            "type": "negative",
+            "icon": "😢",
+            "color": "#E91E63",
+            "character": "moganna",
+            "season": "Q1",
+            "effect": {
+                "type": "satisfaction",
+                "value": -5,
+                "duration": 2
+            },
+            "description": "花粉过敏影响注意力，测试遗漏率增加"
+        },
+        {
+            "id": "moganna_summer_sleepy",
+            "name": "夏日犯困",
+            "type": "negative",
+            "icon": "😴",
+            "color": "#FFC107",
+            "character": "moganna",
+            "season": "Q2",
+            "effect": {
+                "type": "progress",
+                "value": -2,
+                "duration": 1
+            },
+            "description": "夏天午后容易犯困"
+        },
+        {
+            "id": "moganna_autumn_fresh",
+            "name": "神清气爽",
+            "type": "positive",
+            "icon": "😊",
+            "color": "#4CAF50",
+            "character": "moganna",
+            "season": "Q3",
+            "effect": {
+                "type": "satisfaction",
+                "value": 3,
+                "duration": 2
+            },
+            "description": "秋天测试心情好"
+        },
+        {
+            "id": "moganna_dry",
+            "name": "暖气干燥",
+            "type": "negative",
+            "icon": "👀",
+            "color": "#795548",
+            "character": "moganna",
+            "season": "Q4",
+            "effect": {
+                "type": "progress",
+                "value": -3,
+                "duration": 1
+            },
+            "description": "暖气太干燥，眼睛不舒服"
+        },
+        {
+            "id": "xiaokui_spring_busy",
+            "name": "开工旺季",
+            "type": "positive",
+            "icon": "📈",
+            "color": "#4CAF50",
+            "character": "xiaokui",
+            "season": "Q1",
+            "effect": {
+                "type": "satisfaction",
+                "value": 3,
+                "duration": 2
+            },
+            "description": "春节后是运营黄金期"
+        },
+        {
+            "id": "xiaokui_summer_event",
+            "name": "暑期活动",
+            "type": "positive",
+            "icon": "☀️",
+            "color": "#FF9800",
+            "character": "xiaokui",
+            "season": "Q2",
+            "effect": {
+                "type": "progress",
+                "value": 2,
+                "duration": 2
+            },
+            "description": "暑期用户活跃"
+        },
+        {
+            "id": "xiaokui_autumn_school",
+            "name": "开学季",
+            "type": "neutral",
+            "icon": "📚",
+            "color": "#9E9E9E",
+            "character": "xiaokui",
+            "season": "Q3",
+            "effect": {
+                "type": "satisfaction_random",
+                "value": 3,
+                "duration": 1
+            },
+            "description": "开学季用户波动"
+        },
+        {
+            "id": "xiaokui_winter_rush",
+            "name": "年底冲刺",
+            "type": "negative",
+            "icon": "💨",
+            "color": "#F44336",
+            "character": "xiaokui",
+            "season": "Q4",
+            "effect": {
+                "type": "morale",
+                "value": -3,
+                "duration": 2
+            },
+            "description": "年底运营任务繁重"
+        },
+        {
+            "id": "xinzhu_spring_inspiration",
+            "name": "灵感绽放",
+            "type": "positive",
+            "icon": "🌸",
+            "color": "#E91E63",
+            "character": "xinzhu",
+            "season": "Q1",
+            "effect": {
+                "type": "progress",
+                "value": 4,
+                "duration": 2
+            },
+            "description": "春天万物复苏，创意迸发"
+        },
+        {
+            "id": "xinzhu_summer_annoyed",
+            "name": "夏日烦躁",
+            "type": "negative",
+            "icon": "😤",
+            "color": "#FF5722",
+            "character": "xinzhu",
+            "season": "Q2",
+            "effect": {
+                "type": "progress",
+                "value": -2,
+                "duration": 1
+            },
+            "description": "夏天太热，灵感枯竭"
+        },
+        {
+            "id": "xinzhu_autumn_leaves",
+            "name": "落叶灵感",
+            "type": "positive",
+            "icon": "🍁",
+            "color": "#FF9800",
+            "character": "xinzhu",
+            "season": "Q3",
+            "effect": {
+                "type": "progress",
+                "value": 3,
+                "duration": 2
+            },
+            "description": "秋天的色彩激发灵感"
+        },
+        {
+            "id": "xinzhu_winter_hibernate",
+            "name": "冬眠模式",
+            "type": "negative",
+            "icon": "🐻",
+            "color": "#795548",
+            "character": "xinzhu",
+            "season": "Q4",
+            "effect": {
+                "type": "progress",
+                "value": -3,
+                "duration": 1
+            },
+            "description": "冬天太冷，效率下降"
+        },
+        {
+            "id": "holiday_new_year",
+            "name": "元旦",
+            "type": "positive",
+            "icon": "🎄",
+            "color": "#FFC107",
+            "holiday": "new_year",
+            "week": 2,
+            "effect": {
+                "type": "morale",
+                "value": 3,
+                "duration": 1
+            },
+            "special_effect": "no_base_cost",
+            "description": "元旦快乐，本周无需支付基础开销"
+        },
+        {
+            "id": "holiday_spring_festival",
+            "name": "春节假期",
+            "type": "positive",
+            "icon": "🧧",
+            "color": "#E91E63",
+            "holiday": "spring_festival",
+            "week": 4,
+            "effect": {
+                "type": "morale",
+                "value": 5,
+                "duration": 1
+            },
+            "special_effect": "progress_pause",
+            "description": "春节快乐，进度暂停1周，节后士气提升"
+        },
+        {
+            "id": "holiday_lantern",
+            "name": "元宵节",
+            "type": "positive",
+            "icon": "🏮",
+            "color": "#FF9800",
+            "holiday": "lantern",
+            "week": 6,
+            "effect": {
+                "type": "morale",
+                "value": 3,
+                "duration": 1
+            },
+            "cost_effect": {
+                "type": "budget",
+                "value": -5
+            },
+            "description": "元宵节快乐"
+        },
+        {
+            "id": "holiday_labor",
+            "name": "劳动节",
+            "type": "neutral",
+            "icon": "🛠️",
+            "color": "#2196F3",
+            "holiday": "labor",
+            "week": 16,
+            "effect": {
+                "type": "morale",
+                "value": 3,
+                "duration": 1
+            },
+            "cost_effect": {
+                "type": "progress",
+                "value": -5
+            },
+            "description": "劳动节快乐"
+        },
+        {
+            "id": "holiday_dragon_boat",
+            "name": "端午节",
+            "type": "positive",
+            "icon": "🛶",
+            "color": "#4CAF50",
+            "holiday": "dragon_boat",
+            "week": 23,
+            "effect": {
+                "type": "morale",
+                "value": 5,
+                "duration": 1
+            },
+            "cost_effect": {
+                "type": "budget",
+                "value": -3
+            },
+            "description": "端午节快乐"
+        },
+        {
+            "id": "holiday_qixi",
+            "name": "七夕节",
+            "type": "positive",
+            "icon": "💑",
+            "color": "#E91E63",
+            "holiday": "qixi",
+            "week": 31,
+            "effect": {
+                "type": "morale",
+                "value": 3,
+                "duration": 1
+            },
+            "description": "七夕节快乐"
+        },
+        {
+            "id": "holiday_mid_autumn",
+            "name": "中秋节",
+            "type": "positive",
+            "icon": "🥮",
+            "color": "#FFC107",
+            "holiday": "mid_autumn",
+            "week": 36,
+            "effect": {
+                "type": "morale",
+                "value": 5,
+                "duration": 1
+            },
+            "cost_effect": {
+                "type": "budget",
+                "value": -5
+            },
+            "description": "中秋节快乐"
+        },
+        {
+            "id": "holiday_national",
+            "name": "国庆节",
+            "type": "positive",
+            "icon": "🇨🇳",
+            "color": "#F44336",
+            "holiday": "national",
+            "week": 39,
+            "effect": {
+                "type": "morale",
+                "value": 5,
+                "duration": 1
+            },
+            "special_effect": "progress_pause",
+            "description": "国庆节快乐，进度暂停1周"
+        },
+        {
+            "id": "holiday_halloween",
+            "name": "万圣节",
+            "type": "positive",
+            "icon": "🎃",
+            "color": "#FF9800",
+            "holiday": "halloween",
+            "week": 46,
+            "effect": {
+                "type": "morale",
+                "value": 3,
+                "duration": 1
+            },
+            "description": "万圣节快乐"
+        },
+        {
+            "id": "holiday_thanksgiving",
+            "name": "感恩节",
+            "type": "positive",
+            "icon": "🦃",
+            "color": "#795548",
+            "holiday": "thanksgiving",
+            "week": 50,
+            "effect": {
+                "type": "morale",
+                "value": 5,
+                "duration": 1
+            },
+            "description": "感恩节快乐"
+        },
+        {
+            "id": "holiday_christmas",
+            "name": "圣诞节/跨年",
+            "type": "positive",
+            "icon": "🎅",
+            "color": "#4CAF50",
+            "holiday": "christmas",
+            "week": 52,
+            "effect": {
+                "type": "morale",
+                "value": 5,
+                "duration": 1
+            },
+            "cost_effect": {
+                "type": "budget",
+                "value": -8
+            },
+            "description": "圣诞节快乐"
         }
     ],
     "buff_rules": {
@@ -153,5 +581,11 @@
             "same_type": "refresh",
             "different_type": "stack"
         }
+    },
+    "season_config": {
+        "Q1": { "name": "春季", "weeks": [1, 2, 3, 4, 5, 6] },
+        "Q2": { "name": "夏季", "weeks": [7, 8, 9, 10, 11, 12] },
+        "Q3": { "name": "秋季", "weeks": [13, 14, 15, 16, 17, 18] },
+        "Q4": { "name": "冬季", "weeks": [19, 20, 21, 22, 23, 24] }
     }
 }

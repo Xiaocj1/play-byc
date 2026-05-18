@@ -1,0 +1,141 @@
+{
+    "merchant_types": [
+        {
+            "id": "normal",
+            "name": "普通商家",
+            "icon": "🏪",
+            "rarity": "R",
+            "color": "#9ca3af",
+            "rewards": {
+                "merchant_count": 5,
+                "gmv_bonus": 10
+            },
+            "demands": {
+                "fund": 5,
+                "traffic": 3,
+                "tech": 2
+            },
+            "base_success_rate": 80,
+            "description": "普通商家入驻"
+        },
+        {
+            "id": "premium",
+            "name": "优质商家",
+            "icon": "🏬",
+            "rarity": "SR",
+            "color": "#eab308",
+            "rewards": {
+                "merchant_count": 15,
+                "gmv_bonus": 30
+            },
+            "demands": {
+                "fund": 8,
+                "traffic": 5,
+                "tech": 4
+            },
+            "base_success_rate": 60,
+            "description": "优质商家入驻"
+        },
+        {
+            "id": "top",
+            "name": "头部商家",
+            "icon": "🏢",
+            "rarity": "SSR",
+            "color": "#ff0066",
+            "rewards": {
+                "merchant_count": 30,
+                "gmv_bonus": 100
+            },
+            "demands": {
+                "fund": 12,
+                "traffic": 8,
+                "tech": 6
+            },
+            "base_success_rate": 40,
+            "description": "头部商家入驻"
+        }
+    ],
+    "success_rate_formula": {
+        "base": "基础成功率",
+        "card_bonus": "卡牌效果加成",
+        "resource_match": "资源匹配度加成（每项满足+10%）",
+        "xiaokui_favor": "小葵好感度加成（≥80时+10%）",
+        "combo_bonus": "连击加成（连续成功+5%/次，最高+15%）"
+    },
+    "rate_limits": {
+        "min": 5,
+        "max": 95
+    },
+    "combo_rules": {
+        "max_bonus": 15,
+        "per_success_bonus": 5,
+        "reset_on_failure": true
+    },
+    "merchant_pool": [
+        {
+            "id": "merchant_001",
+            "name": "小明便利店",
+            "type": "normal",
+            "description": "社区便利店，主营日用百货"
+        },
+        {
+            "id": "merchant_002",
+            "name": "美味餐厅",
+            "type": "normal",
+            "description": "连锁餐饮品牌，主打中式料理"
+        },
+        {
+            "id": "merchant_003",
+            "name": "潮流服饰",
+            "type": "premium",
+            "description": "时尚服饰品牌，年轻客群定位"
+        },
+        {
+            "id": "merchant_004",
+            "name": "数码科技",
+            "type": "premium",
+            "description": "3C数码产品零售商"
+        },
+        {
+            "id": "merchant_005",
+            "name": "环球超市",
+            "type": "top",
+            "description": "大型连锁超市，品类齐全"
+        },
+        {
+            "id": "merchant_006",
+            "name": "奢品汇",
+            "type": "top",
+            "description": "奢侈品电商平台"
+        },
+        {
+            "id": "merchant_007",
+            "name": "生鲜优选",
+            "type": "normal",
+            "description": "新鲜蔬菜水果供应商"
+        },
+        {
+            "id": "merchant_008",
+            "name": "家居生活馆",
+            "type": "premium",
+            "description": "品质家居用品品牌"
+        },
+        {
+            "id": "merchant_009",
+            "name": "美妆护肤",
+            "type": "premium",
+            "description": "知名美妆护肤品牌"
+        },
+        {
+            "id": "merchant_010",
+            "name": "家电城",
+            "type": "top",
+            "description": "大型家电连锁卖场"
+        }
+    ],
+    "negotiation_rules": {
+        "hand_size": 3,
+        "max_cards_per_round": 3,
+        "max_rounds": 5
+    }
+}

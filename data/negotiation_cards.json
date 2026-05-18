@@ -1,0 +1,185 @@
+{
+    "pools": [
+        {
+            "id": "fund",
+            "name": "资金光谱",
+            "icon": "💰",
+            "spectrum": "fund",
+            "spectrum_color": "#eab308",
+            "cards": [
+                {
+                    "id": "nc_fund_001",
+                    "name": "价格战",
+                    "rarity": "R",
+                    "spectrum": "fund",
+                    "effect": {"type": "fund_demand_reduction", "value": 50},
+                    "description": "资金需求-50%"
+                },
+                {
+                    "id": "nc_fund_002",
+                    "name": "融资加持",
+                    "rarity": "SR",
+                    "spectrum": "fund",
+                    "effect": {"type": "fund_demand_reduction", "value": 70},
+                    "description": "资金需求-70%"
+                },
+                {
+                    "id": "nc_fund_003",
+                    "name": "资本运作",
+                    "rarity": "SSR",
+                    "spectrum": "fund",
+                    "effect": {"type": "fund_demand_reduction", "value": 100},
+                    "description": "资金需求清零"
+                }
+            ]
+        },
+        {
+            "id": "traffic",
+            "name": "流量光谱",
+            "icon": "👥",
+            "spectrum": "traffic",
+            "spectrum_color": "#22c55e",
+            "cards": [
+                {
+                    "id": "nc_traffic_001",
+                    "name": "流量扶持",
+                    "rarity": "R",
+                    "spectrum": "traffic",
+                    "effect": {"type": "traffic_demand_reduction", "value": 50},
+                    "description": "流量需求-50%"
+                },
+                {
+                    "id": "nc_traffic_002",
+                    "name": "渠道推广",
+                    "rarity": "SR",
+                    "spectrum": "traffic",
+                    "effect": {"type": "traffic_demand_reduction", "value": 70},
+                    "description": "流量需求-70%"
+                },
+                {
+                    "id": "nc_traffic_003",
+                    "name": "爆款营销",
+                    "rarity": "SSR",
+                    "spectrum": "traffic",
+                    "effect": {"type": "traffic_demand_reduction", "value": 100},
+                    "description": "流量需求清零"
+                }
+            ]
+        },
+        {
+            "id": "tech",
+            "name": "技术光谱",
+            "icon": "⚙️",
+            "spectrum": "tech",
+            "spectrum_color": "#3b82f6",
+            "cards": [
+                {
+                    "id": "nc_tech_001",
+                    "name": "技术支持",
+                    "rarity": "R",
+                    "spectrum": "tech",
+                    "effect": {"type": "tech_demand_reduction", "value": 50},
+                    "description": "技术需求-50%"
+                },
+                {
+                    "id": "nc_tech_002",
+                    "name": "架构升级",
+                    "rarity": "SR",
+                    "spectrum": "tech",
+                    "effect": {"type": "tech_demand_reduction", "value": 70},
+                    "description": "技术需求-70%"
+                },
+                {
+                    "id": "nc_tech_003",
+                    "name": "技术壁垒",
+                    "rarity": "SSR",
+                    "spectrum": "tech",
+                    "effect": {"type": "tech_demand_reduction", "value": 100},
+                    "description": "技术需求清零"
+                }
+            ]
+        },
+        {
+            "id": "special",
+            "name": "特殊光谱",
+            "icon": "✨",
+            "spectrum": "special",
+            "spectrum_color": "#a855f7",
+            "cards": [
+                {
+                    "id": "nc_special_001",
+                    "name": "组合拳",
+                    "rarity": "SR",
+                    "spectrum": "special",
+                    "effect": {"type": "random_two_reduction", "value": 50},
+                    "description": "随机降低两项需求50%"
+                },
+                {
+                    "id": "nc_special_002",
+                    "name": "杀手锏",
+                    "rarity": "SR",
+                    "spectrum": "special",
+                    "effect": {"type": "success_rate_bonus", "value": 30},
+                    "description": "成功率+30%"
+                },
+                {
+                    "id": "nc_special_003",
+                    "name": "必杀技",
+                    "rarity": "SSR",
+                    "spectrum": "special",
+                    "effect": {"type": "guarantee_success", "value": 1},
+                    "description": "必定成功（限1次）"
+                },
+                {
+                    "id": "nc_special_004",
+                    "name": "人脉关系",
+                    "rarity": "R",
+                    "spectrum": "special",
+                    "effect": {"type": "success_rate_bonus", "value": 10},
+                    "description": "成功率+10%"
+                },
+                {
+                    "id": "nc_special_005",
+                    "name": "品牌背书",
+                    "rarity": "SR",
+                    "spectrum": "special",
+                    "effect": {"type": "success_rate_bonus", "value": 20},
+                    "description": "成功率+20%"
+                }
+            ]
+        }
+    ],
+    "spectrum_info": {
+        "fund": {"name": "资金光谱", "color": "#eab308", "icon": "💰"},
+        "traffic": {"name": "流量光谱", "color": "#22c55e", "icon": "👥"},
+        "tech": {"name": "技术光谱", "color": "#3b82f6", "icon": "⚙️"},
+        "special": {"name": "特殊光谱", "color": "#a855f7", "icon": "✨"}
+    },
+    "rarity_colors": {
+        "R": "#9ca3af",
+        "SR": "#eab308",
+        "SSR": "#ff0066"
+    },
+    "synergy_rules": {
+        "professional_synergy": {
+            "description": "员工卡牌+对应功能谈判卡牌",
+            "multiplier": 1.5
+        },
+        "functional_synergy": {
+            "description": "相同功能光谱卡牌×2",
+            "multiplier": 1.5
+        },
+        "cross_spectrum": {
+            "description": "四种光谱各至少1张",
+            "multiplier": 2.0
+        },
+        "professional_mastery": {
+            "description": "同职业员工≥2张",
+            "multiplier": 2.0
+        }
+    },
+    "draw_rules": {
+        "hand_size": 3,
+        "max_cards_per_turn": 3
+    }
+}

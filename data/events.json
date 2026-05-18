@@ -3522,5 +3522,1004 @@
         }
       ]
     }
+  ],
+  "random_events": [
+    {
+      "id": "random_event_001",
+      "title": "阳光明媚的一天",
+      "type": "environment",
+      "trigger_condition": {
+        "probability": 0.2,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "auto_effects": {
+        "morale": 3
+      },
+      "weekly_effect": "团队士气略有提升"
+    },
+    {
+      "id": "random_event_002",
+      "title": "办公室氛围紧张",
+      "type": "environment",
+      "trigger_condition": {
+        "probability": 0.15,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "auto_effects": {
+        "morale": -3
+      },
+      "weekly_effect": "团队士气略有下降"
+    },
+    {
+      "id": "random_event_003",
+      "title": "意外收获",
+      "type": "opportunity",
+      "trigger_condition": {
+        "probability": 0.1,
+        "min_week": 1,
+        "max_week": 52,
+        "satisfaction_above": 70
+      },
+      "auto_effects": {
+        "budget": 15
+      },
+      "weekly_effect": "获得意外的资金收入"
+    },
+    {
+      "id": "random_event_004",
+      "title": "免费资源",
+      "type": "opportunity",
+      "trigger_condition": {
+        "probability": 0.08,
+        "min_week": 1,
+        "max_week": 52,
+        "progress_milestone": 50
+      },
+      "auto_effects": {
+        "progress": 5
+      },
+      "weekly_effect": "获得免费的资源支持"
+    },
+    {
+      "id": "random_event_005",
+      "title": "突发故障",
+      "type": "crisis",
+      "trigger_condition": {
+        "probability": 0.12,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "auto_effects": {
+        "progress": -5,
+        "satisfaction": -5
+      },
+      "weekly_effect": "突发技术故障，进度受阻"
+    },
+    {
+      "id": "random_event_006",
+      "title": "意外开支",
+      "type": "crisis",
+      "trigger_condition": {
+        "probability": 0.1,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "auto_effects": {
+        "budget": -10
+      },
+      "weekly_effect": "出现意外开支"
+    },
+    {
+      "id": "random_event_007",
+      "title": "节日彩蛋",
+      "type": "easter_egg",
+      "trigger_condition": {
+        "probability": 0.05,
+        "min_week": 1,
+        "max_week": 52,
+        "holiday_near": 1
+      },
+      "auto_effects": {
+        "morale": 5,
+        "satisfaction": 5
+      },
+      "weekly_effect": "节日临近，团队氛围愉快"
+    },
+    {
+      "id": "random_event_008",
+      "title": "隐藏剧情",
+      "type": "easter_egg",
+      "trigger_condition": {
+        "probability": 0.03,
+        "min_week": 10,
+        "max_week": 40
+      },
+      "auto_effects": {
+        "fame": 5
+      },
+      "weekly_effect": "发现隐藏剧情，获得额外名声"
+    },
+    {
+      "id": "random_event_tob_001",
+      "title": "甲方来访",
+      "type": "environment",
+      "direction": "tob",
+      "trigger_condition": {
+        "probability": 0.15,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "auto_effects": {
+        "satisfaction": 5
+      },
+      "weekly_effect": "甲方来访，关系更紧密"
+    },
+    {
+      "id": "random_event_tob_002",
+      "title": "客户转介绍",
+      "type": "opportunity",
+      "direction": "tob",
+      "trigger_condition": {
+        "probability": 0.1,
+        "min_week": 1,
+        "max_week": 52,
+        "satisfaction_above": 80
+      },
+      "auto_effects": {
+        "fame": 10,
+        "benchmarkClients": 1
+      },
+      "weekly_effect": "客户转介绍，获得新客户"
+    },
+    {
+      "id": "random_event_tob_003",
+      "title": "客户投诉",
+      "type": "crisis",
+      "direction": "tob",
+      "trigger_condition": {
+        "probability": 0.12,
+        "min_week": 1,
+        "max_week": 52,
+        "satisfaction_below": 50
+      },
+      "auto_effects": {
+        "satisfaction": -10,
+        "renewalRate": -5
+      },
+      "weekly_effect": "收到客户投诉"
+    },
+    {
+      "id": "random_event_toc_001",
+      "title": "应用商店推荐",
+      "type": "opportunity",
+      "direction": "toc",
+      "trigger_condition": {
+        "probability": 0.1,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "auto_effects": {
+        "dau": 20,
+        "fame": 5
+      },
+      "weekly_effect": "应用商店推荐，下载量增加"
+    },
+    {
+      "id": "random_event_toc_002",
+      "title": "服务器崩溃",
+      "type": "crisis",
+      "direction": "toc",
+      "trigger_condition": {
+        "probability": 0.1,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "auto_effects": {
+        "dau": -10,
+        "satisfaction": -10
+      },
+      "weekly_effect": "服务器崩溃，用户流失"
+    },
+    {
+      "id": "random_event_toc_003",
+      "title": "KOL关注",
+      "type": "opportunity",
+      "direction": "toc",
+      "trigger_condition": {
+        "probability": 0.08,
+        "min_week": 1,
+        "max_week": 52,
+        "fame_above": 60
+      },
+      "auto_effects": {
+        "dau": 30,
+        "fame": 10
+      },
+      "weekly_effect": "KOL关注，用户暴增"
+    },
+    {
+      "id": "random_event_b2c_001",
+      "title": "商家入驻",
+      "type": "opportunity",
+      "direction": "b2c",
+      "trigger_condition": {
+        "probability": 0.15,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "auto_effects": {
+        "gmv": 10,
+        "satisfaction": 5
+      },
+      "weekly_effect": "新商家入驻，GMV增长"
+    },
+    {
+      "id": "random_event_b2c_002",
+      "title": "商家抗议",
+      "type": "crisis",
+      "direction": "b2c",
+      "trigger_condition": {
+        "probability": 0.1,
+        "min_week": 1,
+        "max_week": 52,
+        "disputeRate_above": 30
+      },
+      "auto_effects": {
+        "disputeRate": 10,
+        "satisfaction": -10
+      },
+      "weekly_effect": "商家抗议，纠纷增加"
+    },
+    {
+      "id": "random_event_b2c_003",
+      "title": "头部商家入驻",
+      "type": "opportunity",
+      "direction": "b2c",
+      "trigger_condition": {
+        "probability": 0.05,
+        "min_week": 1,
+        "max_week": 52,
+        "gmv_above": 50
+      },
+      "auto_effects": {
+        "gmv": 50,
+        "fame": 15
+      },
+      "weekly_effect": "头部商家入驻，平台升级"
+    },
+    {
+      "id": "holiday_spring_festival",
+      "title": "春节假期",
+      "description": "春节到了，团队放假一周。虽然进度会暂停，但大家都很期待新年的到来！",
+      "type": "holiday",
+      "direction": null,
+      "trigger_condition": {
+        "week": 4,
+        "type": "holiday"
+      },
+      "special_effect": "progress_pause",
+      "options": [
+        {
+          "text": "安排值班",
+          "effects": {"progress": 5, "aisaike": -5, "moganna": -5, "morale": 3},
+          "prd_effect": "春节值班安排",
+          "weekly_effect": "部分成员值班，进度有所推进但大家有些疲惫"
+        },
+        {
+          "text": "全员放假",
+          "effects": {"aisaike": 5, "moganna": 5, "xiaokui": 5, "xinzhu": 5, "morale": 10},
+          "prd_effect": "春节全员放假",
+          "weekly_effect": "大家充分休息，节后干劲十足"
+        }
+      ]
+    },
+    {
+      "id": "holiday_national",
+      "title": "国庆节",
+      "description": "国庆节到了，七天长假！虽然进度会暂停，但团队需要好好休息。",
+      "type": "holiday",
+      "direction": null,
+      "trigger_condition": {
+        "week": 39,
+        "type": "holiday"
+      },
+      "special_effect": "progress_pause",
+      "options": [
+        {
+          "text": "组织出游",
+          "effects": {"budget": -20, "aisaike": 8, "moganna": 8, "xiaokui": 8, "xinzhu": 8, "morale": 12},
+          "prd_effect": "国庆出游活动",
+          "weekly_effect": "团队出游，增进感情"
+        },
+        {
+          "text": "在家休息",
+          "effects": {"morale": 5},
+          "prd_effect": "国庆休息安排",
+          "weekly_effect": "大家好好休息，准备节后冲刺"
+        }
+      ]
+    },
+    {
+      "id": "holiday_lantern",
+      "title": "元宵节",
+      "description": "元宵节到了，团队想组织活动庆祝。",
+      "type": "holiday",
+      "direction": null,
+      "trigger_condition": {
+        "week": 6,
+        "type": "holiday"
+      },
+      "options": [
+        {
+          "text": "组织灯会",
+          "effects": {"budget": -15, "xiaokui": 5, "morale": 8},
+          "prd_effect": "元宵灯会活动",
+          "weekly_effect": "灯会活动热闹非凡"
+        },
+        {
+          "text": "吃元宵即可",
+          "effects": {"budget": -5, "morale": 3},
+          "prd_effect": "元宵节安排",
+          "weekly_effect": "简单庆祝，温馨愉快"
+        }
+      ]
+    },
+    {
+      "id": "holiday_mid_autumn",
+      "title": "中秋节",
+      "description": "中秋节到了，皓月当空，正是团圆时。",
+      "type": "holiday",
+      "direction": null,
+      "trigger_condition": {
+        "week": 36,
+        "type": "holiday"
+      },
+      "options": [
+        {
+          "text": "组织赏月活动",
+          "effects": {"budget": -20, "morale": 10, "xiaokui": 5},
+          "prd_effect": "中秋赏月活动",
+          "weekly_effect": "赏月活动增进团队感情"
+        },
+        {
+          "text": "发放月饼",
+          "effects": {"budget": -10, "morale": 5},
+          "prd_effect": "中秋福利发放",
+          "weekly_effect": "月饼收到，节日气氛浓厚"
+        }
+      ]
+    },
+    {
+      "id": "holiday_christmas",
+      "title": "圣诞节/跨年",
+      "description": "年末将至，圣诞和新年即将来临！",
+      "type": "holiday",
+      "direction": null,
+      "trigger_condition": {
+        "week": 52,
+        "type": "holiday"
+      },
+      "options": [
+        {
+          "text": "举办年会",
+          "effects": {"budget": -40, "morale": 15, "fame": 5},
+          "prd_effect": "年度盛会",
+          "weekly_effect": "年会盛况空前，大家对新一年充满期待"
+        },
+        {
+          "text": "简单庆祝",
+          "effects": {"budget": -15, "morale": 8},
+          "prd_effect": "年末庆祝",
+          "weekly_effect": "简单而温馨的庆祝"
+        }
+      ]
+    },
+    {
+      "id": "teambuilding_tob_client_feast",
+      "title": "客户答谢宴",
+      "description": "ToB模式专属：组织一场客户答谢宴，增进与甲方的关系。",
+      "type": "teambuilding",
+      "direction": "tob",
+      "trigger_condition": {
+        "probability": 0.1,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "options": [
+        {
+          "text": "举办答谢宴",
+          "effects": {"budget": -30, "satisfaction": 10, "xiaokui": 5},
+          "prd_effect": "客户答谢宴",
+          "weekly_effect": "甲方很满意，客户关系更加紧密"
+        },
+        {
+          "text": "改为线上感谢",
+          "effects": {"xiaokui": 3, "satisfaction": 3},
+          "prd_effect": "客户感谢",
+          "weekly_effect": "甲方表示感谢，但效果有限"
+        }
+      ]
+    },
+    {
+      "id": "teambuilding_tob_industry_salon",
+      "title": "行业沙龙",
+      "description": "ToB模式专属：举办行业沙龙，提升公司知名度。",
+      "type": "teambuilding",
+      "direction": "tob",
+      "trigger_condition": {
+        "probability": 0.08,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "options": [
+        {
+          "text": "举办沙龙",
+          "effects": {"budget": -20, "fame": 5, "xiaokui": 3},
+          "prd_effect": "行业沙龙",
+          "weekly_effect": "沙龙反响不错，潜在客户增加"
+        },
+        {
+          "text": "暂不举办",
+          "effects": {},
+          "prd_effect": "无",
+          "weekly_effect": "保持现状"
+        }
+      ]
+    },
+    {
+      "id": "teambuilding_toc_user_meetup",
+      "title": "用户见面会",
+      "description": "ToC模式专属：组织用户见面会，增强用户粘性。",
+      "type": "teambuilding",
+      "direction": "toc",
+      "trigger_condition": {
+        "probability": 0.1,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "options": [
+        {
+          "text": "举办见面会",
+          "effects": {"budget": -25, "satisfaction": 8, "dau": 5},
+          "prd_effect": "用户见面会",
+          "weekly_effect": "用户反馈热烈，产品口碑提升"
+        },
+        {
+          "text": "改为线上活动",
+          "effects": {"budget": -10, "satisfaction": 3, "dau": 2},
+          "prd_effect": "线上用户活动",
+          "weekly_effect": "活动顺利进行"
+        }
+      ]
+    },
+    {
+      "id": "teambuilding_toc_product_launch",
+      "title": "产品发布会",
+      "description": "ToC模式专属：举办产品发布会，扩大影响力。",
+      "type": "teambuilding",
+      "direction": "toc",
+      "trigger_condition": {
+        "probability": 0.05,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "options": [
+        {
+          "text": "举办发布会",
+          "effects": {"budget": -40, "fame": 10, "dau": 10},
+          "prd_effect": "产品发布会",
+          "weekly_effect": "发布会成功，引发关注"
+        },
+        {
+          "text": "改为线上发布",
+          "effects": {"budget": -15, "fame": 5, "dau": 5},
+          "prd_effect": "线上发布会",
+          "weekly_effect": "发布会顺利进行"
+        }
+      ]
+    },
+    {
+      "id": "teambuilding_b2c_merchant_conference",
+      "title": "商家大会",
+      "description": "B2C模式专属：举办商家大会，提升商家满意度。",
+      "type": "teambuilding",
+      "direction": "b2c",
+      "trigger_condition": {
+        "probability": 0.1,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "options": [
+        {
+          "text": "举办商家大会",
+          "effects": {"budget": -35, "satisfaction": 10, "xiaokui": 5},
+          "prd_effect": "商家大会",
+          "weekly_effect": "商家满意度提升，入驻意愿增强"
+        },
+        {
+          "text": "改为线上会议",
+          "effects": {"budget": -15, "satisfaction": 5},
+          "prd_effect": "商家线上会议",
+          "weekly_effect": "会议效果一般"
+        }
+      ]
+    },
+    {
+      "id": "teambuilding_b2c_consumer_day",
+      "title": "消费者日",
+      "description": "B2C模式专属：举办消费者日活动，提升平台口碑。",
+      "type": "teambuilding",
+      "direction": "b2c",
+      "trigger_condition": {
+        "probability": 0.08,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "options": [
+        {
+          "text": "举办消费者日",
+          "effects": {"budget": -25, "satisfaction": 8, "gmv": 3},
+          "prd_effect": "消费者日活动",
+          "weekly_effect": "活动反响热烈，用户好评如潮"
+        },
+        {
+          "text": "发放优惠券",
+          "effects": {"budget": -15, "satisfaction": 3, "gmv": 2},
+          "prd_effect": "优惠券发放",
+          "weekly_effect": "优惠活动效果尚可"
+        }
+      ]
+    },
+    {
+      "id": "character_aisaike_tob_001",
+      "title": "技术方案评审",
+      "description": "艾萨克提交了一个技术方案，需要进行评审。",
+      "type": "character_event",
+      "character": "aisaike",
+      "direction": "tob",
+      "trigger_condition": {
+        "probability": 0.1,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "options": [
+        {
+          "text": "详细评审",
+          "effects": {"progress": 5, "satisfaction": 3, "aisaike": 3},
+          "prd_effect": "技术方案详细评审",
+          "weekly_effect": "方案质量高，甲方满意"
+        },
+        {
+          "text": "快速通过",
+          "effects": {"progress": 10, "satisfaction": -5, "aisaike": -3},
+          "prd_effect": "技术方案快速通过",
+          "weekly_effect": "进度快，但甲方有些担心"
+        }
+      ]
+    },
+    {
+      "id": "character_moganna_tob_001",
+      "title": "验收测试把关",
+      "description": "莫甘娜发现测试用例覆盖率不足，需要决策。",
+      "type": "character_event",
+      "character": "moganna",
+      "direction": "tob",
+      "trigger_condition": {
+        "probability": 0.1,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "options": [
+        {
+          "text": "增加测试",
+          "effects": {"progress": -5, "satisfaction": 5, "moganna": 5},
+          "prd_effect": "增加测试用例",
+          "weekly_effect": "测试更加充分，质量有保障"
+        },
+        {
+          "text": "按时上线",
+          "effects": {"progress": 5, "satisfaction": -5, "moganna": -5},
+          "prd_effect": "按时上线",
+          "weekly_effect": "进度得到保证，但莫甘娜有些担忧"
+        }
+      ]
+    },
+    {
+      "id": "character_xiaokui_tob_001",
+      "title": "客户关系维护",
+      "description": "小葵建议加强客户关系维护，提升续约率。",
+      "type": "character_event",
+      "character": "xiaokui",
+      "direction": "tob",
+      "trigger_condition": {
+        "probability": 0.1,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "options": [
+        {
+          "text": "安排拜访",
+          "effects": {"budget": -15, "satisfaction": 8, "xiaokui": 5},
+          "prd_effect": "客户拜访",
+          "weekly_effect": "甲方关系更加紧密"
+        },
+        {
+          "text": "线上维护",
+          "effects": {"xiaokui": 2, "satisfaction": 3},
+          "prd_effect": "线上客户维护",
+          "weekly_effect": "关系维护正常进行"
+        }
+      ]
+    },
+    {
+      "id": "character_xinzhu_tob_001",
+      "title": "项目方案设计",
+      "description": "辛竹提出了一个创新的设计方案，需要决策。",
+      "type": "character_event",
+      "character": "xinzhu",
+      "direction": "tob",
+      "trigger_condition": {
+        "probability": 0.08,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "options": [
+        {
+          "text": "采用设计",
+          "effects": {"progress": -3, "satisfaction": 5, "xinzhu": 5},
+          "prd_effect": "采用创新设计",
+          "weekly_effect": "设计效果超出预期"
+        },
+        {
+          "text": "简化设计",
+          "effects": {"progress": 5, "xinzhu": -3},
+          "prd_effect": "简化设计方案",
+          "weekly_effect": "进度加快，设计简化"
+        }
+      ]
+    },
+    {
+      "id": "character_aisaike_toc_001",
+      "title": "性能优化攻坚",
+      "description": "艾萨克提议进行一次大规模性能优化。",
+      "type": "character_event",
+      "character": "aisaike",
+      "direction": "toc",
+      "trigger_condition": {
+        "probability": 0.1,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "options": [
+        {
+          "text": "进行全面优化",
+          "effects": {"progress": -8, "dau": 10, "aisaike": 5},
+          "prd_effect": "性能优化项目",
+          "weekly_effect": "优化效果显著，用户体验提升"
+        },
+        {
+          "text": "局部优化",
+          "effects": {"progress": -3, "dau": 3, "aisaike": 2},
+          "prd_effect": "局部性能优化",
+          "weekly_effect": "优化了部分问题"
+        }
+      ]
+    },
+    {
+      "id": "character_moganna_toc_001",
+      "title": "用户测试管理",
+      "description": "莫甘娜提议组织用户测试，收集反馈。",
+      "type": "character_event",
+      "character": "moganna",
+      "direction": "toc",
+      "trigger_condition": {
+        "probability": 0.1,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "options": [
+        {
+          "text": "组织测试",
+          "effects": {"budget": -10, "satisfaction": 5, "dau": 5, "moganna": 3},
+          "prd_effect": "用户测试活动",
+          "weekly_effect": "收集到有价值的用户反馈"
+        },
+        {
+          "text": "数据分析",
+          "effects": {"moganna": 2, "satisfaction": 2},
+          "prd_effect": "数据分析",
+          "weekly_effect": "通过数据分析了解用户"
+        }
+      ]
+    },
+    {
+      "id": "character_xiaokui_toc_001",
+      "title": "用户运营活动",
+      "description": "小葵策划了一个用户运营活动，需要批准。",
+      "type": "character_event",
+      "character": "xiaokui",
+      "direction": "toc",
+      "trigger_condition": {
+        "probability": 0.1,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "options": [
+        {
+          "text": "批准活动",
+          "effects": {"budget": -20, "dau": 15, "satisfaction": 8, "xiaokui": 5},
+          "prd_effect": "用户运营活动",
+          "weekly_effect": "活动效果超预期"
+        },
+        {
+          "text": "缩减规模",
+          "effects": {"budget": -8, "dau": 5, "satisfaction": 3, "xiaokui": 2},
+          "prd_effect": "小规模运营活动",
+          "weekly_effect": "活动效果一般"
+        }
+      ]
+    },
+    {
+      "id": "character_xinzhu_toc_001",
+      "title": "UI/UX升级",
+      "description": "辛竹提议进行一次全面的UI/UX升级。",
+      "type": "character_event",
+      "character": "xinzhu",
+      "direction": "toc",
+      "trigger_condition": {
+        "probability": 0.08,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "options": [
+        {
+          "text": "进行全面升级",
+          "effects": {"progress": -10, "satisfaction": 10, "dau": 8, "xinzhu": 5},
+          "prd_effect": "UI/UX全面升级",
+          "weekly_effect": "用户体验大幅提升"
+        },
+        {
+          "text": "小改版",
+          "effects": {"progress": -3, "satisfaction": 4, "dau": 3, "xinzhu": 2},
+          "prd_effect": "UI小幅改进",
+          "weekly_effect": "界面有所改善"
+        }
+      ]
+    },
+    {
+      "id": "character_aisaike_b2c_001",
+      "title": "平台架构升级",
+      "description": "艾萨克提议升级平台架构以应对增长。",
+      "type": "character_event",
+      "character": "aisaike",
+      "direction": "b2c",
+      "trigger_condition": {
+        "probability": 0.1,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "options": [
+        {
+          "text": "进行升级",
+          "effects": {"progress": -10, "gmv": 15, "aisaike": 5},
+          "prd_effect": "平台架构升级",
+          "weekly_effect": "平台稳定性提升"
+        },
+        {
+          "text": "暂不升级",
+          "effects": {"progress": 5, "aisaike": -2},
+          "prd_effect": "架构升级延期",
+          "weekly_effect": "暂时维持现状"
+        }
+      ]
+    },
+    {
+      "id": "character_moganna_b2c_001",
+      "title": "风控系统完善",
+      "description": "莫甘娜提议完善平台风控系统。",
+      "type": "character_event",
+      "character": "moganna",
+      "direction": "b2c",
+      "trigger_condition": {
+        "probability": 0.1,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "options": [
+        {
+          "text": "完善风控",
+          "effects": {"progress": -5, "disputeRate": -10, "moganna": 5},
+          "prd_effect": "风控系统升级",
+          "weekly_effect": "平台风险降低"
+        },
+        {
+          "text": "维持现状",
+          "effects": {"progress": 3, "disputeRate": 5, "moganna": -2},
+          "prd_effect": "风控维持现状",
+          "weekly_effect": "风控问题暂时搁置"
+        }
+      ]
+    },
+    {
+      "id": "character_xiaokui_b2c_001",
+      "title": "双边运营策略",
+      "description": "小葵提出了双边运营策略，需要决策。",
+      "type": "character_event",
+      "character": "xiaokui",
+      "direction": "b2c",
+      "trigger_condition": {
+        "probability": 0.1,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "options": [
+        {
+          "text": "实施策略",
+          "effects": {"satisfaction": 8, "gmv": 10, "xiaokui": 5},
+          "prd_effect": "双边运营策略",
+          "weekly_effect": "双边满意度提升"
+        },
+        {
+          "text": "单边运营",
+          "effects": {"satisfaction": 3, "xiaokui": 2},
+          "prd_effect": "单边运营",
+          "weekly_effect": "维持现有策略"
+        }
+      ]
+    },
+    {
+      "id": "character_xinzhu_b2c_001",
+      "title": "平台视觉升级",
+      "description": "辛竹提议进行平台视觉全面升级。",
+      "type": "character_event",
+      "character": "xinzhu",
+      "direction": "b2c",
+      "trigger_condition": {
+        "probability": 0.08,
+        "min_week": 1,
+        "max_week": 52
+      },
+      "options": [
+        {
+          "text": "进行全面升级",
+          "effects": {"progress": -8, "satisfaction": 8, "gmv": 5, "xinzhu": 5},
+          "prd_effect": "平台视觉升级",
+          "weekly_effect": "平台形象大幅提升"
+        },
+        {
+          "text": "局部调整",
+          "effects": {"progress": -2, "satisfaction": 3, "gmv": 2, "xinzhu": 2},
+          "prd_effect": "视觉局部调整",
+          "weekly_effect": "视觉效果有所改善"
+        }
+      ]
+    },
+    {
+      "id": "event_chain_server_down",
+      "title": "服务器宕机-后续事件",
+      "description": "加班疲劳导致团队效率下降。",
+      "type": "chain_event",
+      "trigger_condition": {
+        "probability": 0.3,
+        "min_week": 1,
+        "max_week": 52,
+        "chain_from": "event_007"
+      },
+      "chain_effects": {
+        "aisaike": -5,
+        "progress": -3
+      },
+      "options": [
+        {
+          "text": "安排调休",
+          "effects": {"budget": -5, "aisaike": 5, "morale": 5},
+          "prd_effect": "团队调休安排",
+          "weekly_effect": "大家好好休息"
+        },
+        {
+          "text": "继续工作",
+          "effects": {"aisaike": -3, "progress": -5},
+          "prd_effect": "继续加班",
+          "weekly_effect": "团队疲惫不堪"
+        }
+      ]
+    },
+    {
+      "id": "event_chain_customer_complaint",
+      "title": "合同纠纷",
+      "description": "客户投诉引发了合同纠纷。",
+      "type": "chain_event",
+      "direction": "tob",
+      "trigger_condition": {
+        "probability": 0.4,
+        "min_week": 1,
+        "max_week": 52,
+        "chain_from": "satisfaction_below_50"
+      },
+      "chain_effects": {
+        "satisfaction": -15,
+        "renewalRate": -10
+      },
+      "options": [
+        {
+          "text": "积极处理",
+          "effects": {"budget": -20, "satisfaction": 5, "xiaokui": 3},
+          "prd_effect": "合同纠纷处理",
+          "weekly_effect": "纠纷得到妥善解决"
+        },
+        {
+          "text": "法律途径",
+          "effects": {"budget": 30, "satisfaction": -20, "xiaokui": -5},
+          "prd_effect": "法律途径",
+          "weekly_effect": "追回款项，但关系破裂"
+        }
+      ]
+    },
+    {
+      "id": "event_chain_app_store_recommend",
+      "title": "下载量爆发",
+      "description": "应用商店推荐引发了下载量爆发！",
+      "type": "chain_event",
+      "direction": "toc",
+      "trigger_condition": {
+        "probability": 0.5,
+        "min_week": 1,
+        "max_week": 52,
+        "dau_below": 30,
+        "chain_from": "app_store_recommend"
+      },
+      "chain_effects": {
+        "dau": 25,
+        "fame": 8
+      },
+      "options": [
+        {
+          "text": "紧急扩容",
+          "effects": {"budget": -30, "dau": 15, "aisaike": 5},
+          "prd_effect": "服务器扩容",
+          "weekly_effect": "平稳承接流量"
+        },
+        {
+          "text": "控制节奏",
+          "effects": {"dau": 10, "satisfaction": -5},
+          "prd_effect": "流量控制",
+          "weekly_effect": "部分用户流失"
+        }
+      ]
+    },
+    {
+      "id": "event_chain_merchant_protest",
+      "title": "商家集体退出",
+      "description": "商家抗议引发了连锁反应，多个商家威胁退出。",
+      "type": "chain_event",
+      "direction": "b2c",
+      "trigger_condition": {
+        "probability": 0.4,
+        "min_week": 1,
+        "max_week": 52,
+        "disputeRate_above": 30,
+        "chain_from": "merchant_protest"
+      },
+      "chain_effects": {
+        "gmv": -20,
+        "disputeRate": 15
+      },
+      "options": [
+        {
+          "text": "召开会议",
+          "effects": {"budget": -15, "satisfaction": 5, "xiaokui": 5},
+          "prd_effect": "商家沟通会议",
+          "weekly_effect": "部分商家被安抚"
+        },
+        {
+          "text": "调整政策",
+          "effects": {"satisfaction": 10, "gmv": -5},
+          "prd_effect": "政策调整",
+          "weekly_effect": "商家满意，但收入减少"
+        }
+      ]
+    }
   ]
 }
