@@ -66,7 +66,6 @@
             <button class="btn-pixel" onclick="showBackpackModal()">👥 员工管理</button>
             <button class="btn-pixel" onclick="openPRDModal()">查看 PRD</button>
             <button class="btn-pixel" onclick="showBorrowModal()">💰 借钱</button>
-            <button class="btn-pixel" onclick="showMuseumModal()">🏛️ 陈列馆</button>
             <button class="btn-pixel" onclick="saveGame()">💾 保存</button>
         </div>
     </div>
@@ -191,9 +190,99 @@
                             <span id="report-budget-change">-</span>
                         </div>
                     </div>
-                    <button class="btn-pixel report-confirm" onclick="confirmQuarterlyReport()">确认结算</button>
+                    <div class="report-actions">
+                        <button class="btn-pixel report-beauty-btn" onclick="startReportBeauty()">✨ 报表美容</button>
+                        <button class="btn-pixel auto-beauty-btn" onclick="showAutoBeautyModal()">🤖 自动美容</button>
+                        <button class="btn-pixel report-confirm" onclick="confirmQuarterlyReport()">确认结算</button>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- 报表美容模态框 -->
+    <div class="report-beauty-modal" id="report-beauty-modal" style="display: none;">
+        <div class="report-beauty-content">
+            <button class="report-beauty-close" onclick="closeReportBeauty()">X</button>
+            
+            <!-- 阶段1：乱糟糟报表 -->
+            <div class="beauty-stage" id="beauty-stage-1">
+                <h2 class="beauty-title">📋 乱糟糟报表</h2>
+                <div class="ugly-report" id="ugly-report-content"></div>
+                <div class="beauty-actions">
+                    <button class="btn-pixel beauty-start-btn" onclick="startPKStage()">🎮 开始PK</button>
+                </div>
+            </div>
+            
+            <!-- 阶段2：阵营PK -->
+            <div class="beauty-stage" id="beauty-stage-2" style="display: none;">
+                <h2 class="beauty-title">⚔️ 阵营PK</h2>
+                <div class="pk-info">
+                    <div class="pk-round">第 <span id="pk-round">1</span>/3 轮</div>
+                    <div class="pk-hooks">钩子次数: <span id="pk-hooks">0</span></div>
+                </div>
+                <div class="pk-opponent">
+                    <div class="opponent-label">系统阵营</div>
+                    <div class="opponent-camp" id="opponent-camp">??</div>
+                </div>
+                <div class="pk-vs">VS</div>
+                <div class="pk-player">
+                    <div class="player-label">你的卡牌</div>
+                    <div class="player-cards" id="player-cards-pk"></div>
+                </div>
+                <div class="pk-result" id="pk-result"></div>
+            </div>
+            
+            <!-- 阶段3：黄金矿工 -->
+            <div class="beauty-stage" id="beauty-stage-3" style="display: none;">
+                <h2 class="beauty-title">⛏️ 黄金矿工</h2>
+                <div class="miner-info">
+                    <div class="miner-hooks">剩余钩子: <span id="miner-hooks">0</span></div>
+                    <div class="miner-timer">时间: <span id="miner-timer">10</span>s</div>
+                    <div class="miner-score">已美容: <span id="miner-score">0</span></div>
+                </div>
+                <canvas id="miner-canvas" class="miner-canvas"></canvas>
+                <div class="miner-instructions">
+                    <p>点击发射钩子，钓取坏词进行美容！</p>
+                    <p>⚠️ 小心审计炸弹！</p>
+                </div>
+            </div>
+            
+            <!-- 阶段4：美容后报表 -->
+            <div class="beauty-stage" id="beauty-stage-4" style="display: none;">
+                <h2 class="beauty-title">✨ 美容后报表</h2>
+                <div class="pretty-report" id="pretty-report-content"></div>
+                <div class="beauty-summary" id="beauty-summary"></div>
+                <div class="beauty-actions">
+                    <button class="btn-pixel beauty-submit-btn" onclick="submitBeautifulReport()">📤 提交报表</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 自动美容模态框 -->
+    <div class="auto-beauty-modal" id="auto-beauty-modal" style="display: none;">
+        <div class="auto-beauty-content">
+            <button class="report-beauty-close" onclick="closeAutoBeautyModal()">X</button>
+            <h2 class="beauty-title">🤖 自动美容</h2>
+            <div class="auto-beauty-info">
+                <p>自动美容券: <span id="auto-beauty-count">0</span> 张</p>
+                <p>合成需要: 10碎片 + 50万资金</p>
+                <p class="auto-beauty-note">自动美容效果为手动的80%</p>
+            </div>
+            <div class="auto-beauty-actions">
+                <button class="btn-pixel" onclick="synthesizeAutoBeauty()">🔨 合成券</button>
+                <button class="btn-pixel" onclick="useAutoBeauty()">🎯 使用券</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 事件模态框 -->
+    <div class="event-modal" id="event-modal" style="display: none;">
+        <div class="event-content">
+            <h2 class="event-title" id="event-title">事件标题</h2>
+            <p class="event-description" id="event-description">事件描述</p>
+            <div class="event-options" id="event-options"></div>
         </div>
     </div>
 
@@ -393,9 +482,10 @@
     <script src="js/spectrum.js"></script>
     <script src="js/events.js"></script>
     <script src="js/tutorial.js"></script>
+    <script src="js/report.js"></script>
+    <script src="js/report_beauty.js"></script>
     <script src="js/game.js"></script>
     <script src="js/recruit.js"></script>
-    <script src="js/report.js"></script>
     <script src="js/gallery.js"></script>
     <script src="js/missions.js"></script>
     <script src="js/backpack.js"></script>

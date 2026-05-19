@@ -1088,3 +1088,846 @@
 .effect-disabled .synergy-notification {
     animation: none !important;
 }
+
+/* ============ 设置面板样式 ============ */
+
+.settings-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+    border: 4px solid #ffd700;
+    border-radius: 12px;
+    padding: 30px;
+    min-width: 400px;
+    max-width: 90%;
+    z-index: 10020;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+}
+
+.settings-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: #ffd700;
+    font-size: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.settings-close:hover {
+    color: #ff6b6b;
+    transform: scale(1.2);
+}
+
+.settings-title {
+    color: #ffd700;
+    font-size: 24px;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.settings-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: rgba(255, 215, 0, 0.05);
+    border: 2px solid rgba(255, 215, 0, 0.2);
+    border-radius: 8px;
+}
+
+.settings-label {
+    color: #ffd700;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.settings-description {
+    color: #888;
+    font-size: 12px;
+}
+
+.settings-toggle {
+    width: 60px;
+    height: 30px;
+    background: #333;
+    border: 2px solid #ffd700;
+    border-radius: 15px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.settings-toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 22px;
+    height: 22px;
+    background: #ffd700;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.settings-toggle.active {
+    background: rgba(255, 215, 0, 0.3);
+}
+
+.settings-toggle.active::after {
+    left: 32px;
+}
+
+/* ============ 快速指南样式 ============ */
+
+#quick-guide-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 10020;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.quick-guide-content {
+    background: linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+    border: 4px solid #ffd700;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: #ffd700;
+    font-size: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.close-modal:hover {
+    color: #ff6b6b;
+    transform: scale(1.2);
+}
+
+.quick-guide-content h2 {
+    color: #ffd700;
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.quick-guide-item {
+    background: rgba(255, 215, 0, 0.05);
+    border: 2px solid rgba(255, 215, 0, 0.2);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.quick-guide-question {
+    padding: 15px;
+    color: #ffd700;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.quick-guide-question:hover {
+    background: rgba(255, 215, 0, 0.1);
+}
+
+.quick-guide-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    padding: 0 15px;
+    color: #ccc;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.quick-guide-answer.expanded {
+    max-height: 500px;
+    padding: 15px;
+}
+
+.toggle-icon {
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+.quick-guide-item.active .toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* ============ 客户终止合作弹窗样式 ============ */
+
+.client-rage-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 10030;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ============ 事件模态框样式 ============ */
+
+.event-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 10020;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.event-content {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 2px solid #e94560;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 0 30px rgba(233, 69, 96, 0.3);
+}
+
+.event-title {
+    color: #e94560;
+    font-size: 24px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.event-description {
+    color: #fff;
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.event-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.event-option-btn {
+    background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+    border: 1px solid #e94560;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.event-option-btn:hover {
+    background: linear-gradient(135deg, #e94560 0%, #c23a51 100%);
+    transform: translateX(5px);
+}
+
+/* ============ 报表美容院样式 ============ */
+.report-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    justify-content: center;
+}
+
+.report-beauty-btn {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+}
+
+.report-beauty-btn:hover {
+    background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+}
+
+.report-beauty-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 10025;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.report-beauty-content {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 2px solid #f39c12;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 600px;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 0 40px rgba(243, 156, 18, 0.3);
+    position: relative;
+}
+
+.report-beauty-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    z-index: 10;
+}
+
+.beauty-title {
+    color: #f39c12;
+    font-size: 26px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.beauty-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+/* 乱糟糟报表样式 */
+.ugly-report {
+    background: #2c3e50;
+    border: 2px dashed #e74c3c;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.ugly-word {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: rgba(231, 76, 60, 0.1);
+    margin: 8px 0;
+    border-radius: 6px;
+}
+
+.bad-word {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.bad-score {
+    color: #e74c3c;
+    margin-left: auto;
+    font-size: 12px;
+}
+
+/* PK阶段样式 */
+.pk-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    color: #f39c12;
+}
+
+.pk-opponent, .pk-player {
+    text-align: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    flex: 1;
+}
+
+.pk-vs {
+    text-align: center;
+    font-size: 24px;
+    color: #f39c12;
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+.opponent-camp {
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+    border-radius: 8px;
+    display: inline-block;
+}
+
+.opponent-camp.运营 { background: linear-gradient(135deg, #e67e22 0%, #d35400 100%); }
+.opponent-camp.设计 { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); }
+.opponent-camp.QA { background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%); }
+.opponent-camp.RD { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }
+
+.player-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.pk-card {
+    background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
+    border: 2px solid #3498db;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.pk-card:hover {
+    transform: scale(1.05);
+    border-color: #f39c12;
+}
+
+.pk-card.selected-win {
+    border-color: #27ae60;
+    background: linear-gradient(135deg, #1e8449 0%, #196b3d 100%);
+}
+
+.pk-card.selected-lose {
+    border-color: #e74c3c;
+    background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+}
+
+.pk-card-name {
+    color: #fff;
+    font-weight: bold;
+}
+
+.pk-card-pos {
+    color: #bdc3c7;
+    font-size: 12px;
+}
+
+.pk-card-rarity {
+    color: #f39c12;
+    font-size: 12px;
+}
+
+.pk-result {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 16px;
+    color: #f39c12;
+    min-height: 30px;
+}
+
+.no-cards {
+    color: #95a5a6;
+    padding: 20px;
+}
+
+/* 矿工阶段样式 */
+.miner-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    color: #f39c12;
+    font-size: 14px;
+}
+
+.miner-canvas {
+    display: block;
+    margin: 0 auto;
+    border: 2px solid #3498db;
+    border-radius: 8px;
+    background: #1a1a2e;
+    cursor: pointer;
+}
+
+.miner-instructions {
+    text-align: center;
+    margin-top: 15px;
+    color: #bdc3c7;
+    font-size: 13px;
+}
+
+/* 美容后报表样式 */
+.pretty-report {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2c5a8a 100%);
+    border: 2px solid #27ae60;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.pretty-word {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 6px;
+}
+
+.pretty-word.good-word {
+    background: rgba(39, 174, 96, 0.2);
+}
+
+.pretty-word.bad-word {
+    background: rgba(231, 76, 60, 0.1);
+}
+
+.good-word {
+    color: #27ae60;
+    font-weight: bold;
+}
+
+.word-score {
+    margin-left: auto;
+    font-size: 12px;
+}
+
+.pretty-word.good-word .word-score {
+    color: #27ae60;
+}
+
+.pretty-word.bad-word .word-score {
+    color: #e74c3c;
+}
+
+.beauty-summary {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+}
+
+.beauty-summary-item {
+    text-align: center;
+}
+
+.beauty-summary-item span:first-child {
+    display: block;
+    color: #95a5a6;
+    font-size: 12px;
+}
+
+.beauty-summary-item span:last-child {
+    display: block;
+    color: #f39c12;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* 完美季度样式 */
+.perfect-quarter {
+    text-align: center;
+    padding: 30px;
+    background: linear-gradient(135deg, #27ae60, #1e8449);
+    border-radius: 12px;
+    border: 2px solid #2ecc71;
+}
+
+.perfect-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.perfect-title {
+    color: #fff;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.perfect-desc {
+    color: #ecf0f1;
+    margin-bottom: 20px;
+}
+
+.perfect-bonus {
+    color: #f39c12;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+/* B2版本提示 */
+.b2-hint {
+    color: #3498db;
+    font-size: 12px;
+    margin-top: 10px;
+    padding: 8px;
+    background: rgba(52, 152, 219, 0.1);
+    border-radius: 6px;
+}
+
+/* 组合技能选中状态 */
+.combo-selected {
+    border-color: #9b59b6 !important;
+    background: linear-gradient(135deg, #8e44ad, #9b59b6) !important;
+    box-shadow: 0 0 15px rgba(155, 89, 182, 0.5);
+}
+
+/* 钩子升级系统 */
+.hook-upgrades {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.upgrade-btn {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border: 1px solid #5dade2;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.upgrade-btn:hover {
+    background: linear-gradient(135deg, #2980b9, #1a5276);
+    transform: scale(1.05);
+}
+
+/* 自动美容按钮 */
+.auto-beauty-btn {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+}
+
+.auto-beauty-btn:hover {
+    background: linear-gradient(135deg, #8e44ad, #7d3c98);
+}
+
+/* 自动美容模态框 */
+.auto-beauty-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 10026;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auto-beauty-content {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border: 2px solid #9b59b6;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 0 40px rgba(155, 89, 182, 0.3);
+    position: relative;
+    text-align: center;
+}
+
+.auto-beauty-info p {
+    color: #ecf0f1;
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+.auto-beauty-note {
+    color: #f39c12 !important;
+    font-size: 12px !important;
+    opacity: 0.8;
+}
+
+.auto-beauty-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+/* B2版本过渡动画 */
+.b2-transition {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.transition-content {
+    text-align: center;
+    padding: 40px;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border: 3px solid #9b59b6;
+    border-radius: 16px;
+    animation: popIn 0.4s ease-out;
+}
+
+@keyframes popIn {
+    from { 
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to { 
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.transition-title {
+    color: #9b59b6;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.transition-desc {
+    color: #ecf0f1;
+    font-size: 15px;
+    line-height: 1.8;
+    margin-bottom: 25px;
+}
+
+.transition-continue {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.transition-continue:hover {
+    background: linear-gradient(135deg, #8e44ad, #7d3c98);
+    transform: scale(1.05);
+}
+
+/* 组合技能确认按钮 */
+.combo-confirm-btn {
+    background: linear-gradient(135deg, #9b59b6, #e74c3c);
+    color: white;
+    border: 2px solid #e74c3c;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 0 10px rgba(155, 89, 182, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(231, 76, 60, 0.8); }
+}
+
+.combo-confirm-btn:hover {
+    transform: scale(1.05);
+}
+
+/* 升级标题 */
+.upgrade-title {
+    width: 100%;
+    text-align: center;
+    color: #3498db;
+    font-weight: bold;
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+
+/* 反向使用功能 */
+.reverse-section {
+    width: 100%;
+    margin-top: 15px;
+}
+
+.reverse-btn {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    border: 1px solid #e74c3c;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.reverse-btn:hover:not(.disabled) {
+    background: linear-gradient(135deg, #c0392b, #a93226);
+    transform: scale(1.05);
+}
+
+.reverse-btn.disabled {
+    background: #555;
+    border-color: #666;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* 升级按钮样式调整 */
+.hook-upgrades {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.hook-upgrades .upgrade-btn {
+    flex: 1;
+    min-width: 140px;
+}

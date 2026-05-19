@@ -1,22 +1,25 @@
 // ============ Buff系统模块 ============
 
-let buffsData = null;
+// 检查是否已声明，避免重复声明
+if (typeof window.buffsData === 'undefined') {
+    window.buffsData = null;
+}
 
 async function loadBuffsData() {
     try {
-        buffsData = await fetch('data/buffs.json').then(r => r.json());
+        window.buffsData = await fetch('data/buffs.json').then(r => r.json());
     } catch (error) {
         console.error('Failed to load buffs data:', error);
     }
 }
 
 function checkSeasonBuffs() {
-    if (!buffsData) return;
+    if (!window.buffsData) return;
     
     const currentQuarter = getCurrentQuarter();
     const season = `Q${currentQuarter}`;
     
-    buffsData.buffs.forEach(buff => {
+    window.buffsData.buffs.forEach(buff => {
         if (!buff.season || buff.season !== season) return;
         if (!buff.character) return;
         
@@ -30,11 +33,11 @@ function checkSeasonBuffs() {
 }
 
 function checkHolidayBuffs() {
-    if (!buffsData) return;
+    if (!window.buffsData) return;
     
     const week = gameState.week;
     
-    buffsData.buffs.forEach(buff => {
+    window.buffsData.buffs.forEach(buff => {
         if (!buff.holiday || buff.week !== week) return;
         
         applyBuffEffect(buff);
@@ -97,7 +100,7 @@ function updateCharacterBuffs() {
 }
 
 function addBuffToCharacter(characterId, buffId) {
-    if (!buffsData) return;
+    if (!window.buffsData) return;
     
     if (!gameState.characterBuffs) {
         gameState.characterBuffs = {};
@@ -106,10 +109,10 @@ function addBuffToCharacter(characterId, buffId) {
         gameState.characterBuffs[characterId] = [];
     }
     
-    const buff = buffsData.buffs.find(b => b.id === buffId);
+    const buff = window.buffsData.buffs.find(b => b.id === buffId);
     if (!buff) return;
     
-    const maxBuffs = buffsData.buff_rules?.max_buffs_per_character || 3;
+    const maxBuffs = window.buffsData.buff_rules?.max_buffs_per_character || 3;
     if (gameState.characterBuffs[characterId].length >= maxBuffs) {
         gameState.characterBuffs[characterId].shift();
     }

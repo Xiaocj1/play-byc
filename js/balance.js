@@ -151,6 +151,10 @@ function checkDirectionHCMilestones(currentHC) {
 }
 
 function checkHCMilestones() {
+    if (!gameState.quarterEnded) {
+        return;
+    }
+    
     const totalAssets = gameState.totalAssets || (gameState.budget - gameState.debt);
     const currentHC = typeof hc !== 'undefined' ? hc : 3;
     
@@ -184,6 +188,8 @@ function checkHCMilestones() {
         }
         showToast(`🎉 HC达到里程碑！HC +${diff}`);
     }
+    
+    gameState.quarterEnded = false;
 }
 
 function getDrawCostMultiplier() {

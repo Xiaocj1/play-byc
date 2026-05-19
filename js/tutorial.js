@@ -118,15 +118,24 @@ function showTutorialModal(step) {
         };
         buttonContainer.appendChild(continueBtn);
     } else if (step.action === 'wait_for_choice') {
-        const skipBtn = document.createElement('button');
-        skipBtn.className = 'tutorial-btn tutorial-btn-secondary';
-        skipBtn.textContent = '跳过引导';
-        skipBtn.onclick = () => {
-            removeTutorialOverlay();
-            completeTutorial();
-        };
-        buttonContainer.appendChild(skipBtn);
-    } else if (step.action === 'wait_for_event') {
+            const continueBtn = document.createElement('button');
+            continueBtn.className = 'tutorial-btn tutorial-btn-primary';
+            continueBtn.textContent = '我知道了';
+            continueBtn.onclick = () => {
+                removeTutorialOverlay();
+                showNextTutorialStep();
+            };
+            buttonContainer.appendChild(continueBtn);
+            
+            const skipBtn = document.createElement('button');
+            skipBtn.className = 'tutorial-btn tutorial-btn-secondary';
+            skipBtn.textContent = '跳过引导';
+            skipBtn.onclick = () => {
+                removeTutorialOverlay();
+                completeTutorial();
+            };
+            buttonContainer.appendChild(skipBtn);
+        } else if (step.action === 'wait_for_event') {
         const laterBtn = document.createElement('button');
         laterBtn.className = 'tutorial-btn tutorial-btn-secondary';
         laterBtn.textContent = '稍后再说';

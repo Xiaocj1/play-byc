@@ -1,23 +1,36 @@
-const UNLOCKED_CARDS_KEY = "fair_office_unlocked_cards";
-const ENDINGS_KEY = "fair_office_unlocked_endings";
-const RARITY_COLORS = {
-    "SSR": "#f39c12",
-    "SR": "#9b59b6",
-    "R": "#888"
-};
+// 检查是否已声明，避免重复声明
+if (typeof window.UNLOCKED_CARDS_KEY === 'undefined') {
+    window.UNLOCKED_CARDS_KEY = "fair_office_unlocked_cards";
+}
+if (typeof window.ENDINGS_KEY === 'undefined') {
+    window.ENDINGS_KEY = "fair_office_unlocked_endings";
+}
+if (typeof window.RARITY_COLORS === 'undefined') {
+    window.RARITY_COLORS = {
+        "SSR": "#f39c12",
+        "SR": "#9b59b6",
+        "R": "#888"
+    };
+}
 
-let galleryCardsData = null;
-let galleryUnlockedCards = [];
+if (typeof window.galleryCardsData === 'undefined') {
+    window.galleryCardsData = null;
+}
+if (typeof window.galleryUnlockedCards === 'undefined') {
+    window.galleryUnlockedCards = [];
+}
 
-let currentGalleryFilter = {
-    position: 'all',
-    rarity: 'all',
-    status: 'all'
-};
+if (typeof window.currentGalleryFilter === 'undefined') {
+    window.currentGalleryFilter = {
+        position: 'all',
+        rarity: 'all',
+        status: 'all'
+    };
+}
 
 async function loadGalleryCards() {
     try {
-        galleryCardsData = await fetch('data/cards.json').then(r => r.json());
+        window.galleryCardsData = await fetch('data/cards.json').then(r => r.json());
         loadGalleryUnlockedCards();
     } catch (error) {
         console.error('Failed to load cards data:', error);
@@ -26,35 +39,35 @@ async function loadGalleryCards() {
 
 function loadGalleryUnlockedCards() {
     try {
-        const saved = localStorage.getItem(UNLOCKED_CARDS_KEY);
-        galleryUnlockedCards = saved ? JSON.parse(saved) : [];
+        const saved = localStorage.getItem(window.UNLOCKED_CARDS_KEY);
+        window.galleryUnlockedCards = saved ? JSON.parse(saved) : [];
     } catch (error) {
         console.error('Failed to load unlocked cards:', error);
-        galleryUnlockedCards = [];
+        window.galleryUnlockedCards = [];
     }
 }
 
 function updateGalleryFilter(filterType, value) {
-    currentGalleryFilter[filterType] = value;
+    window.currentGalleryFilter[filterType] = value;
     renderCardsGallery(document.getElementById('gallery-grid'));
 }
 
 function renderCardsGallery(container) {
-    if (!galleryCardsData || !container) {
+    if (!window.galleryCardsData || !container) {
         container.innerHTML = '<p style="text-align:center;padding:40px;color:#888;">卡牌数据加载中...</p>';
         return;
     }
     
-    const { position, rarity, status } = currentGalleryFilter;
-    const availablePositions = galleryCardsData.pools.map(p => ({ id: p.id, name: p.name, icon: p.icon }));
+    const { position, rarity, status } = window.currentGalleryFilter;
+    const availablePositions = window.galleryCardsData.pools.map(p => ({ id: p.id, name: p.name, icon: p.icon }));
     
     const allCards = [];
-    galleryCardsData.pools.forEach(pool => {
+    window.galleryCardsData.pools.forEach(pool => {
         if (position !== 'all' && pool.id !== position) return;
         
         pool.cards.forEach(card => {
             const cardKey = pool.id + '_' + card.id;
-            const isUnlocked = galleryUnlockedCards.includes(cardKey);
+            const isUnlocked = window.galleryUnlockedCards.includes(cardKey);
             
             if (status === 'unlocked' && !isUnlocked) return;
             if (status === 'locked' && isUnlocked) return;
@@ -83,8 +96,8 @@ function renderCardsGallery(container) {
         return a.name.localeCompare(b.name);
     });
     
-    const allCardsTotal = galleryCardsData.pools.reduce(function(sum, pool) { return sum + pool.cards.length; }, 0);
-    const allCardsUnlocked = galleryUnlockedCards.length;
+    const allCardsTotal = window.galleryCardsData.pools.reduce(function(sum, pool) { return sum + pool.cards.length; }, 0);
+    const allCardsUnlocked = window.galleryUnlockedCards.length;
     const progress = allCardsTotal > 0 ? Math.round((allCardsUnlocked / allCardsTotal) * 100) : 0;
     
     var htmlContent = '';
@@ -125,7 +138,7 @@ function renderCardsGallery(container) {
         var onmouseenterAttr = !card.unlocked ? 'showCardHint(\'' + card.cardKey + '\')' : '';
         var iconHtml = card.unlocked ? card.poolIcon : '<span class="question-box">?</span>';
         var nameHtml = card.unlocked ? card.name : '???';
-        var rarityColor = card.unlocked ? (RARITY_COLORS[card.rarity] || '#888') : '#666';
+        var rarityColor = card.unlocked ? (window.RARITY_COLORS[card.rarity] || '#888') : '#666';
         var descHtml = '';
         if (card.unlocked && card.description) {
             descHtml = '<div class="gallery-card-desc">' + card.description + '</div>';
@@ -161,12 +174,12 @@ function showCardHint(cardKey) {
 }
 
 function showCardDetail(poolId, cardId) {
-    if (!galleryCardsData) return;
+    if (!window.galleryCardsData) return;
     
     var pool = null;
-    for (var i = 0; i < galleryCardsData.pools.length; i++) {
-        if (galleryCardsData.pools[i].id === poolId) {
-            pool = galleryCardsData.pools[i];
+    for (var i = 0; i < window.galleryCardsData.pools.length; i++) {
+        if (window.galleryCardsData.pools[i].id === poolId) {
+            pool = window.galleryCardsData.pools[i];
             break;
         }
     }

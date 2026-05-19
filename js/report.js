@@ -42,8 +42,13 @@ function generateQuarterlyQuests() {
 }
 
 function showReportModal() {
+    console.log('DEBUG showReportModal: 开始显示报表');
     const modal = document.getElementById('report-modal');
-    if (!modal) return;
+    console.log('DEBUG showReportModal: modal 元素:', modal);
+    if (!modal) {
+        console.error('DEBUG showReportModal: 未找到 report-modal 元素！');
+        return;
+    }
     
     if (!gameState.quarterlyQuests || gameState.quarterlyQuests.length === 0) {
         quarterlyQuests = generateQuarterlyQuests();
@@ -56,8 +61,11 @@ function showReportModal() {
     gameState.reportPending = true;
     saveGame();
     
+    console.log('DEBUG showReportModal: 准备渲染报表');
     renderReportModal();
+    console.log('DEBUG showReportModal: 准备显示模态框');
     modal.style.display = 'flex';
+    console.log('DEBUG showReportModal: 报表已显示');
 }
 
 function closeReportModal() {
@@ -350,6 +358,9 @@ function confirmQuarterlyReport() {
     gameState.reportPending = false;
     gameState.quarterlyQuests = [];
     gameState.quarterlyScore = 0;
+    
+    // 标记季度结束，用于触发HC里程碑检查
+    gameState.quarterEnded = true;
     
     saveGame();
     

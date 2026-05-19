@@ -65,7 +65,7 @@ function checkEventTriggerCondition(event) {
                 if (!gameState.currentEmployees || gameState.currentEmployees.length === 0) return false;
                 break;
             case 'has_sr_card':
-                const hasSR = backpack && backpack.some(c => c.rarity === 'SR' || c.rarity === 'SSR');
+                const hasSR = window.backpack && window.backpack.some(c => c.rarity === 'SR' || c.rarity === 'SSR');
                 if (!hasSR) return false;
                 break;
         }
@@ -78,16 +78,17 @@ function checkEventTriggerCondition(event) {
 }
 
 function checkRandomEvents() {
-    if (!data.events || !data.events.random_events) return;
+    if (!data.events || !data.events.events) return;
     
-    const randomEvents = data.events.random_events;
+    const allEvents = data.events.events;
     
-    const availableEvents = randomEvents.filter(event => {
-        return checkEventTriggerCondition(event);
+    // 筛选类型为 random 的事件
+    const randomEvents = allEvents.filter(event => {
+        return event.type === 'random' && checkEventTriggerCondition(event);
     });
     
-    if (availableEvents.length > 0) {
-        const event = availableEvents[Math.floor(Math.random() * availableEvents.length)];
+    if (randomEvents.length > 0) {
+        const event = randomEvents[Math.floor(Math.random() * randomEvents.length)];
         applyRandomEvent(event);
     }
 }
@@ -147,10 +148,11 @@ function applyRandomEvent(event) {
 
 // ============ 节假日事件系统 ============
 function checkHolidayEvents() {
-    if (!data.events) return;
+    if (!data.events || !data.events.events) return;
     
     const week = gameState.week;
-    const holidayEvents = data.events.filter(event => {
+    const allEvents = data.events.events;
+    const holidayEvents = allEvents.filter(event => {
         if (event.type !== 'holiday') return false;
         if (event.trigger_condition?.week !== week) return false;
         return true;
@@ -164,9 +166,10 @@ function checkHolidayEvents() {
 
 // ============ 团建事件系统 ============
 function checkTeambuildingEvents() {
-    if (!data.events) return;
+    if (!data.events || !data.events.events) return;
     
-    const teambuildingEvents = data.events.filter(event => {
+    const allEvents = data.events.events;
+    const teambuildingEvents = allEvents.filter(event => {
         if (event.type !== 'teambuilding') return false;
         return checkEventTriggerCondition(event);
     });
@@ -179,9 +182,10 @@ function checkTeambuildingEvents() {
 
 // ============ 角色专属事件系统 ============
 function checkCharacterEvents() {
-    if (!data.events) return;
+    if (!data.events || !data.events.events) return;
     
-    const characterEvents = data.events.filter(event => {
+    const allEvents = data.events.events;
+    const characterEvents = allEvents.filter(event => {
         if (event.type !== 'character_event') return false;
         return checkEventTriggerCondition(event);
     });
@@ -197,13 +201,14 @@ let chainEventCount = 0;
 const MAX_CHAIN_EVENTS = 2;
 
 function checkChainEvents() {
-    if (!data.events) return;
+    if (!data.events || !data.events.events) return;
     if (chainEventCount >= MAX_CHAIN_EVENTS) {
         chainEventCount = 0;
         return;
     }
     
-    const chainEvents = data.events.filter(event => {
+    const allEvents = data.events.events;
+    const chainEvents = allEvents.filter(event => {
         if (event.type !== 'chain_event') return false;
         return checkEventTriggerCondition(event);
     });
@@ -257,4 +262,125 @@ function checkChainEvents() {
 
 function resetChainEventCount() {
     chainEventCount = 0;
+}
+
+// ============ 事件显示系统 ============
+function showEventModal(event) {
+    console.log('DEBUG showEventModal: 显示事件', event);
+    const modal = document.getElementById('event-modal');
+    const titleEl = document.getElementById('event-title');
+    const descEl = document.getElementById('event-description');
+    const optionsEl = document.getElementById('event-options');
+    
+    if (!modal || !titleEl || !descEl || !optionsEl) {
+        console.error('DEBUG showEventModal: 事件模态框元素未找到');
+        return;
+    }
+    
+    titleEl.textContent = event.title || '事件';
+    descEl.textContent = event.description || '';
+    
+    optionsEl.innerHTML = '';
+    
+    if (event.options && event.options.length > 0) {
+        event.options.forEach((option, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'event-option-btn';
+            btn.textContent = option.text || `选项 ${index + 1}`;
+            btn.onclick = () => {
+                handleEventChoice(event, option);
+                closeEventModal();
+            };
+            optionsEl.appendChild(btn);
+        });
+    } else {
+        const btn = document.createElement('button');
+        btn.className = 'event-option-btn';
+        btn.textContent = '确定';
+        btn.onclick = () => {
+            closeEventModal();
+        };
+        optionsEl.appendChild(btn);
+    }
+    
+    modal.style.display = 'flex';
+}
+
+function closeEventModal() {
+    const modal = document.getElementById('event-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function handleEventChoice(event, option) {
+    console.log('DEBUG handleEventChoice: 处理事件选择', event, option);
+    
+    if (option.effects) {
+        Object.keys(option.effects).forEach(key => {
+            const value = option.effects[key];
+            switch(key) {
+                case 'morale':
+                case 'satisfaction':
+                    gameState.satisfaction = Math.max(0, Math.min(100, gameState.satisfaction + value));
+                    break;
+                case 'budget':
+                    gameState.budget += value;
+                    break;
+                case 'progress':
+                    gameState.progress = Math.max(0, Math.min(100, gameState.progress + value));
+                    break;
+                case 'fame':
+                    if (typeof addFame === 'function') {
+                        addFame(value);
+                    }
+                    break;
+                case 'dau':
+                    gameState.dau = Math.max(0, gameState.dau + value);
+                    break;
+                case 'gmv':
+                    gameState.gmv = Math.max(0, gameState.gmv + value);
+                    break;
+                case 'benchmarkClients':
+                    gameState.benchmarkClients += value;
+                    break;
+                case 'renewalRate':
+                    gameState.renewalRate = Math.max(0, Math.min(100, gameState.renewalRate + value));
+                    break;
+                case 'disputeRate':
+                    gameState.disputeRate = Math.max(0, Math.min(100, (gameState.disputeRate || 0) + value));
+                    break;
+                case 'aisaike':
+                case 'moganna':
+                case 'xiaokui':
+                case 'xinzhu':
+                    if (gameState.favors) {
+                        gameState.favors[key] = Math.max(0, Math.min(100, (gameState.favors[key] || 50) + value));
+                    }
+                    break;
+            }
+        });
+    }
+    
+    if (option.budget) {
+        gameState.budget += option.budget;
+    }
+    
+    if (option.weekly_effect) {
+        showToast(`📢 ${option.weekly_effect}`);
+    }
+    
+    gameState.weeklyLogs.push({
+        week: gameState.week,
+        event: event.title,
+        choice: option.text,
+        effect: option.weekly_effect || ''
+    });
+    
+    if (typeof saveGame === 'function') {
+        saveGame();
+    }
+    if (typeof updateUI === 'function') {
+        updateUI();
+    }
 }

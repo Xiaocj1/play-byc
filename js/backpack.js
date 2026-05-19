@@ -7,7 +7,7 @@ function showBackpackModal() {
             <div class="backpack-stats">
                 <div class="stat-item">
                     <span>📦 HC:</span>
-                    <span id="backpack-hc">${backpack.length}/${gameState.hcLimit || 3}</span>
+                    <span id="backpack-hc">${backpack.length}/${gameState.hcLimit || (typeof hc !== 'undefined' ? hc : 3)}</span>
                 </div>
             </div>
             <div class="backpack-filters">
@@ -96,7 +96,7 @@ function getRarityStars(rarity) {
 function updateBackpackStats() {
     const hcDisplay = document.getElementById('backpack-hc');
     if (hcDisplay) {
-        hcDisplay.textContent = `${backpack.length}/${gameState.hcLimit || 3}`;
+        hcDisplay.textContent = `${backpack.length}/${gameState.hcLimit || (typeof hc !== 'undefined' ? hc : 3)}`;
     }
 }
 

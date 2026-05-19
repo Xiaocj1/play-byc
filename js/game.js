@@ -1,26 +1,157 @@
-const STORAGE_KEY = "fair_office_game_state";
-const ENDINGS_KEY = "fair_office_unlocked_endings";
-const PROJECT_EXPERIENCE_KEY = "fair_office_project_experience";
-const RANK_KEY = "fair_office_current_rank";
-const TOOLCHAIN_KEY = "fair_office_toolchain";
-const UNLOCKED_TOOLS_KEY = "fair_office_unlocked_tools";
-const QUARTER_DURATION = 12;
+// 检查是否已声明，避免重复声明
+if (typeof window.STORAGE_KEY === 'undefined') {
+    window.STORAGE_KEY = "fair_office_game_state";
+}
+if (typeof window.ENDINGS_KEY === 'undefined') {
+    window.ENDINGS_KEY = "fair_office_unlocked_endings";
+}
+if (typeof window.PROJECT_EXPERIENCE_KEY === 'undefined') {
+    window.PROJECT_EXPERIENCE_KEY = "fair_office_project_experience";
+}
+if (typeof window.RANK_KEY === 'undefined') {
+    window.RANK_KEY = "fair_office_current_rank";
+}
+if (typeof window.TOOLCHAIN_KEY === 'undefined') {
+    window.TOOLCHAIN_KEY = "fair_office_toolchain";
+}
+if (typeof window.UNLOCKED_TOOLS_KEY === 'undefined') {
+    window.UNLOCKED_TOOLS_KEY = "fair_office_unlocked_tools";
+}
+if (typeof window.QUARTER_DURATION === 'undefined') {
+    window.QUARTER_DURATION = 12;
+}
 
-let projectExperience = 0;
-let currentRank = "p5";
-let ranks = [];
-let toolsData = { categories: [] };
-let selectedTools = {};
-let unlockedTools = [];
+if (typeof window.projectExperience === 'undefined') {
+    window.projectExperience = 0;
+}
+if (typeof window.currentRank === 'undefined') {
+    window.currentRank = "p5";
+}
+if (typeof window.ranks === 'undefined') {
+    window.ranks = [];
+}
+if (typeof window.toolsData === 'undefined') {
+    window.toolsData = { categories: [] };
+}
+if (typeof window.selectedTools === 'undefined') {
+    window.selectedTools = {};
+}
+if (typeof window.unlockedTools === 'undefined') {
+    window.unlockedTools = [];
+}
+
+// 检查是否已声明，避免重复声明
+if (typeof window.data === 'undefined') {
+    window.data = {
+        weekly_reports: { reports: [] },
+        prd_templates: { prd_entries: [] },
+        events: { events: [] },
+        characters: { characters: [] },
+        ranks: { ranks: [] },
+        endings: { endings: [] },
+        tools: { categories: [] },
+        weights: { phases: [], efficiency_buff: {} },
+        buffs: { buffs: [], buff_rules: {} },
+        financing: { rounds: [] },
+        directionConfig: {}
+    };
+}
+
+// 为了向后兼容，让代码可以继续使用 data 而不是 window.data
+let data = window.data;
+
+// 检查是否已声明，避免重复声明
+if (typeof window.weightsData === 'undefined') {
+    window.weightsData = { phases: [], efficiency_buff: { threshold: 80, min_bonus: 0.05, max_bonus: 1.0 } };
+}
+
+// 为了向后兼容，让代码可以继续使用 weightsData 而不是 window.weightsData
+let weightsData = window.weightsData;
+// 检查是否已声明，避免重复声明
+if (typeof window.buffsData === 'undefined') {
+    window.buffsData = { buffs: [], buff_rules: { max_buffs_per_character: 3, buff_duration_unit: "weeks", stacking: { same_type: "refresh", different_type: "stack" } } };
+}
+
+// 定义 gameState
+let gameState = {
+    week: 1,
+    direction: null,
+    prdVersion: "V1.0.0",
+    favors: {},
+    progress: 0,
+    satisfaction: 80,
+    satisfactionHistory: [80],
+    consecutiveLowSatisfactionWeeks: 0,
+    prdHistory: [],
+    weeklyLogs: [],
+    currentEventIndex: 0,
+    gameOver: false,
+    budget: 100,
+    toolchain: {},
+    characterBuffs: {},
+    quarterlyQuests: [],
+    quarterlyScore: 0,
+    pendingVariants: [],
+    totalReports: 0,
+    fame: 50,
+    debt: 0,
+    debtLimit: 100,
+    okrBonus: 0,
+    financingRound: 0,
+    financingDebt: 0,
+    consecutiveProfitableQuarters: 0,
+    totalAssets: 0,
+    dau: 10,  // ToC模式初始日活用户（万）
+    consecutiveZeroDauWeeks: 0,  // ToC模式：连续DAU=0的周数
+    ltv: 0.01,  // ToC模式LTV（万元），初始100元
+    gmv: 0,
+    commissionRate: 5,
+    disputeRate: 5,
+    benchmarkClients: 0,
+    renewalRate: 70,
+    toBPhase: 0,
+    declinedIPO: false,
+    triggerAcquisition: false,
+    pmfReached: false,  // 是否已达到PMF（Product-Market Fit）
+    pmfChoiceMade: false,  // 是否已经做出关键选择
+    growthStrategy: null,  // 增长策略：'aggressive', 'monetization', 'balanced'
+    dauMultiplier: 1.0,  // DAU增长倍数
+    ltvMultiplier: 1.0,   // LTV增长倍数
+    teamFavorCap: 100,        // 团队好感度上限（会永久降低）
+    blameMeetings: 0,          // 已召开甩锅大会次数
+    lastBlameWeek: 0,          // 上次甩锅大会周数
+    blameHistory: [],           // 甩锅历史记录
+    blameGrowthPoints: 0,      // 甩锅成长点
+    blameExperiences: [],       // 已获得的经验之谈ID列表
+    permanentEfficiencyPenalty: 0,   // 效率永久降低（%）
+    permanentDurabilityPenalty: 0,    // 耐久度上限永久降低（%）
+    blameMeetingActive: false,   // 甩锅大会是否正在进行中
+    hcLimit: 3,                // HC上限
+    reportBeauty: {             // 报表美容院状态
+        unlocked: true,
+        pkWins: 0,
+        hookCount: 0,
+        beautifiedWords: [],
+        upgradeLevels: {
+            length: 0,
+            speed: 0,
+            magnetism: 0
+        }
+    },
+    autoBeautyCoupons: 0,        // 自动美容券数量
+    cardFragments: 0,            // 卡牌碎片
+    lastSynthesisMonth: 0,       // 上次合成自动美容券的月份
+    thisQuarterUsedAutoBeauty: false  // 本季度是否已使用自动美容
+};
 
 function getCurrentQuarter() {
     const week = gameState.week;
-    return Math.floor((week - 1) / QUARTER_DURATION) + 1;
+    return Math.floor((week - 1) / window.QUARTER_DURATION) + 1;
 }
 
 function getWeekInQuarter() {
     const week = gameState.week;
-    return ((week - 1) % QUARTER_DURATION) + 1;
+    return ((week - 1) % window.QUARTER_DURATION) + 1;
 }
 
 function formatQuarterWeek() {
@@ -189,63 +320,7 @@ function triggerGameOver(reason) {
     }
 }
 
-let gameState = {
-    week: 1,
-    direction: null,
-    prdVersion: "V1.0.0",
-    favors: {},
-    progress: 0,
-    satisfaction: 80,
-    satisfactionHistory: [80],
-    consecutiveLowSatisfactionWeeks: 0,
-    prdHistory: [],
-    weeklyLogs: [],
-    currentEventIndex: 0,
-    gameOver: false,
-    budget: 100,
-    toolchain: {},
-    characterBuffs: {},
-    quarterlyQuests: [],
-    quarterlyScore: 0,
-    pendingVariants: [],
-    totalReports: 0,
-    fame: 50,
-    debt: 0,
-    debtLimit: 100,
-    okrBonus: 0,
-    financingRound: 0,
-    financingDebt: 0,
-    consecutiveProfitableQuarters: 0,
-    totalAssets: 0,
-    dau: 10,  // ToC模式初始日活用户（万）
-    consecutiveZeroDauWeeks: 0,  // ToC模式：连续DAU=0的周数
-    ltv: 0.01,  // ToC模式LTV（万元），初始100元
-    gmv: 0,
-    commissionRate: 5,
-    disputeRate: 5,
-    benchmarkClients: 0,
-    renewalRate: 70,
-    toBPhase: 0,
-    declinedIPO: false,
-    triggerAcquisition: false,
-    // PMF关键事件相关字段
-    pmfReached: false,  // 是否已达到PMF（Product-Market Fit）
-    pmfChoiceMade: false,  // 是否已经做出关键选择
-    growthStrategy: null,  // 增长策略：'aggressive', 'monetization', 'balanced'
-    dauMultiplier: 1.0,  // DAU增长倍数
-    ltvMultiplier: 1.0,   // LTV增长倍数
-    
-    // 甩锅大会相关字段
-    teamFavorCap: 100,        // 团队好感度上限（会永久降低）
-    blameMeetings: 0,          // 已召开甩锅大会次数
-    lastBlameWeek: 0,          // 上次甩锅大会周数
-    blameHistory: [],           // 甩锅历史记录
-    blameGrowthPoints: 0,      // 甩锅成长点
-    blameExperiences: [],       // 已获得的经验之谈ID列表
-    permanentEfficiencyPenalty: 0,   // 效率永久降低（%）
-    permanentDurabilityPenalty: 0,    // 耐久度上限永久降低（%）
-    blameMeetingActive: false   // 甩锅大会是否正在进行中
-};
+
 
 function showBorrowModal() {
     const modal = document.getElementById('borrow-modal');
@@ -300,23 +375,6 @@ function handleRepay() {
     }
 }
 
-let data = {
-    weekly_reports: { reports: [] },
-    prd_templates: { prd_entries: [] },
-    events: { events: [] },
-    characters: { characters: [] },
-    ranks: { ranks: [] },
-    endings: { endings: [] },
-    tools: { categories: [] },
-    weights: { phases: [], efficiency_buff: {} },
-    buffs: { buffs: [], buff_rules: {} },
-    financing: { rounds: [] },
-    directionConfig: {}
-};
-
-let weightsData = { phases: [], efficiency_buff: { threshold: 80, min_bonus: 0.05, max_bonus: 1.0 } };
-let buffsData = { buffs: [], buff_rules: { max_buffs_per_character: 3, buff_duration_unit: "weeks", stacking: { same_type: "refresh", different_type: "stack" } } };
-
 async function loadAllData() {
     loadSettings();
     
@@ -348,11 +406,11 @@ async function loadAllData() {
         data.financing = financing;
         data.directionConfig = directionConfig;
         data.missions = missions;
-        toolsData = tools;
+        window.toolsData = tools;
         weightsData = weights;
-        buffsData = buffs;
+        window.buffsData = buffs;
         
-        ranks = ranksData.ranks || [];
+        window.ranks = ranksData.ranks || [];
         
         await Promise.all([
             loadBalanceData(),
@@ -364,7 +422,7 @@ async function loadAllData() {
         loadUnlockedTools();
         
         if (gameState.toolchain) {
-            selectedTools = { ...gameState.toolchain };
+            window.selectedTools = { ...gameState.toolchain };
         }
         
         initToolchainSkin();
@@ -386,20 +444,28 @@ async function loadAllData() {
 }
 
 function loadProjectExperienceAndRank() {
-    projectExperience = parseInt(localStorage.getItem(PROJECT_EXPERIENCE_KEY) || '0');
-    currentRank = localStorage.getItem(RANK_KEY) || 'p5';
+    window.projectExperience = parseInt(localStorage.getItem(window.PROJECT_EXPERIENCE_KEY) || '0');
+    window.currentRank = localStorage.getItem(window.RANK_KEY) || 'p5';
 }
 
 function saveProjectExperienceAndRank() {
-    localStorage.setItem(PROJECT_EXPERIENCE_KEY, projectExperience.toString());
-    localStorage.setItem(RANK_KEY, currentRank);
+    localStorage.setItem(window.PROJECT_EXPERIENCE_KEY, window.projectExperience.toString());
+    localStorage.setItem(window.RANK_KEY, window.currentRank);
 }
 
 function loadGameState() {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = localStorage.getItem(window.STORAGE_KEY);
     if (saved) {
         const savedState = JSON.parse(saved);
         gameState = { ...gameState, ...savedState };
+        
+        // 同步HC值
+        if (typeof loadHC === 'function') {
+            loadHC();
+        }
+        if (gameState.hcLimit) {
+            window.hc = gameState.hcLimit;
+        }
         
         if (!gameState.direction) {
             window.location.href = 'select.html';
@@ -412,7 +478,7 @@ function loadGameState() {
 }
 
 function initToolchainSkin() {
-    const toolchainId = localStorage.getItem(TOOLCHAIN_KEY);
+    const toolchainId = localStorage.getItem(window.TOOLCHAIN_KEY);
     if (!toolchainId) return;
     
     document.body.classList.add(`skin-${toolchainId}`);
@@ -933,7 +999,7 @@ function stopDirectionLabelUpdates() {
 }
 
 function saveGame() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
+    localStorage.setItem(window.STORAGE_KEY, JSON.stringify(gameState));
     showSaveNotification();
 }
 
@@ -946,9 +1012,9 @@ function showSaveNotification() {
 }
 
 function loadUnlockedTools() {
-    const saved = localStorage.getItem(UNLOCKED_TOOLS_KEY);
+    const saved = localStorage.getItem(window.UNLOCKED_TOOLS_KEY);
     if (saved) {
-        unlockedTools = JSON.parse(saved);
+        window.unlockedTools = JSON.parse(saved);
     }
 }
 
@@ -1062,7 +1128,7 @@ function updateHCDisplay() {
     if (!hcDisplay || typeof getCurrentHCCount !== 'function') return;
     
     const currentHC = getCurrentHCCount ? getCurrentHCCount() : 0;
-    const maxHC = typeof hc !== 'undefined' ? hc : 3;
+    const maxHC = gameState.hcLimit || (typeof hc !== 'undefined' ? hc : 3);
     const variantCount = typeof backpack !== 'undefined' ? backpack.filter(c => c.is_variant).length : 0;
     
     hcDisplay.textContent = `📦 HC ${currentHC}/${maxHC}（管培生${variantCount}不计）`;
@@ -1094,7 +1160,7 @@ function renderCharacterCards() {
         if (buffs.length > 0) {
             buffsHtml = `<div class="character-card-buffs">`;
             buffs.forEach(buff => {
-                const buffData = buffsData.buffs.find(b => b.id === buff.buffId);
+                const buffData = window.buffsData.buffs.find(b => b.id === buff.buffId);
                 const icon = buffData ? buffData.icon : '✨';
                 const color = buffData ? buffData.color : '#888';
                 const typeClass = buffData && buffData.type === 'positive' ? 'buff-positive' : 'buff-negative';
@@ -1187,16 +1253,62 @@ function showCharacterStatus(characterId) {
     if (buffs.length > 0) {
         buffsInfo = '<div class="status-buffs">';
         buffs.forEach((buff, index) => {
-            const buffData = buffsData.buffs.find(b => b.id === buff.buffId);
+            const buffData = window.buffsData.buffs.find(b => b.id === buff.buffId);
             const icon = buffData ? buffData.icon : '✨';
             const name = buffData ? buffData.name : buff.buffId;
             const type = buffData && buffData.type === 'positive' ? 'positive' : 'negative';
             const duration = buff.duration > 0 ? `${buff.duration}周` : '永久';
+            
+            // 获取效果描述
+            let effectDesc = '';
+            if (buffData) {
+                if (buffData.effect) {
+                    const effectType = buffData.effect.type;
+                    const effectValue = buffData.effect.value;
+                    const effectDuration = buffData.effect.duration;
+                    
+                    // 效果类型映射
+                    const effectTypeMap = {
+                        'progress': '项目进度',
+                        'team_favor': '团队好感度',
+                        'favor': '好感度',
+                        'satisfaction': '满意度',
+                        'budget': '资金',
+                        'efficiency': '效率',
+                        'fame': '名声'
+                    };
+                    
+                    const typeName = effectTypeMap[effectType] || effectType;
+                    const valuePrefix = effectValue >= 0 ? '+' : '';
+                    const durationStr = effectDuration === 'permanent' ? '永久' : `持续${effectDuration}周`;
+                    
+                    effectDesc = `<div style="font-size: 11px; color: #aaa; margin-top: 5px;">${typeName} ${valuePrefix}${effectValue} (${durationStr})</div>`;
+                    
+                    // 如果有副作用，也显示
+                    if (buffData.side_effect) {
+                        const sideEffectType = buffData.side_effect.type;
+                        const sideEffectValue = buffData.side_effect.value;
+                        const sideTypeName = effectTypeMap[sideEffectType] || sideEffectType;
+                        const sideValuePrefix = sideEffectValue >= 0 ? '+' : '';
+                        
+                        effectDesc += `<div style="font-size: 11px; color: #ff6b6b; margin-top: 3px;">副作用: ${sideTypeName} ${sideValuePrefix}${sideEffectValue}</div>`;
+                    }
+                }
+                
+                // 添加 buff 描述
+                if (buffData.description) {
+                    effectDesc += `<div style="font-size: 11px; color: #888; margin-top: 5px;">"${buffData.description}"</div>`;
+                }
+            }
+            
             buffsInfo += `
-                <div class="status-buff-item ${type}">
-                    <span class="buff-icon">${icon}</span>
-                    <span class="buff-name">${name}</span>
-                    <span class="buff-duration">剩余${duration}</span>
+                <div class="status-buff-item ${type}" style="margin-bottom: 10px; padding: 10px;">
+                    <span class="buff-icon" style="font-size: 20px;">${icon}</span>
+                    <div style="flex: 1;">
+                        <div class="buff-name" style="font-weight: bold; margin-bottom: 3px;">${name}</div>
+                        <div style="font-size: 12px; color: #888;">剩余${duration}</div>
+                        ${effectDesc}
+                    </div>
                 </div>
             `;
         });
@@ -1565,10 +1677,23 @@ function handleWeekChange() {
     checkWinConditions();
     checkLoseConditions();
 
-    if (checkQuarterEnd()) {
-        calculateQuarterlyRevenue();
-        checkFinancingEvent();
-        showReportModal();
+    try {
+        if (typeof checkQuarterEnd === 'function' && checkQuarterEnd()) {
+            console.log('DEBUG: 季度结束，触发报表');
+            if (typeof calculateQuarterlyRevenue === 'function') {
+                calculateQuarterlyRevenue();
+            }
+            if (typeof checkFinancingEvent === 'function') {
+                checkFinancingEvent();
+            }
+            if (typeof showReportModal === 'function') {
+                showReportModal();
+            }
+        } else {
+            console.log('DEBUG: 未到季度结束，当前周数:', gameState.week, '季度内周数:', getWeekInQuarter());
+        }
+    } catch (error) {
+        console.error('DEBUG: 报表功能出错:', error);
     }
 }
 
@@ -1787,7 +1912,7 @@ function updateCharacterBuffs() {
 }
 
 function checkEfficiencyBuffs() {
-    const efficiencyBuff = buffsData.buffs.find(b => b.id === 'efficiency_boost');
+    const efficiencyBuff = window.buffsData.buffs.find(b => b.id === 'efficiency_boost');
     if (!efficiencyBuff) return;
 
     data.characters.characters.forEach(character => {
@@ -1968,7 +2093,7 @@ function calculateWeightedEfficiency(phase) {
         
         const characterBuffs = gameState.characterBuffs[characterId] || [];
         characterBuffs.forEach(buff => {
-            const buffData = buffsData.buffs.find(b => b.id === buff.buffId);
+            const buffData = window.buffsData.buffs.find(b => b.id === buff.buffId);
             if (buffData && buffData.effect.type === 'progress') {
                 efficiency += buffData.effect.value / 100;
             }
@@ -1999,10 +2124,10 @@ function getToolchainEffects() {
         fatigue: 0
     };
     
-    if (!toolsData.categories) return effects;
+    if (!window.toolsData.categories) return effects;
     
-    toolsData.categories.forEach(category => {
-        const selectedToolId = selectedTools[category.id];
+    window.toolsData.categories.forEach(category => {
+        const selectedToolId = window.selectedTools[category.id];
         if (selectedToolId) {
             const tool = category.tools.find(t => t.id === selectedToolId);
             if (tool) {
@@ -2193,10 +2318,10 @@ function checkBlameMeeting() {
     let triggerReason = '';
     
     if (gameState.direction === 'tob') {
-        // ToB：满意度 ≤ 30
-        if (gameState.satisfaction <= 30) {
+        // ToB：满意度 ≤ 28（在毁约前触发，毁约阈值是<25）
+        if (gameState.satisfaction <= 28) {
             shouldTrigger = true;
-            triggerReason = '甲方满意度过低（≤30）';
+            triggerReason = '甲方满意度过低（≤28）';
         }
     } else if (gameState.direction === 'toc') {
         // ToC：LTV ≤ 0.05万元（500元）
@@ -2526,7 +2651,13 @@ function checkLoseConditions() {
 
 function handleClientRage() {
     // 客户终止合作的逻辑
-    const penalty = Math.round(gameState.progress * 2);  // 违约金 = 进度 * 2
+    let penalty = Math.round(gameState.progress * 2);  // 违约金 = 进度 * 2
+    
+    // 设置最低违约金，避免为0
+    if (penalty < 50) {
+        penalty = 50;  // 最低50万违约金
+    }
+    
     gameState.budget -= penalty;
     gameState.progress = 0;  // 项目进度清零
     gameState.satisfaction = 80;  // 重置满意度（新客户从80开始）
@@ -2535,13 +2666,51 @@ function handleClientRage() {
         gameState.benchmarkClients--;  // 标杆客户 -1
     }
     
-    showToast(`⚠️ 客户终止合作！赔偿违约金 ${penalty}万，项目进度清零`);
-    
     // 记录到周报
     gameState.weeklyLogs.push({
         week: gameState.week,
         event: `客户终止合作，赔偿违约金${penalty}万`
     });
+    
+    // 显示客户终止合作对话框
+    showClientRageModal(penalty);
+}
+
+function showClientRageModal(penalty) {
+    disableGameButtons();
+    
+    const modalContent = `
+        <div class="client-rage-modal" id="client-rage-modal" style="display: flex;">
+            <div style="background: linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%); border: 4px solid #ff6b6b; border-radius: 12px; padding: 30px; max-width: 500px; width: 90%; position: relative; box-shadow: 0 0 30px rgba(255, 107, 107, 0.5);">
+                <h2 style="color: #ff6b6b; font-size: 24px; margin-bottom: 20px; text-align: center;">⚠️ 甲方终止合作</h2>
+                
+                <div style="color: #ccc; font-size: 16px; line-height: 1.8; margin-bottom: 25px;">
+                    <p>由于项目质量严重不达标，甲方决定终止合作关系！</p>
+                    <p style="margin-top: 15px;">您需要赔偿甲方违约金 <span style="color: #ff6b6b; font-weight: bold; font-size: 20px;">${penalty}万</span></p>
+                    <p style="margin-top: 15px;">项目进度已清零，您需要重新开始与新客户的合作。</p>
+                    <p style="margin-top: 15px; color: #ffd700;">剩余标杆客户: <strong>${gameState.benchmarkClients}</strong> 个</p>
+                </div>
+                
+                <div style="display: flex; gap: 15px; justify-content: center;">
+                    <button onclick="closeClientRageModal()" style="padding: 12px 30px; font-size: 16px; background: #ffd700; border: 3px solid #ffd700; color: #000; cursor: pointer; transition: all 0.3s ease; border-radius: 8px;">
+                        继续奋斗
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    const modal = document.createElement('div');
+    modal.innerHTML = modalContent;
+    document.body.appendChild(modal);
+}
+
+function closeClientRageModal() {
+    const modal = document.getElementById('client-rage-modal');
+    if (modal) {
+        modal.remove();
+    }
+    enableGameButtons();
 }
 
 function showIPOOption() {
@@ -2738,11 +2907,11 @@ function showGameOverModal() {
 }
 
 function unlockEnding(endingId) {
-    const unlockedEndings = JSON.parse(localStorage.getItem(ENDINGS_KEY) || '[]');
+    const unlockedEndings = JSON.parse(localStorage.getItem(window.ENDINGS_KEY) || '[]');
 
     if (!unlockedEndings.includes(endingId)) {
         unlockedEndings.push(endingId);
-        localStorage.setItem(ENDINGS_KEY, JSON.stringify(unlockedEndings));
+        localStorage.setItem(window.ENDINGS_KEY, JSON.stringify(unlockedEndings));
     }
 }
 
@@ -2855,7 +3024,7 @@ function toggleTipsSettings(element) {
 }
 
 function restartGame() {
-    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(window.STORAGE_KEY);
     window.location.href = 'index.html';
 }
 

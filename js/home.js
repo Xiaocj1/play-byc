@@ -1,21 +1,53 @@
-const STORAGE_KEY = "fair_office_game_state";
-const PROJECT_EXPERIENCE_KEY = "fair_office_project_experience";
-const RANK_KEY = "fair_office_current_rank";
-const TOOLCHAIN_KEY = "fair_office_toolchain";
-const UNLOCKED_TOOLS_KEY = "fair_office_unlocked_tools";
+// 检查是否已声明，避免重复声明
+if (typeof window.STORAGE_KEY === 'undefined') {
+    window.STORAGE_KEY = "fair_office_game_state";
+}
+if (typeof window.PROJECT_EXPERIENCE_KEY === 'undefined') {
+    window.PROJECT_EXPERIENCE_KEY = "fair_office_project_experience";
+}
+if (typeof window.RANK_KEY === 'undefined') {
+    window.RANK_KEY = "fair_office_current_rank";
+}
+if (typeof window.TOOLCHAIN_KEY === 'undefined') {
+    window.TOOLCHAIN_KEY = "fair_office_toolchain";
+}
+if (typeof window.UNLOCKED_TOOLS_KEY === 'undefined') {
+    window.UNLOCKED_TOOLS_KEY = "fair_office_unlocked_tools";
+}
+if (typeof window.ENDINGS_KEY === 'undefined') {
+    window.ENDINGS_KEY = "fair_office_unlocked_endings";
+}
 
-let projectExperience = 0;
-let currentRank = "p5";
-let ranks = [];
-let toolsData = { categories: [] };
-let selectedTools = {};
-let unlockedTools = [];
+if (typeof window.projectExperience === 'undefined') {
+    window.projectExperience = 0;
+}
+if (typeof window.currentRank === 'undefined') {
+    window.currentRank = "p5";
+}
+if (typeof window.ranks === 'undefined') {
+    window.ranks = [];
+}
+if (typeof window.toolsData === 'undefined') {
+    window.toolsData = { categories: [] };
+}
+if (typeof window.selectedTools === 'undefined') {
+    window.selectedTools = {};
+}
+if (typeof window.unlockedTools === 'undefined') {
+    window.unlockedTools = [];
+}
 
-let data = {
-    ranks: { ranks: [] },
-    endings: { endings: [] },
-    tools: { categories: [] }
-};
+// 检查是否已声明，避免重复声明
+if (typeof window.data === 'undefined') {
+    window.data = {
+        ranks: { ranks: [] },
+        endings: { endings: [] },
+        tools: { categories: [] }
+    };
+}
+
+// 为了向后兼容，让代码可以继续使用 data 而不是 window.data
+let data = window.data;
 
 async function loadAllData() {
     try {
@@ -25,12 +57,12 @@ async function loadAllData() {
             fetch('data/tools.json').then(r => r.json())
         ]);
         
-        data.ranks = ranksData;
-        data.endings = endings;
-        data.tools = tools;
-        toolsData = tools;
+        window.data.ranks = ranksData;
+        window.data.endings = endings;
+        window.data.tools = tools;
+        window.toolsData = tools;
         
-        ranks = ranksData.ranks || [];
+        window.ranks = ranksData.ranks || [];
         
         loadProjectExperienceAndRank();
         loadUnlockedTools();
@@ -56,11 +88,11 @@ function processLastGameResult() {
     
     if (lastGameResult === 'victory') {
         // 胜利获得2个项目经历
-        projectExperience += 2;
+        window.projectExperience += 2;
         showToast('🎉 项目胜利！获得2个项目经历');
     } else if (lastGameResult === 'failure') {
         // 失败获得0.5个项目经历
-        projectExperience += 0.5;
+        window.projectExperience += 0.5;
         showToast('😢 项目失败...获得0.5个项目经历');
     }
     
@@ -69,17 +101,17 @@ function processLastGameResult() {
 }
 
 function loadProjectExperienceAndRank() {
-    projectExperience = parseFloat(localStorage.getItem(PROJECT_EXPERIENCE_KEY) || '0');
-    currentRank = localStorage.getItem(RANK_KEY) || 'p5';
+    window.projectExperience = parseFloat(localStorage.getItem(window.PROJECT_EXPERIENCE_KEY) || '0');
+    window.currentRank = localStorage.getItem(window.RANK_KEY) || 'p5';
 }
 
 function loadSelectedTools() {
-    const saved = localStorage.getItem(TOOLCHAIN_KEY);
+    const saved = localStorage.getItem(window.TOOLCHAIN_KEY);
     if (saved) {
         try {
             const savedTools = JSON.parse(saved);
             Object.keys(savedTools).forEach(key => {
-                selectedTools[key] = savedTools[key];
+                window.selectedTools[key] = savedTools[key];
             });
         } catch (e) {
             console.error('Failed to load selected tools:', e);
@@ -88,23 +120,23 @@ function loadSelectedTools() {
 }
 
 function saveProjectExperienceAndRank() {
-    localStorage.setItem(PROJECT_EXPERIENCE_KEY, projectExperience.toString());
-    localStorage.setItem(RANK_KEY, currentRank);
+    localStorage.setItem(window.PROJECT_EXPERIENCE_KEY, window.projectExperience.toString());
+    localStorage.setItem(window.RANK_KEY, window.currentRank);
 }
 
 function loadUnlockedTools() {
-    const saved = localStorage.getItem(UNLOCKED_TOOLS_KEY);
+    const saved = localStorage.getItem(window.UNLOCKED_TOOLS_KEY);
     if (saved) {
-        unlockedTools = JSON.parse(saved);
+        window.unlockedTools = JSON.parse(saved);
     }
 }
 
 function initDefaultTools() {
-    if (Object.keys(selectedTools).length === 0) {
-        toolsData.categories.forEach(category => {
+    if (Object.keys(window.selectedTools).length === 0) {
+        window.toolsData.categories.forEach(category => {
             const defaultTool = category.tools.find(t => t.cost === 0);
             if (defaultTool) {
-                selectedTools[category.id] = defaultTool.id;
+                window.selectedTools[category.id] = defaultTool.id;
             }
         });
     }
@@ -113,8 +145,8 @@ function initDefaultTools() {
 function initRanks() {
     // 直接从 JSON 文件加载，这里留空，由 loadAllData 中的 fetch 加载
     // 如果加载失败，使用默认数据
-    if (!ranks || ranks.length === 0) {
-        ranks = [
+    if (!window.ranks || window.ranks.length === 0) {
+        window.ranks = [
             {"id": "p5", "name": "初级PM", "network": "1-1", "tech": "1-1", "resource": "1-1", "cost": 0, "budget": 80, "unlock": "基础开局"},
             {"id": "p6", "name": "中级PM", "network": "2-1", "tech": "1-2", "resource": "1-2", "cost": 2, "budget": 100, "unlock": "「大厂实习经历」"},
             {"id": "p7", "name": "高级PM", "network": "2-2", "tech": "2-1", "resource": "2-1", "cost": 5, "budget": 120, "unlock": "「技术背景加成」"},
@@ -122,13 +154,13 @@ function initRanks() {
             {"id": "p9", "name": "专家PM", "network": "3-2", "tech": "3-1", "resource": "3-1", "cost": 14, "budget": 180, "unlock": "「行业认证专家」"},
             {"id": "p10", "name": "架构师", "network": "4-1", "tech": "3-2", "resource": "3-2", "cost": 20, "budget": 220, "unlock": "「技术决策者」"}
         ];
-        data.ranks = { ranks: ranks };
+        window.data.ranks = { ranks: window.ranks };
     }
 }
 
 function updateRankDisplay() {
-    const rank = ranks.find(r => r.id === currentRank) || ranks[0] || { name: '初级PM', network: '1-1', tech: '1-1', resource: '1-1', cost: 0 };
-    const nextRank = ranks.find(r => r.cost > projectExperience);
+    const rank = window.ranks.find(r => r.id === window.currentRank) || window.ranks[0] || { name: '初级PM', network: '1-1', tech: '1-1', resource: '1-1', cost: 0 };
+    const nextRank = window.ranks.find(r => r.cost > window.projectExperience);
     
     const rankValue = document.querySelector('.rank-value');
     const rankBars = document.querySelectorAll('.rank-bar');
@@ -144,11 +176,11 @@ function updateRankDisplay() {
         rankBars[2].querySelector('.bar-value').textContent = rank.resource;
     }
     
-    if (prestigeValue) prestigeValue.textContent = projectExperience.toFixed(1);
+    if (prestigeValue) prestigeValue.textContent = window.projectExperience.toFixed(1);
     
     if (nextRank) {
         if (prestigeNext) prestigeNext.textContent = nextRank.cost;
-        const remaining = (nextRank.cost - projectExperience).toFixed(1);
+        const remaining = (nextRank.cost - window.projectExperience).toFixed(1);
         if (prestigeHint) prestigeHint.textContent = `（${nextRank.name}还需 ${remaining}）`;
     } else {
         if (prestigeNext) prestigeNext.textContent = '-';
@@ -157,7 +189,7 @@ function updateRankDisplay() {
 }
 
 function checkForSave() {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = localStorage.getItem(window.STORAGE_KEY);
     const btnContinue = document.getElementById('btn-continue');
     if (btnContinue) {
         btnContinue.style.display = saved ? 'inline-block' : 'none';
@@ -165,10 +197,10 @@ function checkForSave() {
 }
 
 function startNewGame() {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = localStorage.getItem(window.STORAGE_KEY);
     if (saved) {
         showConfirm('将删除未通关的档案，是否继续？', () => {
-            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(window.STORAGE_KEY);
             window.location.href = 'select.html';
         }, () => {});
         return;
@@ -177,11 +209,11 @@ function startNewGame() {
 }
 
 function doStartNewGame() {
-    const rank = ranks.find(r => r.id === currentRank) || ranks[0] || { budget: 100 };
+    const rank = window.ranks.find(r => r.id === window.currentRank) || window.ranks[0] || { budget: 100 };
     
     let toolchainCost = 0;
-    toolsData.categories.forEach(category => {
-        const selectedToolId = selectedTools[category.id];
+    window.toolsData.categories.forEach(category => {
+        const selectedToolId = window.selectedTools[category.id];
         if (selectedToolId) {
             const tool = category.tools.find(t => t.id === selectedToolId);
             if (tool) {
@@ -210,7 +242,7 @@ function doStartNewGame() {
         debtLimit: 100
     };
     
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
+    localStorage.setItem(window.STORAGE_KEY, JSON.stringify(gameState));
     window.location.href = 'game.html';
 }
 
@@ -222,16 +254,16 @@ function showLevelupModal() {
     // 更新当前项目经历显示
     const expValue = document.getElementById('levelup-exp-value');
     if (expValue) {
-        expValue.textContent = projectExperience.toFixed(1);
+        expValue.textContent = window.projectExperience.toFixed(1);
     }
     
     const list = document.getElementById('levelup-list');
     if (!list) return;
     list.innerHTML = '';
     
-    ranks.forEach(rank => {
-        const isCurrent = rank.id === currentRank;
-        const isUnlocked = rank.cost <= projectExperience;
+    window.ranks.forEach(rank => {
+        const isCurrent = rank.id === window.currentRank;
+        const isUnlocked = rank.cost <= window.projectExperience;
         
         const item = document.createElement('div');
         item.className = `levelup-item ${isCurrent ? 'current' : ''} ${!isUnlocked && !isCurrent ? 'locked' : ''}`;
@@ -284,13 +316,13 @@ function closeLevelupModal() {
 }
 
 function promoteToRank(rankId) {
-    const rank = ranks.find(r => r.id === rankId);
-    if (!rank || rank.cost > projectExperience) return;
+    const rank = window.ranks.find(r => r.id === rankId);
+    if (!rank || rank.cost > window.projectExperience) return;
     
     // 扣除项目经历
-    projectExperience -= rank.cost;
+    window.projectExperience -= rank.cost;
     
-    currentRank = rankId;
+    window.currentRank = rankId;
     saveProjectExperienceAndRank();
     updateRankDisplay();
     closeLevelupModal();
@@ -342,7 +374,7 @@ function showGallery() {
     if (!grid) return;
     
     function renderGallery() {
-        if (typeof renderCardsGallery === 'function' && galleryCardsData) {
+        if (typeof renderCardsGallery === 'function' && window.galleryCardsData) {
             renderCardsGallery(grid);
         } else {
             grid.innerHTML = '<p style="text-align:center;padding:40px;color:#888;">卡牌数据加载中...</p>';
@@ -361,18 +393,18 @@ function closeGalleryModal() {
 
 function isToolUnlocked(tool) {
     const rankOrder = ['p5', 'p6', 'p7', 'p8', 'p9', 'p10'];
-    const currentRankIndex = rankOrder.indexOf(currentRank);
+    const currentRankIndex = rankOrder.indexOf(window.currentRank);
     const requiredRankIndex = rankOrder.indexOf(tool.unlock_rank);
     
     if (currentRankIndex >= requiredRankIndex) {
         return true;
     }
     
-    return unlockedTools.includes(tool.id);
+    return window.unlockedTools.includes(tool.id);
 }
 
 function showToolchainModal() {
-    if (!toolsData.categories || toolsData.categories.length === 0) {
+    if (!window.toolsData.categories || window.toolsData.categories.length === 0) {
         loadAllData().then(() => {
             renderToolchainModal();
             const modal = document.getElementById('toolchain-modal');
@@ -397,7 +429,7 @@ function renderToolchainModal() {
     tabsContainer.innerHTML = '';
     categoriesContainer.innerHTML = '';
     
-    toolsData.categories.forEach((category, index) => {
+    window.toolsData.categories.forEach((category, index) => {
         const tab = document.createElement('button');
         tab.className = `toolchain-tab ${index === 0 ? 'active' : ''}`;
         tab.textContent = `${category.icon} ${category.name}`;
@@ -425,7 +457,7 @@ function renderToolchainModal() {
 
 function createToolItem(tool, categoryId) {
     const item = document.createElement('div');
-    const isSelected = selectedTools[categoryId] === tool.id;
+    const isSelected = window.selectedTools[categoryId] === tool.id;
     const isUnlocked = isToolUnlocked(tool);
     
     item.className = `tool-item ${isSelected ? 'selected' : ''} ${!isUnlocked ? 'locked' : ''}`;
@@ -463,7 +495,7 @@ function createToolItem(tool, categoryId) {
 }
 
 function selectTool(tool, categoryId) {
-    selectedTools[categoryId] = tool.id;
+    window.selectedTools[categoryId] = tool.id;
     
     document.querySelectorAll(`.tool-item[data-category-id="${categoryId}"]`).forEach(item => {
         item.classList.remove('selected');
@@ -488,7 +520,7 @@ function switchToolchainTab(categoryId) {
     document.querySelectorAll('.toolchain-category').forEach(cat => cat.classList.remove('active'));
     
     document.querySelectorAll('.toolchain-tab').forEach(tab => {
-        if (tab.textContent.includes(toolsData.categories.find(c => c.id === categoryId)?.name)) {
+        if (tab.textContent.includes(window.toolsData.categories.find(c => c.id === categoryId)?.name)) {
             tab.classList.add('active');
         }
     });
@@ -498,14 +530,14 @@ function switchToolchainTab(categoryId) {
 }
 
 function updateToolchainSummary() {
-    const rank = ranks.find(r => r.id === currentRank) || ranks[0] || { budget: 100 };
+    const rank = window.ranks.find(r => r.id === window.currentRank) || window.ranks[0] || { budget: 100 };
     let baseBudget = rank.budget;
     let totalCost = 0;
     let effectsList = [];
     let toolNames = [];
     
-    toolsData.categories.forEach(category => {
-        const selectedToolId = selectedTools[category.id];
+    window.toolsData.categories.forEach(category => {
+        const selectedToolId = window.selectedTools[category.id];
         if (selectedToolId) {
             const tool = category.tools.find(t => t.id === selectedToolId);
             if (tool) {
@@ -538,11 +570,11 @@ function updateToolchainSummary() {
     const currentToolsNamesEl = document.getElementById('current-tools-names');
     const currentToolsDisplayEl = document.getElementById('current-tools-display');
     if (currentToolsNamesEl) currentToolsNamesEl.textContent = toolNames.join('、') || '未选择';
-    if (currentToolsDisplayEl) currentToolsDisplayEl.style.display = Object.keys(selectedTools).length > 0 ? 'block' : 'none';
+    if (currentToolsDisplayEl) currentToolsDisplayEl.style.display = Object.keys(window.selectedTools).length > 0 ? 'block' : 'none';
 }
 
 function confirmToolchain() {
-    localStorage.setItem(TOOLCHAIN_KEY, JSON.stringify(selectedTools));
+    localStorage.setItem(window.TOOLCHAIN_KEY, JSON.stringify(window.selectedTools));
     closeToolchainModal();
     
     const display = document.getElementById('current-tools-display');

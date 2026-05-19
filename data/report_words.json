@@ -1,0 +1,69 @@
+{
+  "words": [
+    {
+      "bad": "亏损",
+      "good": "战略性投入",
+      "weight": "light",
+      "score": 10
+    },
+    {
+      "bad": "裁员",
+      "good": "优化人才结构",
+      "weight": "medium",
+      "score": 20
+    },
+    {
+      "bad": "投诉暴增",
+      "good": "用户参与度提升",
+      "weight": "medium",
+      "score": 20
+    },
+    {
+      "bad": "市场份额跌",
+      "good": "聚焦核心业务",
+      "weight": "heavy",
+      "score": 30
+    },
+    {
+      "bad": "研发失败",
+      "good": "技术积累期",
+      "weight": "medium",
+      "score": 20
+    },
+    {
+      "bad": "加班严重",
+      "good": "团队奋斗精神",
+      "weight": "light",
+      "score": 10
+    },
+    {
+      "bad": "员工流失率高",
+      "good": "人才流动性行业领先",
+      "weight": "heavy",
+      "score": 30
+    },
+    {
+      "bad": "产品延期",
+      "good": "精细化打磨中",
+      "weight": "medium",
+      "score": 20
+    }
+  ],
+  "special_items": [
+    {
+      "type": "audit_bomb",
+      "name": "审计炸弹",
+      "effect": "爆炸，矿工阶段结束"
+    },
+    {
+      "type": "money_chest",
+      "name": "资金宝箱",
+      "effect": "+100万资金"
+    },
+    {
+      "type": "hc_chest",
+      "name": "HC宝箱",
+      "effect": "+1 HC"
+    }
+  ]
+}

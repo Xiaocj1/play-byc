@@ -1,19 +1,67 @@
-const CARDS_KEY = "fair_office_cards";
-const HC_KEY = "fair_office_hc";
-const WEEKLY_DRAWS_KEY = "fair_office_weekly_draws";
-const UNLOCKED_CARDS_KEY = "fair_office_unlocked_cards";
-const FIRST_DRAW_KEY = "fair_office_first_draw";
-const DRAW_HISTORY_KEY = "fair_office_draw_history";
+// 检查是否已声明，避免重复声明
+if (typeof window.CARDS_KEY === 'undefined') {
+    window.CARDS_KEY = "fair_office_cards";
+}
+if (typeof window.HC_KEY === 'undefined') {
+    window.HC_KEY = "fair_office_hc";
+}
+if (typeof window.WEEKLY_DRAWS_KEY === 'undefined') {
+    window.WEEKLY_DRAWS_KEY = "fair_office_weekly_draws";
+}
+if (typeof window.UNLOCKED_CARDS_KEY === 'undefined') {
+    window.UNLOCKED_CARDS_KEY = "fair_office_unlocked_cards";
+}
+if (typeof window.FIRST_DRAW_KEY === 'undefined') {
+    window.FIRST_DRAW_KEY = "fair_office_first_draw";
+}
+if (typeof window.DRAW_HISTORY_KEY === 'undefined') {
+    window.DRAW_HISTORY_KEY = "fair_office_draw_history";
+}
 
-let cardsData = null;
-let currentPool = null;
-let backpack = [];
-let hc = 3;
-let weeklyDraws = 0;
-let unlockedCards = [];
-let storiesData = null;
-let hasShownFirstDrawStory = false;
-let drawHistory = [];
+// 检查是否已声明，避免重复声明
+if (typeof window.cardsData === 'undefined') {
+    window.cardsData = null;
+}
+if (typeof window.currentPool === 'undefined') {
+    window.currentPool = null;
+}
+if (typeof window.backpack === 'undefined') {
+    window.backpack = [];
+}
+if (typeof window.hc === 'undefined') {
+    window.hc = 3;
+}
+if (typeof window.weeklyDraws === 'undefined') {
+    window.weeklyDraws = 0;
+}
+if (typeof window.unlockedCards === 'undefined') {
+    window.unlockedCards = [];
+}
+if (typeof window.storiesData === 'undefined') {
+    window.storiesData = null;
+}
+if (typeof window.hasShownFirstDrawStory === 'undefined') {
+    window.hasShownFirstDrawStory = false;
+}
+if (typeof window.drawHistory === 'undefined') {
+    window.drawHistory = [];
+}
+
+// 使用 getters 和 setters 直接引用 window 上的变量，避免值不同步
+Object.defineProperty(window, 'CARDS_KEY', { value: window.CARDS_KEY, writable: false });
+Object.defineProperty(window, 'HC_KEY', { value: window.HC_KEY, writable: false });
+Object.defineProperty(window, 'WEEKLY_DRAWS_KEY', { value: window.WEEKLY_DRAWS_KEY, writable: false });
+Object.defineProperty(window, 'UNLOCKED_CARDS_KEY', { value: window.UNLOCKED_CARDS_KEY, writable: false });
+Object.defineProperty(window, 'FIRST_DRAW_KEY', { value: window.FIRST_DRAW_KEY, writable: false });
+Object.defineProperty(window, 'DRAW_HISTORY_KEY', { value: window.DRAW_HISTORY_KEY, writable: false });
+
+// 为了向后兼容，直接使用 window 上的变量
+const CARDS_KEY = window.CARDS_KEY;
+const HC_KEY = window.HC_KEY;
+const WEEKLY_DRAWS_KEY = window.WEEKLY_DRAWS_KEY;
+const UNLOCKED_CARDS_KEY = window.UNLOCKED_CARDS_KEY;
+const FIRST_DRAW_KEY = window.FIRST_DRAW_KEY;
+const DRAW_HISTORY_KEY = window.DRAW_HISTORY_KEY;
 
 async function loadCardsData() {
     try {
@@ -21,8 +69,8 @@ async function loadCardsData() {
             fetch('data/cards.json').then(r => r.json()),
             fetch('data/stories.json').then(r => r.json())
         ]);
-        cardsData = cards;
-        storiesData = stories;
+        window.cardsData = cards;
+        window.storiesData = stories;
         loadBackpack();
         loadHC();
         loadWeeklyDraws();
@@ -37,9 +85,9 @@ async function loadCardsData() {
 function checkFirstDraw() {
     const saved = localStorage.getItem(FIRST_DRAW_KEY);
     if (!saved) {
-        hasShownFirstDrawStory = false;
+        window.hasShownFirstDrawStory = false;
     } else {
-        hasShownFirstDrawStory = true;
+        window.hasShownFirstDrawStory = true;
     }
 }
 
@@ -47,28 +95,28 @@ function loadBackpack() {
     const saved = localStorage.getItem(CARDS_KEY);
     if (saved) {
         try {
-            backpack = JSON.parse(saved);
+            window.backpack = JSON.parse(saved);
         } catch (e) {
-            backpack = [];
+            window.backpack = [];
         }
     }
 }
 
 function saveBackpack() {
-    localStorage.setItem(CARDS_KEY, JSON.stringify(backpack));
+    localStorage.setItem(CARDS_KEY, JSON.stringify(window.backpack));
 }
 
 function clearBackpack() {
-    backpack = [];
+    window.backpack = [];
     saveBackpack();
 }
 
 function loadHC() {
-    hc = parseInt(localStorage.getItem(HC_KEY) || '3');
+    window.hc = parseInt(localStorage.getItem(HC_KEY) || '3');
 }
 
 function saveHC() {
-    localStorage.setItem(HC_KEY, hc.toString());
+    localStorage.setItem(HC_KEY, window.hc.toString());
 }
 
 function loadWeeklyDraws() {
@@ -76,9 +124,9 @@ function loadWeeklyDraws() {
     if (saved) {
         const data = JSON.parse(saved);
         if (data.week === gameState?.week) {
-            weeklyDraws = data.count;
+            window.weeklyDraws = data.count;
         } else {
-            weeklyDraws = 0;
+            window.weeklyDraws = 0;
         }
     }
 }
@@ -86,56 +134,56 @@ function loadWeeklyDraws() {
 function saveWeeklyDraws() {
     localStorage.setItem(WEEKLY_DRAWS_KEY, JSON.stringify({
         week: gameState?.week || 1,
-        count: weeklyDraws
+        count: window.weeklyDraws
     }));
 }
 
 function loadUnlockedCards() {
     const saved = localStorage.getItem(UNLOCKED_CARDS_KEY);
     if (saved) {
-        unlockedCards = JSON.parse(saved);
+        window.unlockedCards = JSON.parse(saved);
     }
 }
 
 function saveUnlockedCards() {
-    localStorage.setItem(UNLOCKED_CARDS_KEY, JSON.stringify(unlockedCards));
+    localStorage.setItem(UNLOCKED_CARDS_KEY, JSON.stringify(window.unlockedCards));
 }
 
 function loadDrawHistory() {
     const saved = localStorage.getItem(DRAW_HISTORY_KEY);
     if (saved) {
         try {
-            drawHistory = JSON.parse(saved);
+            window.drawHistory = JSON.parse(saved);
         } catch (e) {
-            drawHistory = [];
+            window.drawHistory = [];
         }
     }
 }
 
 function saveDrawHistory() {
-    localStorage.setItem(DRAW_HISTORY_KEY, JSON.stringify(drawHistory));
+    localStorage.setItem(DRAW_HISTORY_KEY, JSON.stringify(window.drawHistory));
 }
 
 function addToDrawHistory(card) {
-    drawHistory.unshift({
+    window.drawHistory.unshift({
         name: card.name,
         rarity: card.rarity,
         pool: card.poolId,
         timestamp: Date.now()
     });
-    if (drawHistory.length > 100) {
-        drawHistory = drawHistory.slice(0, 100);
+    if (window.drawHistory.length > 100) {
+        window.drawHistory = window.drawHistory.slice(0, 100);
     }
     saveDrawHistory();
 }
 
 function getCurrentHCCount() {
-    return backpack.filter(c => !c.is_variant).length;
+    return window.backpack.filter(c => !c.is_variant).length;
 }
 
 function getCurrentDrawCost() {
-    if (!cardsData || !cardsData.costs) return 10;
-    const baseCost = cardsData.costs.single_draw || 10;
+    if (!window.cardsData || !window.cardsData.costs) return 10;
+    const baseCost = window.cardsData.costs.single_draw || 10;
     
     const budget = gameState?.budget || 0;
     const fame = gameState?.fame || 50;
@@ -151,20 +199,13 @@ function getCurrentDrawCost() {
         else fameCoefficient = 1.5;
     }
     
-    const quarter = getCurrentQuarter ? getCurrentQuarter() : 1;
-    let capitalThreshold;
-    if (quarter <= 4) {
-        capitalThreshold = 5;
-    } else if (quarter <= 8) {
-        capitalThreshold = 20;
-    } else {
-        capitalThreshold = 50;
-    }
-    
-    let capitalCoefficient = 1.0 + (budget / capitalThreshold) * 0.5;
-    const cap = cardsData.costs.capital_cap;
-    if (cap !== null && cap !== undefined) {
-        capitalCoefficient = Math.min(cap, capitalCoefficient);
+    // 资金系数：使用对数函数，让费用增长更平缓
+    // 基础费用 = baseCost * fameCoefficient
+    // 资金 > 20 万时，每增加一倍，费用增加约 30%
+    let capitalCoefficient = 1.0;
+    if (budget > 20) {
+        capitalCoefficient = 1.0 + Math.log2(budget / 20) * 0.3;
+        capitalCoefficient = Math.min(capitalCoefficient, 3.0); // 最高 3 倍
     }
     
     const multiplier = fameCoefficient * capitalCoefficient;
@@ -176,12 +217,12 @@ function canDraw() {
     if (!gameState) return false;
     if (gameState.budget <= 0) return false;
     if (gameState.budget < getCurrentDrawCost()) return false;
-    if (getCurrentHCCount() >= hc) return false;
+    if (getCurrentHCCount() >= window.hc) return false;
     return true;
 }
 
 function drawCard(poolId) {
-    const pool = cardsData.pools.find(p => p.id === poolId);
+    const pool = window.cardsData.pools.find(p => p.id === poolId);
     if (!pool) return null;
     
     const cards = pool.cards;
@@ -214,7 +255,7 @@ function handleVariantCard(card, callback) {
     if (!card.is_variant || !card.variant_pool) return card;
     
     const resultId = card.variant_pool[Math.floor(Math.random() * card.variant_pool.length)];
-    const result = cardsData.variant_results[resultId];
+    const result = window.cardsData.variant_results[resultId];
     
     if (!result) {
         console.error('Variant result not found:', resultId);
@@ -249,7 +290,7 @@ function handleVariantCard(card, callback) {
     gameState.pendingVariants = gameState.pendingVariants || [];
     gameState.pendingVariants.push(pendingVariant);
     
-    backpack.push(pendingVariant);
+    window.backpack.push(pendingVariant);
     saveBackpack();
     
     // 记录抽卡历史（包括管培生）
@@ -307,11 +348,11 @@ function processPendingVariants() {
             description: variant.variantResult.text || variant.description
         };
         
-        const backpackIndex = backpack.findIndex(c => c.instanceId === variant.instanceId);
+        const backpackIndex = window.backpack.findIndex(c => c.instanceId === variant.instanceId);
         if (backpackIndex !== -1) {
-            backpack[backpackIndex] = mutatedCard;
+            window.backpack[backpackIndex] = mutatedCard;
         } else {
-            backpack.push(mutatedCard);
+            window.backpack.push(mutatedCard);
         }
         saveBackpack();
         
@@ -329,7 +370,7 @@ function drawFromPool(poolId) {
     if (!canDraw()) {
         return null;
     }
-    if (!currentPool) {
+    if (!window.currentPool) {
         showToast('请先选择岗位！');
         return null;
     }
@@ -340,7 +381,7 @@ function drawFromPool(poolId) {
             return null;
         }
         
-        let card = drawCard(currentPool);
+        let card = drawCard(window.currentPool);
         
         if (!card) {
             showToast('抽卡失败');
@@ -369,7 +410,7 @@ function drawFromPool(poolId) {
         return card;
     };
     
-    if (!hasShownFirstDrawStory && storiesData) {
+    if (!window.hasShownFirstDrawStory && window.storiesData) {
         showFirstDrawStory(() => {
             performDrawInternal();
         });
@@ -383,7 +424,7 @@ function drawFromPool(poolId) {
 
 
 function showFirstDrawStory(callback) {
-    const story = storiesData.card_stories.first_draw;
+    const story = window.storiesData.card_stories.first_draw;
     
     if (!story) {
         if (callback) callback();
@@ -405,7 +446,7 @@ function showFirstDrawStory(callback) {
     
     window.closeFirstDrawStoryAndDraw = function() {
         closeFirstDrawStory();
-        hasShownFirstDrawStory = true;
+        window.hasShownFirstDrawStory = true;
         localStorage.setItem(FIRST_DRAW_KEY, 'true');
         if (callback) callback();
     };
@@ -419,7 +460,7 @@ function closeFirstDrawStory() {
 }
 
 function showSSRStory() {
-    const story = storiesData.card_stories.ssr_draw;
+    const story = window.storiesData.card_stories.ssr_draw;
     if (!story) return;
     
     const modal = document.createElement('div');
@@ -463,7 +504,7 @@ function confirmRecruit(card) {
     
     confirmCardName.textContent = card.name || '未知';
     confirmCardRarity.textContent = card.rarity || 'R';
-    confirmCardRarity.style.color = cardsData?.rarity_colors?.[card.rarity] || '#9ca3af';
+    confirmCardRarity.style.color = window.cardsData?.rarity_colors?.[card.rarity] || '#9ca3af';
     confirmCardDesc.textContent = card.description || '暂无描述';
     
     confirmBtn.onclick = () => {
@@ -494,13 +535,13 @@ function addCardToBackpack(card, silent = false) {
         return;
     }
     
-    if (!card.is_variant && getCurrentHCCount() >= hc) {
+    if (!card.is_variant && getCurrentHCCount() >= window.hc) {
         showToast('HC不足！');
         return;
     }
     
     addToDrawHistory(card);
-    backpack.push(card);
+    window.backpack.push(card);
     saveBackpack();
     
     // 如果报表模态框已打开，同步更新报表
@@ -525,8 +566,8 @@ function addCardToBackpack(card, silent = false) {
 
 function unlockCard(card) {
     const cardKey = `${card.poolId}_${card.id}`;
-    if (!unlockedCards.includes(cardKey)) {
-        unlockedCards.push(cardKey);
+    if (!window.unlockedCards.includes(cardKey)) {
+        window.unlockedCards.push(cardKey);
         saveUnlockedCards();
     }
 }
@@ -543,10 +584,10 @@ function useCard(instanceId, scenario = 'general', success = true) {
         return result;
     }
     
-    const index = backpack.findIndex(c => c.instanceId === instanceId);
+    const index = window.backpack.findIndex(c => c.instanceId === instanceId);
     if (index === -1) return null;
     
-    const card = backpack[index];
+    const card = window.backpack[index];
     
     if (!card.durability) {
         card.durability = card.rarity === 'SSR' ? 5 : (card.rarity === 'SR' ? 8 : 10);
@@ -575,7 +616,7 @@ function useCard(instanceId, scenario = 'general', success = true) {
             if (gameState.cardFragments === undefined) gameState.cardFragments = 0;
             gameState.cardFragments += fragments;
         }
-        backpack.splice(index, 1);
+        window.backpack.splice(index, 1);
         showToast(`卡牌"${card.name}"已报废！获得${fragments}碎片`);
     }
     
@@ -591,8 +632,8 @@ function showRecruitModal() {
     
     const poolList = document.getElementById('pool-list');
     if (poolList) {
-        poolList.innerHTML = cardsData.pools.map(pool => {
-            const isSelected = currentPool === pool.id;
+        poolList.innerHTML = window.cardsData.pools.map(pool => {
+            const isSelected = window.currentPool === pool.id;
             return `
                 <button class="pool-btn ${isSelected ? 'selected' : ''}" data-pool="${pool.id}">
                     <span class="pool-icon">${pool.icon}</span>
@@ -605,7 +646,7 @@ function showRecruitModal() {
             btn.addEventListener('click', () => {
                 poolList.querySelectorAll('.pool-btn').forEach(b => b.classList.remove('selected'));
                 btn.classList.add('selected');
-                currentPool = btn.dataset.pool;
+                window.currentPool = btn.dataset.pool;
                 updateRecruitUI();
             });
         });
@@ -653,13 +694,13 @@ function updateDrawHistoryUI() {
     const list = document.getElementById('history-list');
     if (!list) return;
     
-    if (drawHistory.length === 0) {
+    if (window.drawHistory.length === 0) {
         list.innerHTML = '<div class="history-empty">暂无抽卡记录</div>';
         return;
     }
     
-    list.innerHTML = drawHistory.slice(0, 50).map(record => {
-        const color = cardsData?.rarity_colors?.[record.rarity] || '#9ca3af';
+    list.innerHTML = window.drawHistory.slice(0, 50).map(record => {
+        const color = window.cardsData?.rarity_colors?.[record.rarity] || '#9ca3af';
         const date = new Date(record.timestamp);
         const timeStr = `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
         return `
@@ -688,10 +729,10 @@ function canAffordUpgrade(card) {
 }
 
 function upgradeCard(instanceId) {
-    const cardIndex = backpack.findIndex(c => c.instanceId === instanceId);
+    const cardIndex = window.backpack.findIndex(c => c.instanceId === instanceId);
     if (cardIndex === -1) return;
     
-    const card = backpack[cardIndex];
+    const card = window.backpack[cardIndex];
     if (!canAffordUpgrade(card)) {
         showToast('资金不足！');
         return;
@@ -722,7 +763,7 @@ function upgradeCard(instanceId) {
 }
 
 function updateRecruitUI() {
-    if (!cardsData || !cardsData.costs) {
+    if (!window.cardsData || !window.cardsData.costs) {
         return;
     }
     
@@ -734,8 +775,8 @@ function updateRecruitUI() {
     const historyBtn = document.getElementById('recruit-history');
     
     if (hcDisplay) {
-        const variantCount = backpack.filter(c => c.is_variant).length;
-        hcDisplay.textContent = `📦 HC ${getCurrentHCCount()}/${hc}（管培生${variantCount}不计）`;
+        const variantCount = window.backpack.filter(c => c.is_variant).length;
+        hcDisplay.textContent = `📦 HC ${getCurrentHCCount()}/${window.hc}（管培生${variantCount}不计）`;
     }
     
     if (budgetDisplay && gameState) {
@@ -757,13 +798,13 @@ function updateRecruitUI() {
         const canDrawResult = canDraw();
         drawBtn.disabled = !canDrawResult;
         drawBtn.onclick = canDrawResult ? () => {
-            drawFromPool(currentPool || 'rd');
+            drawFromPool(window.currentPool || 'rd');
         } : () => {};
     }
     
     if (backpackEl) {
-        backpackEl.innerHTML = backpack.map(card => {
-            const rarityColor = cardsData?.rarity_colors?.[card.rarity] || '#9ca3af';
+        backpackEl.innerHTML = window.backpack.map(card => {
+            const rarityColor = window.cardsData?.rarity_colors?.[card.rarity] || '#9ca3af';
             return `
                 <div class="card-item" style="border-color: ${rarityColor}">
                     <div class="card-rarity" style="color: ${rarityColor}">${card.rarity || 'R'}</div>
@@ -788,7 +829,7 @@ function showCardAnimation(card, callback) {
         return;
     }
     
-    const rarityColor = cardsData?.rarity_colors?.[card.rarity] || '#9ca3af';
+    const rarityColor = window.cardsData?.rarity_colors?.[card.rarity] || '#9ca3af';
     const description = card.description || '暂无描述';
     
     animationEl.innerHTML = `
@@ -853,12 +894,18 @@ function createToastModal() {
 }
 
 function addHC(amount) {
-    hc += amount;
+    window.hc += amount;
+    if (typeof gameState !== 'undefined') {
+        gameState.hcLimit = window.hc;
+    }
+    if (typeof saveGame === 'function') {
+        saveGame();
+    }
     saveHC();
 }
 
 function getBackpack() {
-    return [...backpack];
+    return [...window.backpack];
 }
 
 window.addEventListener('DOMContentLoaded', loadCardsData);
