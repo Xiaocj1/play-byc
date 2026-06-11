@@ -1,0 +1,519 @@
+/* === Jira皮肤 - Atlassian专业风格 === */
+body.skin-jira {
+    background: #f4f5f7 !important;
+    color: #172b4d !important;
+    height: 100vh;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+.skin-jira .game-container,
+.skin-jira .main-wrapper {
+    background: transparent !important;
+}
+
+.skin-jira .container {
+    background: transparent !important;
+    display: grid;
+    grid-template-columns: 260px 1fr 300px;
+    gap: 14px;
+    padding: 14px;
+    height: calc(100vh - 56px);
+}
+
+.skin-jira .sidebar-left {
+    order: 1;
+}
+
+.skin-jira .main-area {
+    order: 2;
+}
+
+.skin-jira .sidebar-right {
+    order: 3;
+}
+
+.skin-jira .status-bar-wrapper {
+    background: #0747a6 !important;
+    border-bottom: 1px solid #0052cc !important;
+    padding: 0 16px;
+    height: 56px;
+    box-shadow: 0 1px 4px rgba(7, 71, 166, 0.15);
+}
+
+.skin-jira .status-bar {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 56px;
+    gap: 12px;
+}
+
+.skin-jira .header-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.skin-jira .btn-back-home,
+.skin-jira .btn-settings,
+.skin-jira .btn-help {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+    padding: 6px 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 13px;
+    border-radius: 4px;
+}
+
+.skin-jira .btn-back-home:hover,
+.skin-jira .btn-settings:hover,
+.skin-jira .btn-help:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+}
+
+.skin-jira .status-columns {
+    display: flex;
+    gap: 20px;
+    flex: 1;
+    align-items: center;
+}
+
+.skin-jira .status-column {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.skin-jira .status-item {
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.skin-jira .status-value {
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.skin-jira .glow-text {
+    text-shadow: none !important;
+}
+
+.skin-jira .status-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.skin-jira .btn-pixel {
+    background: #ffffff !important;
+    border: 1px solid #dfe1e6 !important;
+    color: #172b4d !important;
+    border-radius: 4px;
+    padding: 6px 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 13px;
+}
+
+.skin-jira .btn-pixel:hover {
+    background: #ebecf0 !important;
+}
+
+.skin-jira .character-panel {
+    background: #ffffff !important;
+    border: 1px solid #dfe1e6 !important;
+    border-radius: 4px;
+    padding: 16px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.skin-jira .character-panel .panel-title {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #172b4d !important;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #dfe1e6 !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.skin-jira .character-panel .panel-title::before {
+    content: '';
+    width: 3px;
+    height: 14px;
+    background: #0747a6;
+    border-radius: 2px;
+}
+
+.skin-jira .character-card {
+    background: #f4f5f7;
+    border: 1px solid #dfe1e6;
+    border-radius: 3px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.skin-jira .character-card:hover {
+    background: #ebecf0;
+    border-color: #c1c7d0;
+}
+
+.skin-jira .character-card.selected {
+    background: #deebff;
+    border-color: #0052cc;
+}
+
+.skin-jira .character-portrait {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0747a6 0%, #0052cc 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 2px solid #dfe1e6;
+}
+
+.skin-jira .character-card.selected .character-portrait {
+    border-color: #0052cc;
+}
+
+.skin-jira .character-card-name {
+    font-size: 13px;
+    color: #172b4d;
+    font-weight: 500;
+}
+
+.skin-jira .character-card-role {
+    font-size: 11px;
+    color: #7a869a;
+    background: #ebecf0;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.skin-jira .character-card-favor-bar {
+    width: 50px;
+    height: 4px;
+    background: #dfe1e6;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.skin-jira .character-card-favor-fill {
+    height: 100%;
+    background: #0747a6;
+    border-radius: 2px;
+}
+
+.skin-jira .main-area {
+    background: #ffffff !important;
+    border: 1px solid #dfe1e6 !important;
+    border-radius: 4px;
+    padding: 20px;
+    overflow-y: auto;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.skin-jira .document-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #172b4d;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dfe1e6;
+}
+
+.skin-jira .document-content {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #5e6c84;
+}
+
+.skin-jira .event-card {
+    background: #ffffff !important;
+    border: 1px solid #dfe1e6 !important;
+    border-radius: 4px;
+    padding: 18px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.skin-jira .jira-issue-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dfe1e6;
+    margin-bottom: 12px;
+}
+
+.skin-jira .jira-issue-id {
+    font-family: 'SF Mono', 'Courier New', monospace;
+    font-weight: 600;
+    color: #5e6c84;
+    font-size: 12px;
+    background: #f4f5f7;
+    padding: 3px 6px;
+    border-radius: 3px;
+    border: 1px solid #dfe1e6;
+}
+
+.skin-jira .jira-priority-badge {
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #ffebe6;
+    color: #de350b;
+    margin-left: auto;
+    border: 1px solid #ffbdad;
+}
+
+.skin-jira .jira-issue-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #172b4d;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.skin-jira .jira-issue-description {
+    font-size: 13px;
+    color: #5e6c84;
+    line-height: 1.6;
+    margin-bottom: 14px;
+    background: #f4f5f7;
+    padding: 10px;
+    border-radius: 3px;
+    border-left: 3px solid #0747a6;
+}
+
+.skin-jira .jira-action-btn {
+    width: 100%;
+    background: #f4f5f7;
+    color: #172b4d;
+    border: 1px solid #dfe1e6;
+    border-radius: 3px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.skin-jira .jira-action-btn:hover {
+    background: #ebecf0;
+    border-color: #0052cc;
+    color: #0052cc;
+}
+
+.skin-jira .jira-effect-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f4f5f7;
+    padding: 6px 10px;
+    border-radius: 3px;
+    margin-top: 6px;
+}
+
+.skin-jira .jira-effect-label {
+    font-size: 12px;
+    color: #7a869a;
+}
+
+.skin-jira .jira-effect-value.positive {
+    color: #00875a;
+    background: #e3fcef;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-weight: 600;
+    border: 1px solid #79f2c0;
+}
+
+.skin-jira .jira-effect-value.negative {
+    color: #de350b;
+    background: #ffebe6;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-weight: 600;
+    border: 1px solid #ffbdad;
+}
+
+.skin-jira .progress-panel,
+.skin-jira .satisfaction-panel {
+    background: #ffffff !important;
+    border: 1px solid #dfe1e6 !important;
+    border-radius: 4px;
+    padding: 12px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.skin-jira .progress-panel .panel-title,
+.skin-jira .satisfaction-panel .panel-title {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #172b4d !important;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.skin-jira .progress-bar,
+.skin-jira .satisfaction-bar {
+    height: 6px;
+    background: #dfe1e6;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.skin-jira .progress-fill {
+    background: #0747a6;
+}
+
+.skin-jira .satisfaction-fill.green { background: #00875a; }
+.skin-jira .satisfaction-fill.yellow { background: #ffab00; }
+.skin-jira .satisfaction-fill.orange { background: #ff7452; }
+.skin-jira .satisfaction-fill.red { background: #de350b; }
+
+.skin-jira .progress-text,
+.skin-jira .satisfaction-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #5e6c84;
+    text-align: center;
+}
+
+.skin-jira .task-flow {
+    background: #ffffff;
+    border: 1px solid #dfe1e6;
+    border-radius: 4px;
+    padding: 16px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.skin-jira .task-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: #f4f5f7;
+    border: 1px solid #dfe1e6;
+    border-radius: 3px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.skin-jira .task-item:hover {
+    background: #ebecf0;
+    border-color: #c1c7d0;
+}
+
+.skin-jira .task-item.unread {
+    background: #deebff;
+    border-left: 3px solid #0747a6;
+}
+
+.skin-jira .task-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0747a6 0%, #0052cc 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.skin-jira .task-title {
+    font-weight: 500;
+    color: #172b4d;
+    font-size: 13px;
+}
+
+.skin-jira .task-meta {
+    font-size: 12px;
+    color: #7a869a;
+}
+
+.skin-jira .task-status {
+    font-size: 12px;
+    color: #0747a6;
+    background: #deebff;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.skin-jira .weekly-report {
+    background: #ffffff !important;
+    border: 1px solid #dfe1e6 !important;
+    border-radius: 4px;
+    padding: 16px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.skin-jira .weekly-report .report-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #172b4d;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #dfe1e6;
+}
+
+.skin-jira .weekly-report .report-section h4 {
+    font-size: 12px;
+    font-weight: 600;
+    color: #172b4d;
+    margin-bottom: 6px;
+    padding: 6px 8px;
+    background: #f4f5f7;
+    border-left: 3px solid #0747a6;
+    border-radius: 3px;
+}
+
+.skin-jira .weekly-report .report-section p {
+    font-size: 13px;
+    color: #5e6c84;
+    line-height: 1.6;
+}
+
+.skin-jira .weekly-report .fun-comment {
+    background: #fff8e5;
+    border-left: 3px solid #ffab00;
+    padding: 8px 10px;
+    margin-top: 8px;
+    font-style: italic;
+    font-size: 12px;
+    color: #7a869a;
+    border-radius: 3px;
+}

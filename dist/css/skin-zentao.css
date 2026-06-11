@@ -1,0 +1,520 @@
+/* === 禅道皮肤 - 蓝白项目管理风格 === */
+body.skin-zentao {
+    background: #f5f7fa !important;
+    color: #333333 !important;
+    height: 100vh;
+    overflow: hidden;
+    font-family: "Microsoft YaHei", "微软雅黑", "PingFang SC", Arial, sans-serif;
+}
+
+.skin-zentao .game-container,
+.skin-zentao .main-wrapper {
+    background: transparent !important;
+}
+
+.skin-zentao .container {
+    background: transparent !important;
+    display: grid;
+    grid-template-columns: 250px 1fr 300px;
+    gap: 14px;
+    padding: 14px;
+    height: calc(100vh - 56px);
+}
+
+.skin-zentao .sidebar-left {
+    order: 1;
+}
+
+.skin-zentao .main-area {
+    order: 2;
+}
+
+.skin-zentao .sidebar-right {
+    order: 3;
+}
+
+.skin-zentao .status-bar-wrapper {
+    background: #2e79f5 !important;
+    border-bottom: 1px solid #1e6be7 !important;
+    padding: 0 16px;
+    height: 56px;
+    box-shadow: 0 1px 4px rgba(46, 121, 245, 0.2);
+}
+
+.skin-zentao .status-bar {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 56px;
+    gap: 12px;
+}
+
+.skin-zentao .header-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.skin-zentao .btn-back-home,
+.skin-zentao .btn-settings,
+.skin-zentao .btn-help {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+    padding: 6px 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 13px;
+    border-radius: 4px;
+}
+
+.skin-zentao .btn-back-home:hover,
+.skin-zentao .btn-settings:hover,
+.skin-zentao .btn-help:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+}
+
+.skin-zentao .status-columns {
+    display: flex;
+    gap: 20px;
+    flex: 1;
+    align-items: center;
+}
+
+.skin-zentao .status-column {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.skin-zentao .status-item {
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.skin-zentao .status-value {
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.skin-zentao .glow-text {
+    text-shadow: none !important;
+}
+
+.skin-zentao .status-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.skin-zentao .btn-pixel {
+    background: #ffffff !important;
+    border: 1px solid #e5e6eb !important;
+    color: #333333 !important;
+    border-radius: 4px;
+    padding: 6px 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 13px;
+}
+
+.skin-zentao .btn-pixel:hover {
+    background: #f0f2f5 !important;
+    border-color: #d0d3d9 !important;
+}
+
+.skin-zentao .character-panel {
+    background: #ffffff !important;
+    border: 1px solid #e5e6eb !important;
+    border-radius: 6px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.skin-zentao .character-panel .panel-title {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #333333 !important;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e5e6eb !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.skin-zentao .character-panel .panel-title::before {
+    content: '';
+    width: 3px;
+    height: 14px;
+    background: #2e79f5;
+    border-radius: 2px;
+}
+
+.skin-zentao .character-card {
+    background: #f7f8fa;
+    border: 1px solid #e5e6eb;
+    border-radius: 4px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.skin-zentao .character-card:hover {
+    background: #f0f2f5;
+    border-color: #c9cdd4;
+}
+
+.skin-zentao .character-card.selected {
+    background: #e8f3ff;
+    border-color: #2e79f5;
+}
+
+.skin-zentao .character-portrait {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #2e79f5 0%, #4d94ff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid #e5e6eb;
+}
+
+.skin-zentao .character-card.selected .character-portrait {
+    border-color: #2e79f5;
+}
+
+.skin-zentao .character-card-name {
+    font-size: 13px;
+    color: #333333;
+    font-weight: 500;
+}
+
+.skin-zentao .character-card-role {
+    font-size: 11px;
+    color: #86909c;
+    background: #f0f2f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.skin-zentao .character-card-favor-bar {
+    width: 50px;
+    height: 4px;
+    background: #e5e6eb;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.skin-zentao .character-card-favor-fill {
+    height: 100%;
+    background: #2e79f5;
+    border-radius: 2px;
+}
+
+.skin-zentao .main-area {
+    background: #ffffff !important;
+    border: 1px solid #e5e6eb !important;
+    border-radius: 6px;
+    padding: 20px;
+    overflow-y: auto;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.skin-zentao .document-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333333;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e5e6eb;
+}
+
+.skin-zentao .document-content {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #4e5969;
+}
+
+.skin-zentao .event-card {
+    background: #ffffff !important;
+    border: 1px solid #e5e6eb !important;
+    border-radius: 6px;
+    padding: 18px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.skin-zentao .jira-issue-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e5e6eb;
+    margin-bottom: 12px;
+}
+
+.skin-zentao .jira-issue-id {
+    font-family: "Consolas", "Monaco", monospace;
+    font-weight: 600;
+    color: #2e79f5;
+    font-size: 12px;
+    background: #f0f7ff;
+    padding: 3px 6px;
+    border-radius: 3px;
+    border: 1px solid #cce1ff;
+}
+
+.skin-zentao .jira-priority-badge {
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #fff2f0;
+    color: #f53f3f;
+    margin-left: auto;
+    border: 1px solid #ffd8d3;
+}
+
+.skin-zentao .jira-issue-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333333;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.skin-zentao .jira-issue-description {
+    font-size: 13px;
+    color: #4e5969;
+    line-height: 1.6;
+    margin-bottom: 14px;
+    background: #f7f8fa;
+    padding: 10px;
+    border-radius: 4px;
+    border-left: 3px solid #2e79f5;
+}
+
+.skin-zentao .jira-action-btn {
+    width: 100%;
+    background: #f7f8fa;
+    color: #333333;
+    border: 1px solid #e5e6eb;
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.skin-zentao .jira-action-btn:hover {
+    background: #f0f2f5;
+    border-color: #2e79f5;
+    color: #2e79f5;
+}
+
+.skin-zentao .jira-effect-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f7f8fa;
+    padding: 6px 10px;
+    border-radius: 4px;
+    margin-top: 6px;
+}
+
+.skin-zentao .jira-effect-label {
+    font-size: 12px;
+    color: #86909c;
+}
+
+.skin-zentao .jira-effect-value.positive {
+    color: #00b42a;
+    background: #e8ffea;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-weight: 600;
+    border: 1px solid #b8eac0;
+}
+
+.skin-zentao .jira-effect-value.negative {
+    color: #f53f3f;
+    background: #fff2f0;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-weight: 600;
+    border: 1px solid #ffd8d3;
+}
+
+.skin-zentao .progress-panel,
+.skin-zentao .satisfaction-panel {
+    background: #ffffff !important;
+    border: 1px solid #e5e6eb !important;
+    border-radius: 6px;
+    padding: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.skin-zentao .progress-panel .panel-title,
+.skin-zentao .satisfaction-panel .panel-title {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #333333 !important;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.skin-zentao .progress-bar,
+.skin-zentao .satisfaction-bar {
+    height: 6px;
+    background: #e5e6eb;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.skin-zentao .progress-fill {
+    background: #2e79f5;
+}
+
+.skin-zentao .satisfaction-fill.green { background: #00b42a; }
+.skin-zentao .satisfaction-fill.yellow { background: #ff7d00; }
+.skin-zentao .satisfaction-fill.orange { background: #ff7d00; }
+.skin-zentao .satisfaction-fill.red { background: #f53f3f; }
+
+.skin-zentao .progress-text,
+.skin-zentao .satisfaction-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #4e5969;
+    text-align: center;
+}
+
+.skin-zentao .task-flow {
+    background: #ffffff;
+    border: 1px solid #e5e6eb;
+    border-radius: 6px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.skin-zentao .task-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: #f7f8fa;
+    border: 1px solid #e5e6eb;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.skin-zentao .task-item:hover {
+    background: #f0f2f5;
+    border-color: #c9cdd4;
+}
+
+.skin-zentao .task-item.unread {
+    background: #e8f3ff;
+    border-left: 3px solid #2e79f5;
+}
+
+.skin-zentao .task-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #2e79f5 0%, #4d94ff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.skin-zentao .task-title {
+    font-weight: 500;
+    color: #333333;
+    font-size: 13px;
+}
+
+.skin-zentao .task-meta {
+    font-size: 12px;
+    color: #86909c;
+}
+
+.skin-zentao .task-status {
+    font-size: 12px;
+    color: #2e79f5;
+    background: #e8f3ff;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.skin-zentao .weekly-report {
+    background: #ffffff !important;
+    border: 1px solid #e5e6eb !important;
+    border-radius: 6px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.skin-zentao .weekly-report .report-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333333;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e5e6eb;
+}
+
+.skin-zentao .weekly-report .report-section h4 {
+    font-size: 12px;
+    font-weight: 600;
+    color: #333333;
+    margin-bottom: 6px;
+    padding: 6px 8px;
+    background: #f7f8fa;
+    border-left: 3px solid #2e79f5;
+    border-radius: 3px;
+}
+
+.skin-zentao .weekly-report .report-section p {
+    font-size: 13px;
+    color: #4e5969;
+    line-height: 1.6;
+}
+
+.skin-zentao .weekly-report .fun-comment {
+    background: #fff7e8;
+    border-left: 3px solid #ff7d00;
+    padding: 8px 10px;
+    margin-top: 8px;
+    font-style: italic;
+    font-size: 12px;
+    color: #86909c;
+    border-radius: 3px;
+}

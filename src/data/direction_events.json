@@ -1,0 +1,130 @@
+{
+  "tob": [
+    {
+      "id": "tob_contract_negotiation",
+      "title": "合同谈判",
+      "description": "甲方提出了苛刻的付款条件，需要谈判。",
+      "options": [
+        { "text": "接受条款，先签合同", "effects": { "satisfaction": 15, "morale": -10 } },
+        { "text": "争取更有利条件", "effects": { "satisfaction": -5, "morale": 5, "progress": 10 } },
+        { "text": "找法务审查合同", "effects": { "satisfaction": 0, "budget": -5, "progress": -5 } }
+      ]
+    },
+    {
+      "id": "tob_client_retain",
+      "title": "老客户续约",
+      "description": "合作了一年的甲方表示有兴趣续约，但希望价格优惠。",
+      "options": [
+        { "text": "给予10%折扣，稳定客户", "effects": { "budget": -10, "satisfaction": 20, "fame": 10 } },
+        { "text": "保持原价，增加服务", "effects": { "satisfaction": 10, "progress": 10, "morale": -5 } },
+        { "text": "介绍其他项目来弥补", "effects": { "satisfaction": 15, "fame": 5 } }
+      ]
+    },
+    {
+      "id": "tob_compliance_risk",
+      "title": "合规风险",
+      "description": "项目涉及敏感数据，需要满足合规要求。",
+      "options": [
+        { "text": "严格合规，增加预算", "effects": { "budget": -20, "progress": -10, "fame": 15 } },
+        { "text": "简化流程，承担风险", "effects": { "budget": 5, "satisfaction": -10, "progress": 15 } },
+        { "text": "请专家评估", "effects": { "budget": -8, "satisfaction": 5, "progress": -5 } }
+      ]
+    },
+    {
+      "id": "tob_payment_delay",
+      "title": "付款延期",
+      "description": "甲方项目负责人更换，付款流程需要重新审批。",
+      "options": [
+        { "text": "耐心等待", "effects": { "budget": -5, "satisfaction": 5, "morale": -5 } },
+        { "text": "催促付款", "effects": { "budget": 10, "satisfaction": -10 } },
+        { "text": "提供分期付款方案", "effects": { "budget": -3, "satisfaction": 15 } }
+      ]
+    }
+  ],
+  "toc": [
+    {
+      "id": "toc_viral_growth",
+      "title": "产品 viral 爆发！",
+      "description": "突然之间，你的产品在社交媒体上传开了！",
+      "options": [
+        { "text": "赶紧加大服务器投入", "effects": { "budget": -30, "fame": 30, "progress": 20 } },
+        { "text": "先观察一下，再决定", "effects": { "fame": 15, "satisfaction": 10 } },
+        { "text": "准备融资材料，趁势而上", "effects": { "fame": 20, "progress": 10, "budget": -10 } }
+      ]
+    },
+    {
+      "id": "toc_ab_testing",
+      "title": "A/B 测试机会",
+      "description": "用户增长遇到瓶颈，需要做一个重要的产品决策。",
+      "options": [
+        { "text": "做严谨的 A/B 测试", "effects": { "progress": 10, "satisfaction": 10, "budget": -10 } },
+        { "text": "凭感觉选一个方向", "effects": { "progress": 15, "satisfaction": -5, "morale": 5 } },
+        { "text": "让用户投票决定", "effects": { "satisfaction": 20, "fame": 5, "progress": 5 } }
+      ]
+    },
+    {
+      "id": "toc_user_retention",
+      "title": "用户留存下降",
+      "description": "最近的版本发布后，用户留存率明显下降。",
+      "options": [
+        { "text": "紧急回滚版本", "effects": { "satisfaction": 15, "progress": -10, "morale": -5 } },
+        { "text": "快速发布修复版本", "effects": { "satisfaction": 10, "progress": 5, "morale": 5 } },
+        { "text": "调研用户，了解原因", "effects": { "satisfaction": 5, "fame": 5, "progress": 5, "budget": -5 } }
+      ]
+    },
+    {
+      "id": "toc_competitor_copy",
+      "title": "竞品抄袭",
+      "description": "大厂发布了和你几乎一模一样的功能！",
+      "options": [
+        { "text": "快速迭代，保持领先", "effects": { "progress": 20, "morale": 10, "budget": -15 } },
+        { "text": "差异化定位，换赛道", "effects": { "progress": -10, "fame": 10, "satisfaction": 5 } },
+        { "text": "宣传原创，博同情", "effects": { "fame": 15, "satisfaction": 10 } }
+      ]
+    }
+  ],
+  "b2c": [
+    {
+      "id": "b2c_two_sided_tension",
+      "title": "双边矛盾",
+      "description": "服务商抱怨佣金太高，用户抱怨价格太贵！",
+      "options": [
+        { "text": "降低佣金，补贴用户", "effects": { "budget": -20, "satisfaction": 20, "fame": 10 } },
+        { "text": "保持不变，加强服务", "effects": { "satisfaction": -5, "progress": 10, "budget": -5 } },
+        { "text": "调整价格体系", "effects": { "satisfaction": 10, "fame": 5, "progress": 15 } }
+      ]
+    },
+    {
+      "id": "b2c_network_effect",
+      "title": "网络效应临界点",
+      "description": "用户数和服务商数都达到了一个平衡点，是时候加一把火了！",
+
+      "options": [
+        { "text": "投入营销，再上一层楼", "effects": { "budget": -25, "fame": 25, "progress": 20 } },
+        { "text": "优化匹配效率", "effects": { "progress": 15, "satisfaction": 10, "budget": -10 } },
+        { "text": "开始商业化变现", "effects": { "budget": 20, "satisfaction": -10, "fame": 5 } }
+      ]
+    },
+    {
+      "id": "b2c_ecosystem_build",
+      "title": "生态建设机会",
+      "description": "有第三方希望接入你的平台，做增值服务。",
+      "options": [
+        { "text": "开放生态，欢迎接入", "effects": { "fame": 20, "progress": 15, "satisfaction": 10 } },
+        { "text": "谨慎合作，先做试点", "effects": { "fame": 10, "progress": 10, "budget": -5 } },
+        { "text": "自己做这些服务", "effects": { "progress": 20, "morale": -10, "budget": -15 } }
+      ]
+    },
+    {
+      "id": "b2c_regulatory_risk",
+      "title": "监管风险",
+      "description": "监管部门注意到了你的平台，需要合规。",
+      "options": [
+        { "text": "积极配合，全面合规", "effects": { "budget": -25, "fame": 20, "progress": -10 } },
+        { "text": "先观望，再应对", "effects": { "budget": -5, "satisfaction": -5 } },
+        { "text": "寻找灰色地带", "effects": { "budget": 10, "satisfaction": -15, "fame": -10 } }
+      ]
+    }
+  ]
+}
+
